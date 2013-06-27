@@ -35,9 +35,6 @@ nosetests.xml
 .pydevproject
 
 # Pyramid spesific files
-README.txt
-MANIFEST.in
-CHANGES.txt
 
 # Database
 *.sqlite
