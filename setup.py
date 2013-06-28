@@ -15,6 +15,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'alembic',
+    'cryptacular',
     ]
 
 setup(name='pyrtos',
