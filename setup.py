@@ -20,6 +20,7 @@ requires = [
     'webhelpers',
     'webtest',
     'nose',
+    'coverage',
     ]
 
 setup(name='pyrtos',

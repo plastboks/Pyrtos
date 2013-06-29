@@ -20,8 +20,8 @@ def _initTestingDB():
     hashed = m.encode(u'abc123')
     with transaction.manager:
         user = User(
-                        username=u'admin',
-                        email=u'admin@local',
+                        username=u'user1',
+                        email=u'user1@local',
                         password=hashed
                     )
         DBSession.add(user)
