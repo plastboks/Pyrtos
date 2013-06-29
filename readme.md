@@ -37,9 +37,17 @@ Alembic upgrades and migrations is done by:
   * `alembic revision --autogenerate -m "comment"`
   * `alembic upgrade head`
 
+Testing
+=======
+This app will be written with TDD. To test the app run:
+  * `nosetest .`
+
 Branches
 ========
 There will mainly be two branches in this repo (@github) at all times. The master and develop branch.
 The master branch will be kept back featurewise of the develop branch. This is to ensure the stability of the master branch.
 
+Useful Links
+============
+  * [Testing page in wiki2 tutorial](http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/tutorials/wiki2/tests.html)
 
