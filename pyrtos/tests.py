@@ -21,8 +21,8 @@ def _initTestingDB(makeuser=False):
       hashed = m.encode(u'1234')
       with transaction.manager:
           user = User(
-                          username=u'user0',
-                          email=u'user0@local',
+                          username=u'user',
+                          email=u'user@email.com',
                           password=hashed
                       )
           DBSession.add(user)
@@ -133,16 +133,18 @@ class FunctionlTests(unittest.TestCase):
 
     def test_anonymous_user_cannot_se_logout(self):
         res = self.testapp.get('/logout', status=302)
-        self.assertTrue(res.location, '/login')
+        self.assertTrue(res.location, 'http://localhost/login')
 
     def test_try_login(self):
-        res = self.testapp.post('/login', params={'email': 'user0@email.com',
-                                                 'password' : '1234'},
+        res = self.testapp.post('/login', params={'email': 'user@email.com',
+                                                  'password' : '1234'},
                                           status=302)
-        self.assertFalse('Login' in res.body)
+        self.assertTrue(res.location, 'http://localhost/')
+        logged_in = self.testapp.get('/login', status=302)
+        self.assertTrue(logged_in.location, 'http://localhost/')
 
     def test_fail_login(self):
         res = self.testapp.post('/login', params={'email': 'fakeuser@email.com',
                                                   'password' : 'abcd'},
                                           status=302)
-        self.assertTrue('Login' in res.body)
+        self.assertTrue(res.location, 'http://localhost/login')
