@@ -51,7 +51,5 @@ class User(Base):
         return DBSession.query(User).filter(User.email == email).first()
 
     def verify_password(self, password):
-        return self.pm.chech(self.password, password)
-
-    def hash_password(self, password):
-        return self.pm.encode(password)
+        return self.pm.check(self.password, password)
+    
