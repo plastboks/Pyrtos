@@ -16,8 +16,7 @@ Features include:
   * Notify via SMS and Email when an invoice is due to payment.
   * Compare uses against expected numbers.
   * Plot and graphs to visualize budget.
-  * Upload and keep track of reciepts.
-  * Upload and keep track of documents.
+  * Upload and keep track of reciepts and documents.
   * +++
 
 
@@ -34,13 +33,19 @@ Alembic
 =======
 Alembic upgrades and migrations is done by:
   * edit pyramarks/models.py accordingly
-  * `alembic revision --autogenerate -m "comment"`
-  * `alembic upgrade head`
+  * run `alembic revision --autogenerate -m "migration comment"`
+  * run `alembic upgrade head`
+
+Upgrading
+=========
+While the project is in the initial state, there will be no fancy upgrading. Until then, upgrades will be done by:
+  * run `pip install -e .`
+  * run `alembic upgrade head`
 
 Testing
 =======
 This app will be written with TDD. To test the app run:
-  * `nosetest .`
+  * run `nosetests .`
 
 Branches
 ========
