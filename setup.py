@@ -16,6 +16,11 @@ requires = [
     'waitress',
     'alembic',
     'cryptacular',
+    'wtforms',
+    'webhelpers',
+    'webtest',
+    'nose',
+    'coverage',
     ]
 
 setup(name='pyrtos',

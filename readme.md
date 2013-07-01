@@ -16,8 +16,7 @@ Features include:
   * Notify via SMS and Email when an invoice is due to payment.
   * Compare uses against expected numbers.
   * Plot and graphs to visualize budget.
-  * Upload and keep track of reciepts.
-  * Upload and keep track of documents.
+  * Upload and keep track of reciepts and documents.
   * +++
 
 
@@ -34,12 +33,26 @@ Alembic
 =======
 Alembic upgrades and migrations is done by:
   * edit pyramarks/models.py accordingly
-  * `alembic revision --autogenerate -m "comment"`
-  * `alembic upgrade head`
+  * run `alembic revision --autogenerate -m "migration comment"`
+  * run `alembic upgrade head`
+
+Upgrading
+=========
+While the project is in the initial state, there will be no fancy upgrading. Until then, upgrades will be done by:
+  * run `pip install -e .`
+  * run `alembic upgrade head`
+
+Testing
+=======
+This app will be written with TDD. To test the app run:
+  * run `nosetests .`
 
 Branches
 ========
 There will mainly be two branches in this repo (@github) at all times. The master and develop branch.
 The master branch will be kept back featurewise of the develop branch. This is to ensure the stability of the master branch.
 
+Useful Links
+============
+  * [Testing page in wiki2 tutorial](http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/tutorials/wiki2/tests.html)
 
