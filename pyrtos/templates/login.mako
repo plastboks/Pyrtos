@@ -11,7 +11,7 @@
     <h1>Login</h1>
     <form action="${request.route_url('login')}" method="post">
       <p>
-        <label>User</label>
+        <label>Email</label>
         <input type="text" name="email">
       </p>
       <p>
