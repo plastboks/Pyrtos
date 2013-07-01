@@ -7,8 +7,13 @@
   <link rel="stylesheet" href="${request.static_url('pyrtos:static/css/style.css')}" type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
-  <div id="content">
-     ${next.body()} 
+  <div id="wrapper">
+    <div class="sidebar corners5px">
+      <%include file="pyrtos:templates/sidebar.mako"/>
+    </div>
+    <div id="content" class="corners5px">
+       ${next.body()} 
+    </div>
   </div>
 </body>
 </html>
