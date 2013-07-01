@@ -125,7 +125,7 @@ class FunctionlTests(unittest.TestCase):
 
     def test_root(self):
         res = self.testapp.get('/', status=200)
-        self.assertIn(b'Hello world', res.body)
+        self.assertIn(b'Login', res.body)
 
     def test_login(self):
         res = self.testapp.get('/login', status=200)

@@ -24,7 +24,8 @@ from .models import (
 # Index #
 #########
 @view_config(route_name='index',
-             renderer='pyrtos:templates/index.mako')
+             renderer='pyrtos:templates/index.mako',
+             permission='view')
 def index(request):
     return {'title': 'Hello world'}
 
