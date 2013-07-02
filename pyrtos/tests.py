@@ -2,6 +2,7 @@ import unittest
 import transaction
 
 from pyramid import testing
+from webtest import TestApp
 from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
 
 from webob import multidict
@@ -20,7 +21,7 @@ def _initTestingDB(makeuser=False):
     DBSession.configure(bind=engine)
     if makeuser:
       m = BPM()
-      hashed = m.encode(u'1234')
+      hashed = m.encode(u'1234567')
       with transaction.manager:
           user = User(
                           username=u'user',
@@ -130,6 +131,7 @@ class ViewTests(unittest.TestCase):
     def test_login(self):
         from .views import login
         request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
         response = login(request)
         self.assertEqual(response['title'], 'Login')
 
@@ -154,14 +156,13 @@ class FunctionlTests(unittest.TestCase):
         from pyrtos import main
         settings = {'sqlalchemy.url' : 'sqlite://'}
         app = main({}, **settings)
-        from webtest import TestApp
         self.testapp = TestApp(app)
-        self.i = _initTestingDB(makeuser=True)
+        self.config = testing.setUp()
+        self.session = _initTestingDB(makeuser=True)
 
     def tearDown(self):
         del self.testapp
-        from .models import DBSession
-        DBSession.remove()
+        self.session.remove()
 
     def test_root_as_anonymous(self):
         res = self.testapp.get('/', status=302)
@@ -176,38 +177,58 @@ class FunctionlTests(unittest.TestCase):
         self.assertTrue(res.location, 'http://localhost/login')
 
     def test_try_login(self):
-        res = self.testapp.post('/login', params={'email': 'user@email.com',
-                                                  'password' : '1234'},
-                                          status=302)
-        self.assertTrue(res.location, 'http://localhost/')
-        logged_in = self.testapp.get('/login', status=302)
-        self.assertTrue(logged_in.location, 'http://localhost/')
+        res = self.testapp.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.testapp.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        self.assertTrue(res.status_int, 302)
+        logged_in = self.testapp.get('/login')
+        self.assertTrue(res.status_int, 302)
 
     def test_fail_login(self):
-        res = self.testapp.post('/login', params={'email': 'fakeuser@email.com',
-                                                  'password' : 'abcd'},
-                                          status=302)
-        self.assertTrue(res.location, 'http://localhost/login')
+        res = self.testapp.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.testapp.post('/login', {'submit' : True,
+                                           'email': 'fake@email.com',
+                                           'password' : 'abcdefg',
+                                           'csrf_token' : token}
+                               )
+        self.assertTrue(res.status_int, 200)
 
     def test_categories_as_anonymous(self):
         res = self.testapp.get('/categories', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
 
     def test_categories(self):
-        res = self.testapp.post('/login', params={'email': 'user@email.com',
-                                                  'password' : '1234'},
-                                          status=302)
-        categories = self.testapp.get('/categories', status=200)
-        self.assertTrue('Categories' in categories.body)
-        res = self.testapp.post('/category/new', params={'name' : 'testbest',
-                                                         'title' : 'testbest'},
-                                                 status=302)
-        categories = self.testapp.get('/categories', status=200)
-        self.assertTrue('testbest' in categories.body)
+        res = self.testapp.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.testapp.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        res = self.testapp.get('/categories')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.testapp.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.testapp.post('/category/new', {'name' : 'testbest',
+                                                  'title' : 'testbest',
+                                                  'csrf_token' : token}
+                               )
+        res = self.testapp.get('/categories', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        res = self.testapp.get('/category/edit/1')
+        token = res.form.fields['csrf_token'][0].value
         res = self.testapp.post('/category/edit/1', params={'id' : 1,
                                                             'name' : 'besttest',
-                                                            'title' : 'besttest'},
-                                                 status=302)
+                                                            'title' : 'besttest',
+                                                            'csrf_token' : token}
+                               )
         categories = self.testapp.get('/categories', status=200)
         self.assertTrue('besttest' in categories.body)
         res = self.testapp.get('/category/edit/1', status=200)
