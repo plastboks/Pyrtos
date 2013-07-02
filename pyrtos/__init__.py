@@ -35,11 +35,14 @@ def main(global_config, **settings):
                           session_factory=sess_factory,)
 
     config.add_static_view('static', 'static', cache_max_age=3600)
+
     config.add_route('index', '/')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
 
     config.add_route('categories', '/categories')
+    config.add_route('category_new', '/category/new')
+    config.add_route('category_edit', '/category/edit/{id}')
 
     config.scan()
     return config.make_wsgi_app()

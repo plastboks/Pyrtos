@@ -80,5 +80,9 @@ class Category(Base):
         return Page(Category.all(), page, url=page_url, items_per_page=IPP)
     
     @classmethod
+    def by_id(cls, id):
+        return DBSession.query(Category).filter(Category.id == id).first()
+
+    @classmethod
     def by_name(cls, name):
         return DBSession.query(Category).filter(Category.name == name).first()

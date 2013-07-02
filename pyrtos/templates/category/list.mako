@@ -1,6 +1,11 @@
 <%inherit file="pyrtos:templates/base.mako"/>
 
 <h1>${title}</h1>
+<div class="upper_toolbar">
+  <ul>
+    <li><a href="${request.route_url('category_new')}">New</a></li>
+  </ul>
+</div>
 
 %if paginator.items:
   <div class='tablelist'>
@@ -13,7 +18,7 @@
         %for item in paginator.items:
           <tr>
             <td>${item.title}</td>
-            <td></td>
+            <td><a href="${request.route_url('category_edit', id=item.id)}">Edit</a></td>
           </tr>
         %endfor
       </tbody>

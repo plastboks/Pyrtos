@@ -91,14 +91,16 @@ class CategoryModelTests(unittest.TestCase):
         from pyrtos.models import Category
         return Category
 
-    def _makeOne(self, title, name):
-        return self._getTargetClass()(title=title, name=name)
+    def _makeOne(self, id, title, name):
+        return self._getTargetClass()(id=id, title=title, name=name)
 
     def test_constructor(self):
-        instance = self._makeOne('Test', 'best')
+        instance = self._makeOne(100, 'Test', 'best')
         self.session.add(instance)
-        q = self._getTargetClass().by_name('best')
-        self.assertEqual(q.title, 'Test')
+        qn = self._getTargetClass().by_name('best')
+        self.assertEqual(qn.title, 'Test')
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
 
 
 class ViewTests(unittest.TestCase):
@@ -134,6 +136,7 @@ class ViewTests(unittest.TestCase):
         request = testing.DummyRequest()
         response = categories(request)
         self.assertEqual(response['title'], 'Categories')
+
 
 class FunctionlTests(unittest.TestCase):
     def setUp(self):
