@@ -22,6 +22,7 @@ from .models import (
     Category,
     )
 from .forms import (
+    LoginForm,
     CategoryCreateForm,
     CategoryEditForm,
 )
@@ -53,7 +54,7 @@ def categories(request):
              renderer='pyrtos:templates/category/edit.mako',
              permission='create')
 def category_create(request):
-    form = CategoryCreateForm(request.POST)
+    form = CategoryCreateForm(request.POST, csrf_context=request.session)
     if request.method == 'POST' and form.validate():
         c = Category()
         form.populate_obj(c)
@@ -72,7 +73,7 @@ def category_edit(request):
     c = Category.by_id(id)
     if not c:
         return HTTPNotFound()
-    form = CategoryEditForm(request.POST, c)
+    form = CategoryEditForm(request.POST, c, csrf_context=request.session)
     if request.method == 'POST' and form.validate():
         form.populate_obj(c)
         request.session.flash('Category %s updated' % (c.title))
@@ -88,11 +89,9 @@ def category_edit(request):
 ################
 @view_config(route_name='login',
              renderer='pyrtos:templates/login.mako')
-@view_config(route_name='login',
-             renderer='string',
-             request_method='POST')
 def login(request):
-    if request.method == 'POST' and request.POST.get('email'):
+    form = LoginForm(request.POST, csrf_context=request.session)
+    if request.method == 'POST' and form.validate():
         user = User.by_email(request.POST.get('email'))
         if user and user.verify_password(request.POST.get('password')):
             headers = remember(request, user.id)
@@ -106,7 +105,8 @@ def login(request):
         return HTTPFound(location=request.route_url('index'))
 
     return {'action' : request.matchdict.get('action'),
-            'title' : 'Login'}
+            'title' : 'Login',
+            'form' : form}
 
 @view_config(route_name='logout',
              renderer='string')
