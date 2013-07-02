@@ -55,4 +55,4 @@ The master branch will be kept back featurewise of the develop branch. This is t
 Useful Links
 ============
   * [Testing page in wiki2 tutorial](http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/tutorials/wiki2/tests.html)
-
+  * [Sonteks tests for Pyramid and SQLAlchemy](http://sontek.net/blog/detail/writing-tests-for-pyramid-and-sqlalchemy)
