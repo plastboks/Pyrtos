@@ -18,6 +18,7 @@ from pyramid.view import (
 from .models import (
     DBSession,
     User,
+    Category,
     )
 
 #########
@@ -29,6 +30,19 @@ from .models import (
 def index(request):
     return {'title': 'Hello world'}
 
+
+##############
+# Categories #
+##############
+@view_config(route_name='categories',
+             renderer='pyrtos:templates/category/list.mako',
+             permission='view')
+def categories(request):
+    page = int (request.params.get('page', 1))
+    categories = Category.page(request, page)
+    return {'paginator': categories,
+            'title' : 'Categories'}
+
 ################
 # Login/logout #
 ################
@@ -37,7 +51,6 @@ def index(request):
 @view_config(route_name='login',
              renderer='string',
              request_method='POST')
-@forbidden_view_config(renderer='pyrtos:templates/login.mako')
 def login(request):
     if request.method == 'POST' and request.POST.get('email'):
         user = User.by_email(request.POST.get('email'))
@@ -51,7 +64,7 @@ def login(request):
                          headers=headers)
     if authenticated_userid(request):
         return HTTPFound(location=request.route_url('index'))
-
+    
     return {'action' : request.matchdict.get('action'),
             'title' : 'Login'}
 
@@ -61,3 +74,11 @@ def logout(request):
     headers = forget(request)
     return HTTPFound(location=request.route_url('login'),
                      headers=headers)
+
+
+#############
+# Forbidden #
+#############
+@forbidden_view_config(renderer='pyrtos:templates/login.mako')
+def forbidden(request):
+    return HTTPFound(request.route_url('login'))
