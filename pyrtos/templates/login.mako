@@ -10,13 +10,17 @@
   <div id="login">
     <h1>Login</h1>
     <form action="${request.route_url('login')}" method="post">
+      ${form.csrf_token}
+      %for error in form.email.errors:
+        <p class=error>${error}</p>
+      %endfor
       <p>
-        <label>Email</label>
-        <input type="text" name="email">
+        <label>${form.email.label}</label><br />
+        ${form.email}
       </p>
       <p>
-        <label>Password</label>
-        <input type="password" name="password">
+        <label>${form.password.label}</label><br />
+        ${form.password}
       </p>
         <input type="submit" value="Sign in">
     </form>

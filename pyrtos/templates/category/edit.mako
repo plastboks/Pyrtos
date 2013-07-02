@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/base.mako" />
 <h1>${title}</h1>
 <form action="${request.route_url(action, id=id)}" method="POST">
-
+  ${form.csrf_token}
   %if action == 'category_edit':
     ${form.id()}
   %endif
