@@ -4,6 +4,8 @@ import transaction
 from pyramid import testing
 from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
 
+from webob import multidict
+
 from .models import DBSession
 
 def _initTestingDB(makeuser=False):
@@ -137,6 +139,15 @@ class ViewTests(unittest.TestCase):
         response = categories(request)
         self.assertEqual(response['title'], 'Categories')
 
+    def test_category_create(self):
+        from .views import category_create
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        request.matchdict = {'name' : 'test'}
+        response = category_create(request)
+        self.assertEqual(response['title'], 'New category')
+
+
 
 class FunctionlTests(unittest.TestCase):
     def setUp(self):
@@ -181,3 +192,25 @@ class FunctionlTests(unittest.TestCase):
     def test_categories_as_anonymous(self):
         res = self.testapp.get('/categories', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
+
+    def test_categories(self):
+        res = self.testapp.post('/login', params={'email': 'user@email.com',
+                                                  'password' : '1234'},
+                                          status=302)
+        categories = self.testapp.get('/categories', status=200)
+        self.assertTrue('Categories' in categories.body)
+        res = self.testapp.post('/category/new', params={'name' : 'testbest',
+                                                         'title' : 'testbest'},
+                                                 status=302)
+        categories = self.testapp.get('/categories', status=200)
+        self.assertTrue('testbest' in categories.body)
+        res = self.testapp.post('/category/edit/1', params={'id' : 1,
+                                                            'name' : 'besttest',
+                                                            'title' : 'besttest'},
+                                                 status=302)
+        categories = self.testapp.get('/categories', status=200)
+        self.assertTrue('besttest' in categories.body)
+        res = self.testapp.get('/category/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.testapp.get('/category/edit/100', status=404)
+
