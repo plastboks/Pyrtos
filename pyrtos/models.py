@@ -53,3 +53,14 @@ class User(Base):
     def verify_password(self, password):
         return self.pm.check(self.password, password)
     
+
+##############
+# Categories #
+##############
+class Category(Base):
+    __tablename__ = 'categories'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), unique=True, nullable=False)
+    title = Column(String(255))
+    created = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, default=datetime.utcnow)
