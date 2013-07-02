@@ -80,6 +80,29 @@ class UserModelTests(unittest.TestCase):
         self.assertEqual(q.email, 'user3@email.com')
     
 
+class CategoryModelTests(unittest.TestCase):
+    def setUp(self):
+        self.session = _initTestingDB(makeuser=False)
+
+    def tearDown(self):
+        self.session.remove()
+
+    def _getTargetClass(self):
+        from pyrtos.models import Category
+        return Category
+
+    def _makeOne(self, id, title, name):
+        return self._getTargetClass()(id=id, title=title, name=name)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 'best')
+        self.session.add(instance)
+        qn = self._getTargetClass().by_name('best')
+        self.assertEqual(qn.title, 'Test')
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+
+
 class ViewTests(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
@@ -108,6 +131,12 @@ class ViewTests(unittest.TestCase):
         response = login(request)
         self.assertEqual(response['title'], 'Login')
 
+    def test_categories(self):
+        from .views import categories
+        request = testing.DummyRequest()
+        response = categories(request)
+        self.assertEqual(response['title'], 'Categories')
+
 
 class FunctionlTests(unittest.TestCase):
     def setUp(self):
@@ -123,9 +152,9 @@ class FunctionlTests(unittest.TestCase):
         from .models import DBSession
         DBSession.remove()
 
-    def test_root(self):
-        res = self.testapp.get('/', status=200)
-        self.assertIn(b'Login', res.body)
+    def test_root_as_anonymous(self):
+        res = self.testapp.get('/', status=302)
+        self.assertTrue(res.location, 'http://localhost/login')
 
     def test_login(self):
         res = self.testapp.get('/login', status=200)
@@ -147,4 +176,8 @@ class FunctionlTests(unittest.TestCase):
         res = self.testapp.post('/login', params={'email': 'fakeuser@email.com',
                                                   'password' : 'abcd'},
                                           status=302)
+        self.assertTrue(res.location, 'http://localhost/login')
+
+    def test_categories_as_anonymous(self):
+        res = self.testapp.get('/categories', status=302)
         self.assertTrue(res.location, 'http://localhost/login')

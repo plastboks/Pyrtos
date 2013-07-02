@@ -81,6 +81,38 @@ img {
 }
 
 
+/**
+ * toolbar
+ */
+.upper_toolbar {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border-bottom: 1px solid #E8E8E8;
+  border-left: 1px solid #E8E8E8;
+  padding: 8px;
+  background: #fafafa;
+  -webkit-border-bottom-left-radius: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.upper_toolbar ul {
+  list-style: none;
+  font-size: 0.8em;
+}
+
+.upper_toolbar li {
+  display: inline;
+  padding: 0px 10px 0px 0px;
+  margin: 0px 10px 0px 0px;
+  color: grey;
+}
+
+.upper_toolbar li:not(:last-child) {
+  border-right: 1px solid #e8e8e8;
+}
+
 /** 
  * content 
  */
@@ -139,6 +171,29 @@ img {
   border-bottom: 1px solid #E8E8E8;
 }
 
+#content form p {
+  padding: 10px;
+}
+
+#content form input[type='text'],
+#content form input[type='password'] {
+  background: none repeat scroll 0 0 #FBFBFB;
+  border: 1px solid #E5E5E5;
+  font-size: 24px;
+  margin-bottom: 16px;
+  margin-right: 6px;
+  margin-top: 2px;
+  padding: 3px;
+  width: 97%;
+}
+
+#content form input[type='submit'] {
+  background: none repeat scroll 0 0 #FBFBFB;
+  border: 1px solid #E5E5E5;
+  padding: 4px;
+  font-size: 0.8em;
+}
+
 #content form label {
   color: grey;
   margin-bottom: 5px;
@@ -173,17 +228,20 @@ img {
 
 #content table thead th {
   font-size: 0.7em;
+  text-align: left;
   color: grey;
 }
 
 #content tbody tr {
   font-size: 0.8em;
   padding: 1px 0px;
+  border: 1px solid whitesmoke;
   height: 25px;
 }
 
 
-#content td {
+#content tbody td {
+  padding: 5px;
 }
 
 #content tbody .income {
