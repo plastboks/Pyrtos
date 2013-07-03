@@ -99,8 +99,10 @@ class CategoryModelTests(unittest.TestCase):
     def test_constructor(self):
         instance = self._makeOne(100, 'Test', 'best')
         self.session.add(instance)
+
         qn = self._getTargetClass().by_name('best')
         self.assertEqual(qn.title, 'Test')
+
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
 
@@ -210,7 +212,18 @@ class FunctionlTests(unittest.TestCase):
                                                  status=302)
         categories = self.testapp.get('/categories', status=200)
         self.assertTrue('besttest' in categories.body)
+
         res = self.testapp.get('/category/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
-        res = self.testapp.get('/category/edit/100', status=404)
 
+        self.testapp.get('/category/delete/1', status=302)
+        res = self.testapp.get('/categories/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.testapp.get('/category/restore/1', status=302)
+        res = self.testapp.get('/categories', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.testapp.get('/category/edit/100', status=404)
+        self.testapp.get('/category/delete/100', status=404)
+        self.testapp.get('/category/restore/100', status=404)
