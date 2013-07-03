@@ -129,6 +129,12 @@ class ViewTests(BaseTestCase):
         response = login(request)
         self.assertEqual(response['title'], 'Login')
 
+    def test_notfound(self):
+        from .views import notfound
+        request = testing.DummyRequest()
+        response = notfound(request)
+        self.assertEqual(response['title'], '404 - Page not found')
+
     def test_categories(self):
         from .views import categories
         request = testing.DummyRequest()
