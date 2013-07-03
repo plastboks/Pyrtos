@@ -14,6 +14,7 @@ from pyramid.security import (
 from pyramid.view import (
     view_config,
     forbidden_view_config,
+    notfound_view_config,
 )
 
 from .models import (
@@ -157,3 +158,11 @@ def logout(request):
 @forbidden_view_config(renderer='pyrtos:templates/login.mako')
 def forbidden(request):
     return HTTPFound(request.route_url('login'))
+
+#############
+# Not Found #
+#############
+@notfound_view_config(renderer='pyrtos:templates/notfound.mako')
+def notfound(request):
+    return {'title': '404 - Page not found',
+            'message' : '"%s" is not the page you are looking for!' % request.path}
