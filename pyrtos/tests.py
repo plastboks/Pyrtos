@@ -3,19 +3,35 @@ import transaction
 
 from pyramid import testing
 from webtest import TestApp
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
 
 from webob import multidict
 
-from .models import DBSession
+from pyrtos import main
+from .models import (
+    DBSession,
+    Base,
+    User,
+)
+
+class BaseTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.engine = create_engine('sqlite://')
+
+    def setUp(self):
+        Base.metadata.create_all(self.engine)
+        DBSession.configure(bind=self.engine)
+        self.session = DBSession
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+        self.session.remove()
 
 def _initTestingDB(makeuser=False):
-    from sqlalchemy import create_engine
-    from pyrtos.models import (
-        DBSession,
-        Base,
-        User,
-        )
     engine = create_engine('sqlite://')
     Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
@@ -32,12 +48,7 @@ def _initTestingDB(makeuser=False):
     return DBSession
 
 
-class UserModelTests(unittest.TestCase):
-    def setUp(self):
-        self.session = _initTestingDB(makeuser=False)
-
-    def tearDown(self):
-        self.session.remove()
+class UserModelTests(BaseTestCase):
 
     def _getTargetClass(self):
         from pyrtos.models import User
@@ -83,12 +94,7 @@ class UserModelTests(unittest.TestCase):
         self.assertEqual(q.email, 'user3@email.com')
     
 
-class CategoryModelTests(unittest.TestCase):
-    def setUp(self):
-        self.session = _initTestingDB(makeuser=False)
-
-    def tearDown(self):
-        self.session.remove()
+class CategoryModelTests(BaseTestCase):
 
     def _getTargetClass(self):
         from pyrtos.models import Category
@@ -106,21 +112,7 @@ class CategoryModelTests(unittest.TestCase):
         self.assertEqual(qi.title, 'Test')
 
 
-class ViewTests(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        from sqlalchemy import create_engine
-        engine = create_engine('sqlite://')
-        from .models import (
-            Base,
-            User,
-            )
-        DBSession.configure(bind=engine)
-        Base.metadata.create_all(engine)
-
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+class ViewTests(BaseTestCase):
 
     def test_index(self):
         from .views import index
@@ -150,14 +142,19 @@ class ViewTests(unittest.TestCase):
         self.assertEqual(response['title'], 'New category')
 
 
-
-class FunctionlTests(unittest.TestCase):
-    def setUp(self):
-        from pyrtos import main
+class IntegrationTestBase(BaseTestCase):
+    @classmethod
+    def setUpClass(cls):
         settings = {'sqlalchemy.url' : 'sqlite://'}
-        app = main({}, **settings)
-        self.testapp = TestApp(app)
+        cls.testapp = main({}, **settings)
+        super(IntegrationTestBase, cls).setUpClass()
+
+
+class FunctionalTests(IntegrationTestBase):
+
+    def setUp(self):
         self.config = testing.setUp()
+        self.testapp = TestApp(self.testapp)
         self.session = _initTestingDB(makeuser=True)
 
     def tearDown(self):
