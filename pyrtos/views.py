@@ -48,7 +48,18 @@ def categories(request):
     page = int (request.params.get('page', 1))
     categories = Category.page(request, page)
     return {'paginator': categories,
-            'title' : 'Categories'}
+            'title' : 'Categories',
+            'archived' : False}
+
+@view_config(route_name='categories_archived',
+             renderer='pyrtos:templates/category/list.mako',
+             permission='view')
+def categories_archived(request):
+    page = int (request.params.get('page', 1))
+    categories = Category.page(request, page, archived=True)
+    return {'paginator': categories,
+            'title' : 'Archived categories',
+            'archived' : True,}
 
 @view_config(route_name='category_new',
              renderer='pyrtos:templates/category/edit.mako',
@@ -82,6 +93,30 @@ def category_edit(request):
             'form' : form,
             'id' : id,
             'action' : 'category_edit'}
+
+@view_config(route_name='category_delete',
+             renderer='string',
+             permission='delete')
+def category_delete(request):
+    id = int(request.matchdict.get('id'))
+    c = Category.by_id(id)
+    if not c:
+        return HTTPNotFound()
+    c.archived = True
+    DBSession.add(c)
+    return HTTPFound(location=request.route_url('categories'))
+
+@view_config(route_name='category_restore',
+             renderer='string',
+             permission='restore')
+def category_restore(request):
+    id = int(request.matchdict.get('id'))
+    c = Category.by_id(id)
+    if not c:
+        return HTTPNotFound()
+    c.archived = False
+    DBSession.add(c)
+    return HTTPFound(location=request.route_url('categories_archived'))
 
 
 ################

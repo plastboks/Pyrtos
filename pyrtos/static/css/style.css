@@ -235,13 +235,18 @@ img {
 #content tbody tr {
   font-size: 0.8em;
   padding: 1px 0px;
-  border: 1px solid whitesmoke;
+  border: 1px solid lavender;
+  background: aliceblue;
   height: 25px;
 }
 
 
 #content tbody td {
   padding: 5px;
+}
+
+#content tbody td.actions{
+  width: 100px;
 }
 
 #content tbody .income {

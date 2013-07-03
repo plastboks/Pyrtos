@@ -41,8 +41,11 @@ def main(global_config, **settings):
     config.add_route('logout', '/logout')
 
     config.add_route('categories', '/categories')
+    config.add_route('categories_archived', '/categories/archived')
     config.add_route('category_new', '/category/new')
     config.add_route('category_edit', '/category/edit/{id}')
+    config.add_route('category_delete', '/category/delete/{id}')
+    config.add_route('category_restore', '/category/restore/{id}')
 
     config.scan()
     return config.make_wsgi_app()
