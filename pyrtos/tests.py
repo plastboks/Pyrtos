@@ -238,14 +238,14 @@ class TestViews(IntegrationTestBase):
         self.assertTrue('besttest' in res.body)
         res = self.app.get('/category/edit/100', status=404)
 
-        self.testapp.get('/category/delete/1', status=302)
-        res = self.testapp.get('/categories/archived', status=200)
+        self.app.get('/category/delete/1', status=302)
+        res = self.app.get('/categories/archived', status=200)
         self.assertTrue('besttest' in res.body)
 
-        self.testapp.get('/category/restore/1', status=302)
-        res = self.testapp.get('/categories', status=200)
+        self.app.get('/category/restore/1', status=302)
+        res = self.app.get('/categories', status=200)
         self.assertTrue('besttest' in res.body)
 
-        self.testapp.get('/category/edit/100', status=404)
-        self.testapp.get('/category/delete/100', status=404)
-        self.testapp.get('/category/restore/100', status=404)
+        self.app.get('/category/edit/100', status=404)
+        self.app.get('/category/delete/100', status=404)
+        self.app.get('/category/restore/100', status=404)
