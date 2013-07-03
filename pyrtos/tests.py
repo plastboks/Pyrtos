@@ -146,49 +146,52 @@ class IntegrationTestBase(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         settings = {'sqlalchemy.url' : 'sqlite://'}
-        cls.testapp = main({}, **settings)
+        cls.app = main({}, **settings)
         super(IntegrationTestBase, cls).setUpClass()
+    
+    def setUp(self):
+        self.app = TestApp(self.app)
+        self.config = testing.setUp()
+        super(IntegrationTestBase, self).setUp()
 
-
-class FunctionalTests(IntegrationTestBase):
+class TestViews(IntegrationTestBase):
 
     def setUp(self):
-        self.config = testing.setUp()
-        self.testapp = TestApp(self.testapp)
+        self.app = TestApp(self.app)
         self.session = _initTestingDB(makeuser=True)
 
     def tearDown(self):
-        del self.testapp
+        del self.app
         self.session.remove()
 
     def test_root_as_anonymous(self):
-        res = self.testapp.get('/', status=302)
+        res = self.app.get('/', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
 
     def test_login(self):
-        res = self.testapp.get('/login', status=200)
+        res = self.app.get('/login', status=200)
         self.assertTrue('Login' in res.body)
 
     def test_anonymous_user_cannot_se_logout(self):
-        res = self.testapp.get('/logout', status=302)
+        res = self.app.get('/logout', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
 
     def test_try_login(self):
-        res = self.testapp.get('/login')
+        res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
-        res = self.testapp.post('/login', {'submit' : True,
+        res = self.app.post('/login', {'submit' : True,
                                            'csrf_token' : token,
                                            'email': 'user@email.com',
                                            'password' : '1234567',}
                                )
         self.assertTrue(res.status_int, 302)
-        logged_in = self.testapp.get('/login')
+        logged_in = self.app.get('/login')
         self.assertTrue(res.status_int, 302)
 
     def test_fail_login(self):
-        res = self.testapp.get('/login')
+        res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
-        res = self.testapp.post('/login', {'submit' : True,
+        res = self.app.post('/login', {'submit' : True,
                                            'email': 'fake@email.com',
                                            'password' : 'abcdefg',
                                            'csrf_token' : token}
@@ -196,39 +199,39 @@ class FunctionalTests(IntegrationTestBase):
         self.assertTrue(res.status_int, 200)
 
     def test_categories_as_anonymous(self):
-        res = self.testapp.get('/categories', status=302)
+        res = self.app.get('/categories', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
 
     def test_categories(self):
-        res = self.testapp.get('/login')
+        res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
-        res = self.testapp.post('/login', {'submit' : True,
+        res = self.app.post('/login', {'submit' : True,
                                            'csrf_token' : token,
                                            'email': 'user@email.com',
                                            'password' : '1234567',}
                                )
-        res = self.testapp.get('/categories')
+        res = self.app.get('/categories')
         self.assertTrue(res.status_int, 200)
 
-        res = self.testapp.get('/category/new')
+        res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.testapp.post('/category/new', {'name' : 'testbest',
+        res = self.app.post('/category/new', {'name' : 'testbest',
                                                   'title' : 'testbest',
                                                   'csrf_token' : token}
                                )
-        res = self.testapp.get('/categories', status=200)
+        res = self.app.get('/categories', status=200)
         self.assertTrue('testbest' in res.body)
 
-        res = self.testapp.get('/category/edit/1')
+        res = self.app.get('/category/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.testapp.post('/category/edit/1', params={'id' : 1,
+        res = self.app.post('/category/edit/1', params={'id' : 1,
                                                             'name' : 'besttest',
                                                             'title' : 'besttest',
                                                             'csrf_token' : token}
                                )
-        categories = self.testapp.get('/categories', status=200)
+        categories = self.app.get('/categories', status=200)
         self.assertTrue('besttest' in categories.body)
-        res = self.testapp.get('/category/edit/1', status=200)
+        res = self.app.get('/category/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
-        res = self.testapp.get('/category/edit/100', status=404)
+        res = self.app.get('/category/edit/100', status=404)
 
