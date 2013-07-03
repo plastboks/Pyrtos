@@ -8,6 +8,7 @@ from sqlalchemy import (
     Unicode,
     UnicodeText,
     DateTime,
+    Boolean,
     ForeignKey,
     or_,
     and_,
@@ -67,17 +68,24 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), unique=True, nullable=False)
     title = Column(String(255))
+    archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
     @classmethod
-    def all(cls):
-        return DBSession.query(Category).order_by(sa.desc(Category.created))
+    def all_active(cls):
+        return DBSession.query(Category).filter(Category.archived == False)
 
     @classmethod
-    def page(cls, request, page):
+    def all_archived(cls):
+        return DBSession.query(Category).filter(Category.archived == True)
+
+    @classmethod
+    def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
-        return Page(Category.all(), page, url=page_url, items_per_page=IPP)
+        if archived:
+            return Page(Category.all_archived(), page, url=page_url, items_per_page=IPP)
+        return Page(Category.all_active(), page, url=page_url, items_per_page=IPP)
     
     @classmethod
     def by_id(cls, id):
