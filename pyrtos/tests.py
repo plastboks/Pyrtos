@@ -2,23 +2,43 @@ import unittest
 import transaction
 
 from pyramid import testing
+from webtest import TestApp
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
 
-from .models import DBSession
+from webob import multidict
+
+from pyrtos import main
+
+from pyrtos.models.meta import DBSession, Base
+from pyrtos.models import (
+    User,
+    Category,
+)
+
+class BaseTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.engine = create_engine('sqlite://')
+
+    def setUp(self):
+        Base.metadata.create_all(self.engine)
+        DBSession.configure(bind=self.engine)
+        self.session = DBSession
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+        self.session.remove()
 
 def _initTestingDB(makeuser=False):
-    from sqlalchemy import create_engine
-    from pyrtos.models import (
-        DBSession,
-        Base,
-        User,
-        )
     engine = create_engine('sqlite://')
     Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
     if makeuser:
       m = BPM()
-      hashed = m.encode(u'1234')
+      hashed = m.encode(u'1234567')
       with transaction.manager:
           user = User(
                           username=u'user',
@@ -29,12 +49,7 @@ def _initTestingDB(makeuser=False):
     return DBSession
 
 
-class UserModelTests(unittest.TestCase):
-    def setUp(self):
-        self.session = _initTestingDB(makeuser=False)
-
-    def tearDown(self):
-        self.session.remove()
+class UserModelTests(BaseTestCase):
 
     def _getTargetClass(self):
         from pyrtos.models import User
@@ -80,71 +95,176 @@ class UserModelTests(unittest.TestCase):
         self.assertEqual(q.email, 'user3@email.com')
     
 
-class ViewTests(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        from sqlalchemy import create_engine
-        engine = create_engine('sqlite://')
-        from .models import (
-            Base,
-            User,
-            )
-        DBSession.configure(bind=engine)
-        Base.metadata.create_all(engine)
+class CategoryModelTests(BaseTestCase):
 
-    def tearDown(self):
-        DBSession.remove()
-        testing.tearDown()
+    def _getTargetClass(self):
+        from pyrtos.models import Category
+        return Category
+
+    def _makeOne(self, id, title, name):
+        return self._getTargetClass()(id=id, title=title, name=name)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 'best')
+        self.session.add(instance)
+
+        qn = self._getTargetClass().by_name('best')
+        self.assertEqual(qn.title, 'Test')
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+
+
+class ViewTests(BaseTestCase):
 
     def test_index(self):
-        from .views import index
+        from pyrtos.views import MainViews
         request = testing.DummyRequest()
-        response = index(request)
+        m = MainViews(request)
+        response = m.index()
         self.assertEqual(response['title'], 'Hello world')
 
-    def test_login(self):
-        from .views import login
+    def test_notfound(self):
+        from pyrtos.views import MainViews
         request = testing.DummyRequest()
-        response = login(request)
+        m = MainViews(request)
+        response = m.notfound()
+        self.assertEqual(response['title'], '404 - Page not found')
+
+    def test_login(self):
+        from pyrtos.views import AuthViews
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        a = AuthViews(request)
+        response = a.login()
         self.assertEqual(response['title'], 'Login')
 
+    def test_categories(self):
+        from pyrtos.views import CategoryViews
+        request = testing.DummyRequest()
+        c = CategoryViews(request)
+        response = c.categories()
+        self.assertEqual(response['title'], 'Categories')
 
-class FunctionlTests(unittest.TestCase):
-    def setUp(self):
-        from pyrtos import main
+    def test_category_create(self):
+        from pyrtos.views import CategoryViews
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        request.matchdict = {'name' : 'test'}
+        c = CategoryViews(request)
+        response = c.category_create()
+        self.assertEqual(response['title'], 'New category')
+
+    def test_tags(self):
+        from pyrtos.views import TagViews
+        request = testing.DummyRequest()
+        t = TagViews(request)
+        response = t.tags()
+        self.assertEqual(response['title'], 'Tags')
+
+
+class IntegrationTestBase(BaseTestCase):
+    @classmethod
+    def setUpClass(cls):
         settings = {'sqlalchemy.url' : 'sqlite://'}
-        app = main({}, **settings)
-        from webtest import TestApp
-        self.testapp = TestApp(app)
-        self.i = _initTestingDB(makeuser=True)
+        cls.app = main({}, **settings)
+        super(IntegrationTestBase, cls).setUpClass()
+    
+    def setUp(self):
+        self.app = TestApp(self.app)
+        self.config = testing.setUp()
+        super(IntegrationTestBase, self).setUp()
+
+class TestViews(IntegrationTestBase):
+
+    def setUp(self):
+        self.app = TestApp(self.app)
+        self.session = _initTestingDB(makeuser=True)
 
     def tearDown(self):
-        del self.testapp
-        from .models import DBSession
-        DBSession.remove()
+        del self.app
+        self.session.remove()
 
-    def test_root(self):
-        res = self.testapp.get('/', status=200)
-        self.assertIn(b'Login', res.body)
+    def test_root_as_anonymous(self):
+        res = self.app.get('/', status=302)
+        self.assertTrue(res.location, 'http://localhost/login')
 
     def test_login(self):
-        res = self.testapp.get('/login', status=200)
+        res = self.app.get('/login', status=200)
         self.assertTrue('Login' in res.body)
 
     def test_anonymous_user_cannot_se_logout(self):
-        res = self.testapp.get('/logout', status=302)
+        res = self.app.get('/logout', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
 
     def test_try_login(self):
-        res = self.testapp.post('/login', params={'email': 'user@email.com',
-                                                  'password' : '1234'},
-                                          status=302)
-        self.assertTrue(res.location, 'http://localhost/')
-        logged_in = self.testapp.get('/login', status=302)
-        self.assertTrue(logged_in.location, 'http://localhost/')
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        self.assertTrue(res.status_int, 302)
+        logged_in = self.app.get('/login')
+        self.assertTrue(res.status_int, 302)
 
     def test_fail_login(self):
-        res = self.testapp.post('/login', params={'email': 'fakeuser@email.com',
-                                                  'password' : 'abcd'},
-                                          status=302)
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'email': 'fake@email.com',
+                                           'password' : 'abcdefg',
+                                           'csrf_token' : token}
+                               )
+        self.assertTrue(res.status_int, 200)
+
+    def test_categories_as_anonymous(self):
+        res = self.app.get('/categories', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
+
+    def test_categories(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        res = self.app.get('/categories')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'name' : 'testbest',
+                                                  'title' : 'testbest',
+                                                  'csrf_token' : token}
+                               )
+        res = self.app.get('/categories', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        res = self.app.get('/category/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/edit/1', params={'id' : 1,
+                                                            'name' : 'besttest',
+                                                            'title' : 'besttest',
+                                                            'csrf_token' : token}
+                               )
+        categories = self.app.get('/categories', status=200)
+        self.assertTrue('besttest' in categories.body)
+
+        res = self.app.get('/category/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/category/edit/100', status=404)
+
+        self.app.get('/category/delete/1', status=302)
+        res = self.app.get('/categories/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/category/restore/1', status=302)
+        res = self.app.get('/categories', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/category/edit/100', status=404)
+        self.app.get('/category/delete/100', status=404)
+        self.app.get('/category/restore/100', status=404)

@@ -11,12 +11,11 @@ from pyramid.paster import (
     setup_logging,
     )
 
-from ..models import (
-    DBSession,
-    Base,
+from pyrtos.models.meta import DBSession, Base
+from pyrtos.models import (
     User,
-    )
-
+    Category,
+)
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
