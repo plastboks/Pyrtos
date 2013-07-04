@@ -163,6 +163,14 @@ class ViewTests(BaseTestCase):
         response = u.users()
         self.assertEqual(response['title'], 'Users')
 
+    def test_new_user(self):
+        from pyrtos.views import UserViews
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        u = UserViews(request)
+        response = u.user_create()
+        self.assertEqual(response['title'], 'New user')
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
@@ -269,3 +277,25 @@ class TestViews(IntegrationTestBase):
         self.app.get('/category/edit/100', status=404)
         self.app.get('/category/delete/100', status=404)
         self.app.get('/category/restore/100', status=404)
+
+    def test_users(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        res = self.app.get('/users', status=200)
+        self.assertTrue(res.status_int, 200)
+        
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'csrf_token' : token})
+        res = self.app.get('/users', status=200)
+        self.assertTrue('test@email.com' in res.body)

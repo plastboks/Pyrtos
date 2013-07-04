@@ -57,6 +57,7 @@ def main(global_config, **settings):
 
     # user
     config.add_route('users', '/users')
+    config.add_route('user_new', '/user/new')
 
     config.scan()
     return config.make_wsgi_app()

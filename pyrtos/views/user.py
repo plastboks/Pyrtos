@@ -37,3 +37,17 @@ class UserViews(object):
         return {'paginator': users,
                 'title' : 'Users',}
 
+    @view_config(route_name='user_new',
+                 renderer='pyrtos:templates/user/edit.mako',
+                 permission='create')
+    def user_create(self):
+        form = UserCreateForm(self.request.POST, csrf_context=self.request.session)
+        if self.request.method == 'POST' and form.validate():
+            u = User()
+            form.populate_obj(u)
+            DBSession.add(u)
+            self.request.session.flash('User %s created' % (u.email), 'success')
+            return HTTPFound(location=self.request.route_url('users'))
+        return {'title': 'New user',
+                'form': form,
+                'action': 'user_new'}

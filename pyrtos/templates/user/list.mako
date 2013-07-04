@@ -11,7 +11,13 @@
       <tbody>
         %for item in paginator.items:
           <tr>
-            <td>${item.givenname} ${item.surname}</td>
+            <td>
+            %if item.givenname:
+              ${item.givenname}
+            %endif
+            %if item.surname:
+              ${item.surname}</td>
+            %endif
             <td>${item.email}</td>
             <td></td>
           </tr>
