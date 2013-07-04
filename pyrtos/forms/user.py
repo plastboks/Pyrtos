@@ -24,7 +24,7 @@ class UserCreateForm(BaseForm):
                                                 message='Passwords must match')],
                             filters=[strip_filter])
     confirm = PasswordField('Confirm password',
-                            filter=[strip_filter])
+                            filters=[strip_filter])
 
 class UserEditForm(UserCreateForm):
     id = HiddenField()
