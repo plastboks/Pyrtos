@@ -1,6 +1,7 @@
 from pyrtos.models.meta import (
     DBSession,
     Base,
+    IPP,
 )
 
 from datetime import datetime
@@ -20,10 +21,10 @@ from sqlalchemy import (
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
 
+from webhelpers.text import urlify
+from webhelpers.paginate import PageURL_WebOb, Page
+from webhelpers.date import time_ago_in_words
 
-##############
-# User Class #
-##############
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -44,6 +45,15 @@ class User(Base):
     def by_email(cls, email):
         return DBSession.query(User).filter(User.email == email).first()
 
+    @classmethod
+    def all(cls):
+        return DBSession.query(User)
+
+    @classmethod
+    def page(cls, request, page):
+        page_url = PageURL_WebOb(request)
+        return Page(User.all(), page, url=page_url, items_per_page=IPP)
+    
     def verify_password(self, password):
         return self.pm.check(self.password, password)
     

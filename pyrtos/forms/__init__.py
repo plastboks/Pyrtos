@@ -5,4 +5,8 @@ from pyrtos.forms.category import (
     CategoryCreateForm,
     CategoryEditForm,
 )
+from pyrtos.forms.user import (
+    UserCreateForm,
+    UserEditForm,
+)
 
