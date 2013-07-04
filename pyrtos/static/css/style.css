@@ -55,6 +55,29 @@ img {
   color: #585858;
 }
 
+/**
+ * Messages
+ */
+
+#messages p {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+#messages .success {
+  background: lightgreen;
+  border: 1px solid limegreen;
+}
+
+#messages .status {
+  background: powderblue;
+  border: 1px solid steelblue;
+}
+
+#messages .error {
+  background: salmon;
+  border: 1px solid red;
+}
 
 /**
  * sidebar

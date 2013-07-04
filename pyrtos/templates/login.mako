@@ -11,8 +11,11 @@
     <h1>Login</h1>
     <form action="${request.route_url('login')}" method="post">
       ${form.csrf_token}
+      %for m in request.session.pop_flash('error'):
+        <p class='error'>${m}<p>
+      %endfor
       %for error in form.email.errors:
-        <p class=error>${error}</p>
+        <p class='error'>${error}</p>
       %endfor
       <p>
         <label>${form.email.label}</label><br />

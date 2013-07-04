@@ -33,13 +33,15 @@ class AuthViews(object):
           user = User.by_email(self.request.POST.get('email'))
           if user and user.verify_password(self.request.POST.get('password')):
               headers = remember(self.request, user.id)
+              self.request.session.flash('Welcome back %s' % (user.username), 'success')
               return HTTPFound(location=self.request.route_url('index'),
                                headers=headers)
           headers = forget(self.request)
-          self.request.session.flash('Login failed')
+          self.request.session.flash('Login failed', 'error')
           return HTTPFound(location=self.request.route_url('login'),
                            headers=headers)
       if authenticated_userid(self.request):
+          self.request.session.flash('You are already logged in', 'status')
           return HTTPFound(location=self.request.route_url('index'))
 
       return {'action' : self.request.matchdict.get('action'),
