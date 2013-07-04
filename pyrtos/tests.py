@@ -124,6 +124,13 @@ class ViewTests(BaseTestCase):
         response = m.index()
         self.assertEqual(response['title'], 'Hello world')
 
+    def test_notfound(self):
+        from pyrtos.views import MainViews
+        request = testing.DummyRequest()
+        m = MainViews(request)
+        response = m.notfound()
+        self.assertEqual(response['title'], '404 - Page not found')
+
     def test_login(self):
         from pyrtos.views import AuthViews
         request = testing.DummyRequest()
@@ -131,12 +138,6 @@ class ViewTests(BaseTestCase):
         a = AuthViews(request)
         response = a.login()
         self.assertEqual(response['title'], 'Login')
-
-    def test_notfound(self):
-        from .views import notfound
-        request = testing.DummyRequest()
-        response = notfound(request)
-        self.assertEqual(response['title'], '404 - Page not found')
 
     def test_categories(self):
         from pyrtos.views import CategoryViews

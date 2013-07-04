@@ -36,4 +36,4 @@ class MainViews(object):
     @notfound_view_config(renderer='pyrtos:templates/notfound.mako')
     def notfound(self):
         return {'title': '404 - Page not found',
-                'message' : '"%s" is not the page you are looking for!' % request.path}
+                'message' : '"%s" is not the page you are looking for!' % self.request.path}
