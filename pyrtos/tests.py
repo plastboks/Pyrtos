@@ -299,3 +299,32 @@ class TestViews(IntegrationTestBase):
                                           'csrf_token' : token})
         res = self.app.get('/users', status=200)
         self.assertTrue('test@email.com' in res.body)
+
+        res = self.app.get('/user/edit/2', status=200)
+        self.assertTrue('test@email.com' in res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/edit/2', {'id' : 2,
+                                             'email' : 'best@email.com',
+                                             'password' : '123456',
+                                             'confirm' : '123456',
+                                             'csrf_token' : token,
+                                             })
+        res = self.app.get('/users', status=200)
+        self.assertTrue('best@email.com')
+
+        res = self.app.get('/user/edit/100', status=404)
+
+        self.app.get('/logout', status=302)
+
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'best@email.com',
+                                           'password' : '123456',
+                                      }, status=302 )
+
+        res = self.app.get('/users', status=200)
+        self.assertTrue(res.status_int, 200)
+        res = self.app.get('/user/edit/1', status=404)
+

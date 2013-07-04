@@ -58,6 +58,9 @@ def main(global_config, **settings):
     # user
     config.add_route('users', '/users')
     config.add_route('user_new', '/user/new')
+    config.add_route('user_edit', '/user/edit/{id}')
+    config.add_route('user_delete', '/user/delete/{id}')
+    config.add_route('user_restore', '/user/restore/{id}')
 
     config.scan()
     return config.make_wsgi_app()

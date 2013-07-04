@@ -1,5 +1,4 @@
 <%inherit file="pyrtos:templates/user/base.mako"/>
-
 %if paginator.items:
   <div class='tablelist'>
     <table id='users'>
@@ -19,7 +18,13 @@
               ${item.surname}</td>
             %endif
             <td>${item.email}</td>
-            <td></td>
+            <td>
+              %if item.id is not myid and item.id is not 1:
+                <a href="${request.route_url('user_edit', id=item.id)}">Edit</a>
+              %elif myid is item.id:
+                <a href="${request.route_url('user_edit', id=item.id)}">Profile</a>
+              %endif
+            </td>
           </tr>
         %endfor
       </tbody>

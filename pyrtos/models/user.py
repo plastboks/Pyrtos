@@ -19,6 +19,7 @@ from sqlalchemy import (
     and_,
     )
 
+
 from cryptacular.bcrypt import BCRYPTPasswordManager
 
 from webhelpers.text import urlify
