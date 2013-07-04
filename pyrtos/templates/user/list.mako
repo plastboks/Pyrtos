@@ -9,7 +9,11 @@
       </thead>
       <tbody>
         %for item in paginator.items:
-          <tr>
+          %if item.blocked:
+            <tr class='inactive'>
+          %else:
+            <tr class='active'>
+          %endif
             <td>
             %if item.givenname:
               ${item.givenname}
@@ -18,11 +22,19 @@
               ${item.surname}</td>
             %endif
             <td>${item.email}</td>
-            <td>
+            <td class='actions'>
               %if item.id is not myid and item.id is not 1:
                 <a href="${request.route_url('user_edit', id=item.id)}">Edit</a>
               %elif myid is item.id:
                 <a href="${request.route_url('user_edit', id=item.id)}">Profile</a>
+              %endif
+
+              %if item.id is not 1 and item.id is not myid: 
+                %if archived:
+                  <a href="${request.route_url('user_restore', id=item.id)}">Restore</a>
+                %else:
+                  <a href="${request.route_url('user_archive', id=item.id)}">Archive</a>
+                %endif
               %endif
             </td>
           </tr>

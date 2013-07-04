@@ -81,10 +81,10 @@ class CategoryViews(object):
                 'id' : id,
                 'action' : 'category_edit'}
 
-    @view_config(route_name='category_delete',
+    @view_config(route_name='category_archive',
                  renderer='string',
-                 permission='delete')
-    def category_delete(self):
+                 permission='archive')
+    def category_archive(self):
         id = int(self.request.matchdict.get('id'))
         c = Category.by_id(id)
         if not c:

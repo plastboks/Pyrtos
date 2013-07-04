@@ -4,6 +4,7 @@ from wtforms import (
     validators,
     TextField,
     HiddenField,
+    BooleanField,
     PasswordField,
 )
 
@@ -25,6 +26,14 @@ class UserCreateForm(BaseForm):
                             filters=[strip_filter])
     confirm = PasswordField('Confirm password',
                             filters=[strip_filter])
+    blocked = BooleanField('Blocked')
+
 
 class UserEditForm(UserCreateForm):
+    password = PasswordField('Password',
+                             [validators.Optional(), 
+                              validators.Length(min=6, max=128),
+                              validators.EqualTo('confirm',
+                                                  message='Passwords must match')],
+                              filters=[strip_filter])
     id = HiddenField()

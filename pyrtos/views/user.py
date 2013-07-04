@@ -38,6 +38,18 @@ class UserViews(object):
         users = User.page(self.request, page)
         return {'paginator': users,
                 'title' : 'Users',
+                'archived' : False,
+                'myid' : authenticated_userid(self.request)}
+
+    @view_config(route_name='users_archived',
+                 renderer='pyrtos:templates/user/list.mako',
+                 permission='view')
+    def users_archived(self):
+        page = int (self.request.params.get('page', 1))
+        users = User.page(self.request, page, archived=True)
+        return {'paginator': users,
+                'title' : 'Archived users',
+                'archived' : True,
                 'myid' : authenticated_userid(self.request)}
 
     @view_config(route_name='user_new',
@@ -70,10 +82,44 @@ class UserViews(object):
         form = UserEditForm(self.request.POST, u, csrf_context=self.request.session)
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(u)
-            u.password = u.pm.encode(form.password.data)
+            if u.password:
+                u.password = u.pm.encode(form.password.data)
+            else:
+               del u.password
             self.request.session.flash('User %s updated' % (u.email), 'status')
             return HTTPFound(location=self.request.route_url('users'))
         return {'title' : 'Edit user',
                 'form' : form,
                 'id' : id,
+                'myid' : a,
                 'action' : 'user_edit'}
+
+    @view_config(route_name='user_archive',
+                 renderer='string',
+                 permission='archive')
+    def user_archive(self):
+        a = authenticated_userid(self.request)
+        id = int(self.request.matchdict.get('id'))
+        if id is 1:
+            return HTTPNotFound()
+        u = User.by_id(id)
+        if not u:
+            return HTTPNotFound()
+        u.archived = True
+        DBSession.add(u)
+        self.request.session.flash('User %s archived' % (u.email), 'status')
+        return HTTPFound(location=self.request.route_url('users'))
+
+    @view_config(route_name='user_restore',
+                 renderer='string',
+                 permission='restore')
+    def user_restore(self):
+        id = int(self.request.matchdict.get('id'))
+        u = User.by_id(id)
+        if not u:
+            return HTTPNotFound()
+        u.archived = False
+        DBSession.add(u)
+        self.request.session.flash('User %s restored' % (u.email), 'status')
+        return HTTPFound(location=self.request.route_url('users_archived'))
+
