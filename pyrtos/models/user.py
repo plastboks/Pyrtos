@@ -28,7 +28,6 @@ from webhelpers.date import time_ago_in_words
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     givenname = Column(String(255))
     surname = Column(String(255))

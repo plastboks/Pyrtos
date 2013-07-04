@@ -33,7 +33,7 @@ class AuthViews(object):
           user = User.by_email(self.request.POST.get('email'))
           if user and user.verify_password(self.request.POST.get('password')):
               headers = remember(self.request, user.id)
-              self.request.session.flash('Welcome back %s' % (user.username), 'success')
+              self.request.session.flash('Welcome back %s' % (user.email), 'success')
               return HTTPFound(location=self.request.route_url('index'),
                                headers=headers)
           headers = forget(self.request)
