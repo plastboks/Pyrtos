@@ -10,13 +10,13 @@ from pyramid.session import (
     UnencryptedCookieSessionFactoryConfig,
 )
 
-from .security import (
+from pyrtos.security import (
     EntryFactory,
 )
-from .models import (
+from pyrtos.models.meta import (
     DBSession,
     Base,
-    )
+)
 
 
 def main(global_config, **settings):
@@ -34,6 +34,7 @@ def main(global_config, **settings):
                           root_factory='pyrtos.security.EntryFactory',
                           session_factory=sess_factory,)
 
+
     config.add_static_view('static', 'static', cache_max_age=3600)
 
     config.add_route('index', '/')
@@ -49,3 +50,4 @@ def main(global_config, **settings):
 
     config.scan()
     return config.make_wsgi_app()
+
