@@ -155,6 +155,13 @@ class ViewTests(BaseTestCase):
         response = c.category_create()
         self.assertEqual(response['title'], 'New category')
 
+    def test_tags(self):
+        from pyrtos.views import TagViews
+        request = testing.DummyRequest()
+        t = TagViews(request)
+        response = t.tags()
+        self.assertEqual(response['title'], 'Tags')
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
