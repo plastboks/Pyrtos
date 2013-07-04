@@ -263,6 +263,12 @@ img {
   height: 25px;
 }
 
+#content tbody tr.inactive {
+  font-style: italic;  
+  background: lightsalmon;
+  border: 1px solid tomato;
+}
+
 
 #content tbody td {
   padding: 5px;

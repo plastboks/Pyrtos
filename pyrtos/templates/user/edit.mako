@@ -43,6 +43,13 @@
     ${form.confirm}
   </p>
 
+  %if id is not 1 and id is not myid:
+    <p>
+      <label>${form.blocked.label}</label>
+      ${form.blocked}
+    </p>
+  %endif
+
   <p>
     <input type="submit" value="Submit" />
   </p>

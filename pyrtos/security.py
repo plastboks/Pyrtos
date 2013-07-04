@@ -11,6 +11,7 @@ class EntryFactory(object):
                (Allow, Authenticated, 'create'),
                (Allow, Authenticated, 'edit'),
                (Allow, Authenticated, 'delete'),
+               (Allow, Authenticated, 'archive'),
                (Allow, Authenticated, 'restore'),]
 
     def __init__(self, request):

@@ -5,6 +5,7 @@
   <ul>
     <li><a href="${request.route_url('user_new')}">New</a></li>
     <li><a href="${request.route_url('users')}">All</a></li>
+    <li><a href="${request.route_url('users_archived')}">Archived</a></li>
   </ul>
 </div>
 

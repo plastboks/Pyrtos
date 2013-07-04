@@ -18,7 +18,7 @@
               %if archived:
                 <a href="${request.route_url('category_restore', id=item.id)}">Restore</a>
               %else:
-                <a href="${request.route_url('category_delete', id=item.id)}">Archive</a>
+                <a href="${request.route_url('category_archive', id=item.id)}">Archive</a>
               %endif
             </td>
           </tr>

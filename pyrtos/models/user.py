@@ -33,6 +33,8 @@ class User(Base):
     givenname = Column(String(255))
     surname = Column(String(255))
     password = Column(String(255), nullable=False)
+    archived = Column(Boolean, default=False)
+    blocked = Column(Boolean, default=False)
     last_logged = Column(DateTime, default=datetime.utcnow)
    
     pm = BCRYPTPasswordManager()
@@ -46,13 +48,19 @@ class User(Base):
         return DBSession.query(User).filter(User.email == email).first()
 
     @classmethod
-    def all(cls):
-        return DBSession.query(User)
+    def all_active(cls):
+        return DBSession.query(User).filter(User.archived == False)
 
     @classmethod
-    def page(cls, request, page):
+    def all_archived(cls):
+        return DBSession.query(User).filter(User.archived == True)
+
+    @classmethod
+    def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
-        return Page(User.all(), page, url=page_url, items_per_page=IPP)
+        if archived:
+          return Page(User.all_archived(), page, url=page_url, items_per_page=IPP)
+        return Page(User.all_active(), page, url=page_url, items_per_page=IPP)
     
     def verify_password(self, password):
         return self.pm.check(self.password, password)
