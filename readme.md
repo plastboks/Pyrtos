@@ -56,3 +56,4 @@ Useful Links
 ============
   * [Testing page in wiki2 tutorial](http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/tutorials/wiki2/tests.html)
   * [Sonteks tests for Pyramid and SQLAlchemy](http://sontek.net/blog/detail/writing-tests-for-pyramid-and-sqlalchemy)
+  * [Outgrowing Pyramid Handlers](http://michael.merickel.org/2011/8/23/outgrowing-pyramid-handlers/)
