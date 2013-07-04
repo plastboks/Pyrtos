@@ -162,6 +162,13 @@ class ViewTests(BaseTestCase):
         response = t.tags()
         self.assertEqual(response['title'], 'Tags')
 
+    def test_users(self):
+        from pyrtos.views import UserViews
+        request = testing.DummyRequest()
+        u = UserViews(request)
+        response = u.users()
+        self.assertEqual(response['title'], 'Users')
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod

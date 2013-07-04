@@ -55,6 +55,9 @@ def main(global_config, **settings):
     # tag
     config.add_route('tags', '/tags')
 
+    # user
+    config.add_route('users', '/users')
+
     config.scan()
     return config.make_wsgi_app()
 
