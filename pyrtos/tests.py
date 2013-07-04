@@ -10,10 +10,11 @@ from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
 from webob import multidict
 
 from pyrtos import main
-from .models import (
-    DBSession,
-    Base,
+
+from pyrtos.models.meta import DBSession, Base
+from pyrtos.models import (
     User,
+    Category,
 )
 
 class BaseTestCase(unittest.TestCase):
@@ -117,30 +118,34 @@ class CategoryModelTests(BaseTestCase):
 class ViewTests(BaseTestCase):
 
     def test_index(self):
-        from .views import index
+        from pyrtos.views import MainViews
         request = testing.DummyRequest()
-        response = index(request)
+        m = MainViews(request)
+        response = m.index()
         self.assertEqual(response['title'], 'Hello world')
 
     def test_login(self):
-        from .views import login
+        from pyrtos.views import AuthViews
         request = testing.DummyRequest()
         request.POST = multidict.MultiDict()
-        response = login(request)
+        a = AuthViews(request)
+        response = a.login()
         self.assertEqual(response['title'], 'Login')
 
     def test_categories(self):
-        from .views import categories
+        from pyrtos.views import CategoryViews
         request = testing.DummyRequest()
-        response = categories(request)
+        c = CategoryViews(request)
+        response = c.categories()
         self.assertEqual(response['title'], 'Categories')
 
     def test_category_create(self):
-        from .views import category_create
+        from pyrtos.views import CategoryViews
         request = testing.DummyRequest()
         request.POST = multidict.MultiDict()
         request.matchdict = {'name' : 'test'}
-        response = category_create(request)
+        c = CategoryViews(request)
+        response = c.category_create()
         self.assertEqual(response['title'], 'New category')
 
 
