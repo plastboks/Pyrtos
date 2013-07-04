@@ -1,11 +1,4 @@
-<%inherit file="pyrtos:templates/base.mako"/>
-
-<h1>${title}</h1>
-<div class="upper_toolbar">
-  <ul>
-    <li><a href="${request.route_url('tags')}">All</a></li>
-  </ul>
-</div>
+<%inherit file="pyrtos:templates/tag/base.mako"/>
 
 %if tags:
   %for tag in tags:
