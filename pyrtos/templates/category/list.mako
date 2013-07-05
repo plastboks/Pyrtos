@@ -1,13 +1,4 @@
-<%inherit file="pyrtos:templates/base.mako"/>
-
-<h1>${title}</h1>
-<div class="upper_toolbar">
-  <ul>
-    <li><a href="${request.route_url('category_new')}">New</a></li>
-    <li><a href="${request.route_url('categories')}">All</a></li>
-    <li><a href="${request.route_url('categories_archived')}">Archived</a></li>
-  </ul>
-</div>
+<%inherit file="pyrtos:templates/category/base.mako"/>
 
 %if paginator.items:
   <div class='tablelist'>
@@ -23,11 +14,17 @@
             <td>${item.title}</td>
             <td>${item.name}</td>
             <td class='actions'>
-              <a href="${request.route_url('category_edit', id=item.id)}">Edit</a>
+              %if request.can_i('edit'):
+                <a href="${request.route_url('category_edit', id=item.id)}">Edit</a>
+              %endif
               %if archived:
-                <a href="${request.route_url('category_restore', id=item.id)}">Restore</a>
+                %if request.can_i('restore'):
+                  <a href="${request.route_url('category_restore', id=item.id)}">Restore</a>
+                %endif
               %else:
-                <a href="${request.route_url('category_delete', id=item.id)}">Archive</a>
+                %if request.can_i('archive'):
+                  <a href="${request.route_url('category_archive', id=item.id)}">Archive</a>
+                %endif
               %endif
             </td>
           </tr>

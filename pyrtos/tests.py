@@ -41,9 +41,9 @@ def _initTestingDB(makeuser=False):
       hashed = m.encode(u'1234567')
       with transaction.manager:
           user = User(
-                          username=u'user',
                           email=u'user@email.com',
-                          password=hashed
+                          password=hashed,
+                          group='admin',
                       )
           DBSession.add(user)
     return DBSession
@@ -55,43 +55,44 @@ class UserModelTests(BaseTestCase):
         from pyrtos.models import User
         return User
 
-    def _makeOne(self, username, email, password, id=False):
+    def _makeOne(self, email, password, group, id=False):
         m = BPM()
         hashed = m.encode(password)
         if id:
           return self._getTargetClass()(id=id,
-                                        username=username,
                                         email=email,
-                                        password=hashed)
-        return self._getTargetClass()(username=username,
+                                        password=hashed,
+                                        group=group)
+        return self._getTargetClass()(
                                       email=email,
-                                      password=hashed)
+                                      password=hashed,
+                                      group=group)
 
     def test_constructor(self):
-        instance = self._makeOne(username='user1',
+        instance = self._makeOne(
                                  email='user1@email.com',
-                                 password='1234')
-        self.assertEqual(instance.username, 'user1')
+                                 password='1234',
+                                 group='admin',
+                                 )
         self.assertEqual(instance.email, 'user1@email.com')
         self.assertTrue(instance.verify_password('1234'))
 
     def test_by_email(self):
-        instance = self._makeOne(username='user2',
+        instance = self._makeOne(
                                  email='user2@email.com',
-                                 password='1234')
+                                 password='1234',
+                                 group='admin')
         self.session.add(instance)
         q = self._getTargetClass().by_email('user2@email.com')
-        self.assertEqual(q.username, 'user2')
         self.assertEqual(q.email, 'user2@email.com')
 
     def test_by_id(self):
         instance = self._makeOne(id=1000,
-                                 username='user3',
                                  email='user3@email.com',
-                                 password='1234')
+                                 password='1234',
+                                 group='admin')
         self.session.add(instance)
         q = self._getTargetClass().by_id(instance.id)
-        self.assertEqual(q.username, 'user3')
         self.assertEqual(q.email, 'user3@email.com')
     
 
@@ -161,6 +162,21 @@ class ViewTests(BaseTestCase):
         t = TagViews(request)
         response = t.tags()
         self.assertEqual(response['title'], 'Tags')
+
+    def test_users(self):
+        from pyrtos.views import UserViews
+        request = testing.DummyRequest()
+        u = UserViews(request)
+        response = u.users()
+        self.assertEqual(response['title'], 'Users')
+
+    def test_new_user(self):
+        from pyrtos.views import UserViews
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        u = UserViews(request)
+        response = u.user_create()
+        self.assertEqual(response['title'], 'New user')
 
 
 class IntegrationTestBase(BaseTestCase):
@@ -257,7 +273,7 @@ class TestViews(IntegrationTestBase):
         self.assertTrue('besttest' in res.body)
         res = self.app.get('/category/edit/100', status=404)
 
-        self.app.get('/category/delete/1', status=302)
+        self.app.get('/category/archive/1', status=302)
         res = self.app.get('/categories/archived', status=200)
         self.assertTrue('besttest' in res.body)
 
@@ -266,5 +282,228 @@ class TestViews(IntegrationTestBase):
         self.assertTrue('besttest' in res.body)
 
         self.app.get('/category/edit/100', status=404)
-        self.app.get('/category/delete/100', status=404)
+        self.app.get('/category/archive/100', status=404)
         self.app.get('/category/restore/100', status=404)
+
+    def test_users(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        res = self.app.get('/users', status=200)
+        self.assertTrue(res.status_int, 200)
+        
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+        res = self.app.get('/users', status=200)
+        self.assertTrue('test@email.com' in res.body)
+
+        res = self.app.get('/users/archived', status=200)
+        self.assertTrue('No users found' in res.body)
+
+        res = self.app.get('/user/edit/2', status=200)
+        self.assertTrue('test@email.com' in res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/edit/2', {'id' : 2,
+                                             'email' : 'best@email.com',
+                                             'password' : '123456',
+                                             'confirm' : '123456',
+                                             'group' : 'admin',
+                                             'csrf_token' : token,
+                                             })
+        res = self.app.get('/users', status=200)
+        self.assertTrue('best@email.com')
+
+        self.app.get('/logout', status=302)
+
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'best@email.com',
+                                       'password' : '123456',
+                                      }, status=302 )
+
+        res = self.app.get('/users', status=200)
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/user/edit/1', status=404)
+
+        self.app.get('/logout', status=302)
+
+        # block user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/user/edit/2', status=200)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/edit/2', {'id' : 2,
+                                             'email' : 'best@email.com',
+                                             'csrf_token' : token,
+                                             'password' : '',
+                                             'confirm' : '',
+                                             'blocked' : 'y',
+                                             })
+        self.app.get('/logout', status=302)
+        
+        # test login with blocked user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'best@email.com',
+                                       'password' : '123456',}
+                           , status=200)
+        self.assertTrue('Login failed' in res.body)
+
+        # test unblock user and login
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/user/edit/2', status=200)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/edit/2', {'id' : 2,
+                                             'email' : 'best@email.com',
+                                             'csrf_token' : token,
+                                             'password' : '',
+                                             'confirm' : '',
+                                             })
+        self.app.get('/logout', status=302)
+
+        # log back in with unblocked user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'best@email.com',
+                                       'password' : '123456',}
+                           , status=302)
+        self.app.get('/logout', status=302)
+
+        # log in and archive 
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        self.app.get('/user/archive/1', status=404)
+        self.app.get('/user/archive/2', status=302)
+        self.app.get('/logout', status=302)
+
+        #try to log in with archived user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'best@email.com',
+                                       'password' : '123456',}
+                           , status=200)
+        self.assertTrue('Login failed' in res.body)
+
+        # log back in with unblocked user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           , status=302)
+        self.app.get('/user/restore/2', status=302)
+        self.app.get('/logout', status=302)
+
+        # log back in with unarchived user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'best@email.com',
+                                       'password' : '123456',}
+                           , status=302)
+        self.app.get('/logout', status=302)
+
+    def test_user_404(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        self.app.get('/user/edit/100', status=404)
+        self.app.get('/user/archive/100', status=404)
+        self.app.get('/user/restore/100', status=404)
+
+    def test_user_bogus_data(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                           'csrf_token' : token,
+                                           'email': 'user@email.com',
+                                           'password' : '1234567',}
+                               )
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'mustang@email.com',
+                                          'givenname' : 'mustang',
+                                          'surname' : 'mcmustang',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'horse',
+                                          'csrf_token' : token},
+                           status=200)
+        res = self.app.post('/user/new', {'email' : 'mustang@email.com',
+                                          'givenname' : 'mustang',
+                                          'surname' : 'mcmustang',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'viewer',
+                                          'csrf_token' : token},
+                           status=302)
+        res = self.app.get('/users')
+        self.assertFalse('horse' in res.body)
+        self.assertTrue('viewer' in res.body)
+        self.assertTrue('mustang@email.com' in res.body)
+
+        res = self.app.get('/user/edit/2', status=200)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/edit/2', {'id' : 2,
+                                             'email' : 'mustang@email.com',
+                                             'group' : 'horse',
+                                             'csrf_token' : token},
+                           status=200)
+        self.assertFalse('horse' in res.body)
+        self.assertTrue('viewer' in res.body)
+        res = self.app.get('/users')
+        self.assertFalse('horse' in res.body)
+        self.assertTrue('viewer' in res.body)
+        self.assertTrue('mustang@email.com' in res.body)
+
+        res = self.app.get('/user/edit/2', status=200)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/edit/2', {'id' : 2,
+                                             'email' : 'mustang@email.com',
+                                             'group' : 'horse',
+                                             'csrf_token' : token},
+                           status=200)
+        self.assertFalse('horse' in res.body)
+        self.assertTrue('viewer' in res.body)

@@ -55,6 +55,29 @@ img {
   color: #585858;
 }
 
+/**
+ * Messages
+ */
+
+#messages p {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+#messages .success {
+  background: lightgreen;
+  border: 1px solid limegreen;
+}
+
+#messages .status {
+  background: powderblue;
+  border: 1px solid steelblue;
+}
+
+#messages .error {
+  background: salmon;
+  border: 1px solid red;
+}
 
 /**
  * sidebar
@@ -240,6 +263,12 @@ img {
   height: 25px;
 }
 
+#content tbody tr.inactive {
+  font-style: italic;  
+  background: lightsalmon;
+  border: 1px solid tomato;
+}
+
 
 #content tbody td {
   padding: 5px;
@@ -267,3 +296,10 @@ img {
   margin-right: 5px;
 }
 
+#content .error {
+  background: salmon;
+  border: 1px solid red;
+  height: auto;
+  padding: 2px;
+  margin: 0px 6px 10px 6px;
+}

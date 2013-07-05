@@ -41,9 +41,9 @@ def main(argv=sys.argv):
 
     with transaction.manager:
         admin = User(
-                        username=u'admin',
                         email=a_email,
-                        password=a_hashed
+                        password=a_hashed,
+                        group='admin',
                     )
         DBSession.add(admin)
 

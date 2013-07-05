@@ -29,7 +29,7 @@ class MainViews(object):
     def index(self):
         return {'title': 'Hello world'}
 
-    @forbidden_view_config(renderer='pyrtos:templates/login.mako')
+    @forbidden_view_config(renderer='string')
     def forbidden(self):
         return HTTPFound(self.request.route_url('login'))
 

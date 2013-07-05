@@ -57,7 +57,7 @@ class CategoryViews(object):
             c = Category()
             form.populate_obj(c)
             DBSession.add(c)
-            self.request.session.flash('Category %s created' % (c.title))
+            self.request.session.flash('Category %s created' % (c.title), 'success')
             return HTTPFound(location=self.request.route_url('categories'))
         return {'title': 'New category',
                 'form': form,
@@ -74,23 +74,24 @@ class CategoryViews(object):
         form = CategoryEditForm(self.request.POST, c, csrf_context=self.request.session)
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(c)
-            self.request.session.flash('Category %s updated' % (c.title))
+            self.request.session.flash('Category %s updated' % (c.title), 'status')
             return HTTPFound(location=self.request.route_url('categories'))
         return {'title' : 'Edit category',
                 'form' : form,
                 'id' : id,
                 'action' : 'category_edit'}
 
-    @view_config(route_name='category_delete',
+    @view_config(route_name='category_archive',
                  renderer='string',
-                 permission='delete')
-    def category_delete(self):
+                 permission='archive')
+    def category_archive(self):
         id = int(self.request.matchdict.get('id'))
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
         c.archived = True
         DBSession.add(c)
+        self.request.session.flash('Category %s archived' % (c.title), 'status')
         return HTTPFound(location=self.request.route_url('categories'))
 
     @view_config(route_name='category_restore',
@@ -103,5 +104,6 @@ class CategoryViews(object):
             return HTTPNotFound()
         c.archived = False
         DBSession.add(c)
+        self.request.session.flash('Category %s restored' % (c.title), 'status')
         return HTTPFound(location=self.request.route_url('categories_archived'))
 

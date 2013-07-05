@@ -8,6 +8,9 @@
 </head>
 <body>
   <div id="wrapper">
+    <div id="messages">
+      <%include file="pyrtos:templates/messages.mako"/>
+    </div>
     <div class="sidebar corners5px">
       <%include file="pyrtos:templates/sidebar.mako"/>
     </div>
