@@ -6,7 +6,10 @@ from wtforms import (
     HiddenField,
     BooleanField,
     PasswordField,
+    SelectField,
 )
+
+from pyrtos.models import User
 
 class UserCreateForm(BaseForm):
     email = TextField('Email',
@@ -26,6 +29,8 @@ class UserCreateForm(BaseForm):
                             filters=[strip_filter])
     confirm = PasswordField('Confirm password',
                             filters=[strip_filter])
+    group = SelectField('Group',
+                        choices=[(n,n) for n in User.groups])
     blocked = BooleanField('Blocked')
 
 

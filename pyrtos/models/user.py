@@ -33,11 +33,14 @@ class User(Base):
     givenname = Column(String(255))
     surname = Column(String(255))
     password = Column(String(255), nullable=False)
+    group = Column(String(10), nullable=False)
     archived = Column(Boolean, default=False)
     blocked = Column(Boolean, default=False)
     last_logged = Column(DateTime, default=datetime.utcnow)
    
     pm = BCRYPTPasswordManager()
+
+    groups = ['admin', 'editor', 'viewer']
 
     @classmethod
     def by_id(cls, id):
