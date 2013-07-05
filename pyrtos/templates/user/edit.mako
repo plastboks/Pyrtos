@@ -45,6 +45,13 @@
 
   %if id is not 1 and id is not myid:
     <p>
+      <label>${form.group.label}</label>
+      ${form.group}
+    </p>
+  %endif
+
+  %if id is not 1 and id is not myid:
+    <p>
       <label>${form.blocked.label}</label>
       ${form.blocked}
     </p>

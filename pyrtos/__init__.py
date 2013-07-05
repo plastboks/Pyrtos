@@ -12,6 +12,8 @@ from pyramid.session import (
 
 from pyrtos.security import (
     EntryFactory,
+    groupfinder,
+    can_i,
 )
 from pyrtos.models.meta import (
     DBSession,
@@ -24,7 +26,9 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     
-    authenPol = AuthTktAuthenticationPolicy('somesecret')
+    authenPol = AuthTktAuthenticationPolicy('somesecret',
+                                            callback=groupfinder,
+                                            hashalg='sha512')
     authorPol = ACLAuthorizationPolicy()
     sess_factory = UnencryptedCookieSessionFactoryConfig('someothersecret')
 
@@ -36,6 +40,7 @@ def main(global_config, **settings):
 
 
     config.add_static_view('static', 'static', cache_max_age=3600)
+    config.add_request_method(can_i, 'can_i')
   
     # index
     config.add_route('index', '/')
