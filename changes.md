@@ -1,3 +1,7 @@
+0.0.3
+  * User CRUD
+  * User roles, and permisssions
+
 0.0.2
 =====
   * Categories.
