@@ -123,7 +123,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         m = MainViews(request)
         response = m.index()
-        self.assertEqual(response['title'], 'Hello world')
+        self.assertEqual(response['title'], 'Dashboard')
 
     def test_notfound(self):
         from pyrtos.views import MainViews

@@ -32,8 +32,12 @@ img {
 #header {
   width: 980px;
   margin: 0 auto;
-  padding-top: 20px;
+  padding-left: 10px;
 }
+
+#header h1 {
+}
+
 
 
 /**
@@ -302,4 +306,18 @@ img {
   height: auto;
   padding: 2px;
   margin: 0px 6px 10px 6px;
+}
+
+
+/**
+ * Footer
+ */
+#footer {
+  clear: both;
+  padding-top: 15px;
+}
+
+#footer p {
+  font-size: 0.8em;
+  text-align: center;
 }
