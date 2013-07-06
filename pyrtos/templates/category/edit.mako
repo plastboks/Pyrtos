@@ -15,11 +15,6 @@
   </p>
 
   <p>
-    <label>${form.name.label}</label><br />
-    ${form.name}
-  </p>
-
-  <p>
     <input type="submit" value="Submit" />
   </p>
 </form>

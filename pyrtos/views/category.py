@@ -1,4 +1,5 @@
 from datetime import datetime
+from slugify import slugify
 from pyramid.response import Response
 from sqlalchemy.exc import DBAPIError
 
@@ -56,6 +57,7 @@ class CategoryViews(object):
         if self.request.method == 'POST' and form.validate():
             c = Category()
             form.populate_obj(c)
+            c.name = slugify(form.title.data)
             DBSession.add(c)
             self.request.session.flash('Category %s created' % (c.title), 'success')
             return HTTPFound(location=self.request.route_url('categories'))
@@ -74,6 +76,7 @@ class CategoryViews(object):
         form = CategoryEditForm(self.request.POST, c, csrf_context=self.request.session)
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(c)
+            c.name = slugify(form.title.data)
             self.request.session.flash('Category %s updated' % (c.title), 'status')
             return HTTPFound(location=self.request.route_url('categories'))
         return {'title' : 'Edit category',
