@@ -8,6 +8,9 @@
 </head>
 <body>
   <div id="wrapper">
+    <div id="header">
+       <h1>${request.registry.settings.get('pyrtos.title')}</h1>
+    </div>
     <div id="messages">
       <%include file="pyrtos:templates/messages.mako"/>
     </div>
@@ -16,6 +19,9 @@
     </div>
     <div id="content" class="corners5px">
        ${next.body()} 
+    </div>
+    <div id='footer'>
+      <p>${request.registry.settings.get('pyrtos.footer')}</p>
     </div>
   </div>
 </body>
