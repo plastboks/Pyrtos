@@ -15,6 +15,7 @@ from pyrtos.models.meta import DBSession, Base
 from pyrtos.models import (
     User,
     Category,
+    Creditor,
 )
 
 class BaseTestCase(unittest.TestCase):
@@ -115,6 +116,26 @@ class CategoryModelTests(BaseTestCase):
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
 
+  
+class CreditorModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Creditor
+        return Creditor
+
+    def _makeOne(self, id, title, name):
+        return self._getTargetClass()(id=id, title=title, name=name)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 'best')
+        self.session.add(instance)
+
+        qn = self._getTargetClass().by_name('best')
+        self.assertEqual(qn.title, 'Test')
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+
 
 class ViewTests(BaseTestCase):
 
@@ -147,6 +168,13 @@ class ViewTests(BaseTestCase):
         response = c.categories()
         self.assertEqual(response['title'], 'Categories')
 
+    def test_archived_categories(self):
+        from pyrtos.views import CategoryViews
+        request = testing.DummyRequest()
+        c = CategoryViews(request)
+        response = c.categories_archived()
+        self.assertEqual(response['title'], 'Archived categories')
+
     def test_category_create(self):
         from pyrtos.views import CategoryViews
         request = testing.DummyRequest()
@@ -170,6 +198,13 @@ class ViewTests(BaseTestCase):
         response = u.users()
         self.assertEqual(response['title'], 'Users')
 
+    def test_archived_users(self):
+        from pyrtos.views import UserViews
+        request = testing.DummyRequest()
+        u = UserViews(request)
+        response = u.users_archived()
+        self.assertEqual(response['title'], 'Archived users')
+
     def test_new_user(self):
         from pyrtos.views import UserViews
         request = testing.DummyRequest()
@@ -177,6 +212,28 @@ class ViewTests(BaseTestCase):
         u = UserViews(request)
         response = u.user_create()
         self.assertEqual(response['title'], 'New user')
+
+    def test_creditor(self):
+        from pyrtos.views import CreditorViews
+        request = testing.DummyRequest()
+        c = CreditorViews(request)
+        response = c.creditors()
+        self.assertEqual(response['title'], 'Creditors')
+
+    def test_archived_creditors(self):
+        from pyrtos.views import CreditorViews
+        request = testing.DummyRequest()
+        c = CreditorViews(request)
+        response = c.creditors_archived()
+        self.assertEqual(response['title'], 'Archived creditors')
+
+    def test_creditor_new(self):
+        from pyrtos.views import CreditorViews
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        c = CreditorViews(request)
+        response = c.creditor_create()
+        self.assertEqual(response['title'], 'New creditor')
 
 
 class IntegrationTestBase(BaseTestCase):
@@ -239,33 +296,41 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/categories', status=302)
         self.assertTrue(res.location, 'http://localhost/login')
 
+    def test_creditors_as_anonymous(self):
+        res = self.app.get('/creditors', status=302)
+        self.assertTrue(res.location, 'http://localhost/login')
+
+    def test_users_as_anonymous(self):
+        res = self.app.get('/users', status=302)
+        self.assertTrue(res.location, 'http://localhost/login')
+
     def test_categories(self):
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/login', {'submit' : True,
-                                           'csrf_token' : token,
-                                           'email': 'user@email.com',
-                                           'password' : '1234567',}
-                               )
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
         res = self.app.get('/categories')
         self.assertTrue(res.status_int, 200)
 
         res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/category/new', {'name' : 'testbest',
-                                                  'title' : 'testbest',
-                                                  'csrf_token' : token}
-                               )
+                                              'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
         res = self.app.get('/categories', status=200)
         self.assertTrue('testbest' in res.body)
 
         res = self.app.get('/category/edit/1')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/category/edit/1', params={'id' : 1,
-                                                            'name' : 'besttest',
-                                                            'title' : 'besttest',
-                                                            'csrf_token' : token}
-                               )
+                                                        'name' : 'besttest',
+                                                        'title' : 'besttest',
+                                                        'csrf_token' : token}
+                           )
         categories = self.app.get('/categories', status=200)
         self.assertTrue('besttest' in categories.body)
 
@@ -289,10 +354,10 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/login', {'submit' : True,
-                                           'csrf_token' : token,
-                                           'email': 'user@email.com',
-                                           'password' : '1234567',}
-                               )
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
         res = self.app.get('/users', status=200)
         self.assertTrue(res.status_int, 200)
         
@@ -507,3 +572,47 @@ class TestViews(IntegrationTestBase):
                            status=200)
         self.assertFalse('horse' in res.body)
         self.assertTrue('viewer' in res.body)
+
+    def test_creditors(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/creditors')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/creditor/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+        res = self.app.get('/creditors', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        res = self.app.get('/creditor/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/edit/1', params={'id' : 1,
+                                                        'title' : 'besttest',
+                                                        'csrf_token' : token}
+                           )
+        res = self.app.get('/creditors', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        res = self.app.get('/creditor/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/creditor/edit/100', status=404)
+
+        self.app.get('/creditor/archive/1', status=302)
+        res = self.app.get('/creditors/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/creditor/restore/1', status=302)
+        res = self.app.get('/creditors', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/creditor/edit/100', status=404)
+        self.app.get('/creditor/archive/100', status=404)
+        self.app.get('/creditor/restore/100', status=404)
