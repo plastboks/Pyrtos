@@ -317,8 +317,7 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/category/new', {'name' : 'testbest',
-                                              'title' : 'testbest',
+        res = self.app.post('/category/new', {'title' : 'testbest',
                                               'csrf_token' : token}
                            )
         res = self.app.get('/categories', status=200)
@@ -327,7 +326,6 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/category/edit/1')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/category/edit/1', params={'id' : 1,
-                                                        'name' : 'besttest',
                                                         'title' : 'besttest',
                                                         'csrf_token' : token}
                            )
