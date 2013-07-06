@@ -21,6 +21,7 @@ requires = [
     'webtest',
     'nose',
     'coverage',
+    'slugify',
     ]
 
 setup(name='pyrtos',
