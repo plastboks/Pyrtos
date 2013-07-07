@@ -8,6 +8,7 @@ from datetime import datetime
 from sqlalchemy import (
     Column,
     Integer,
+    Float,
     Text,
     String,
     Unicode,
@@ -27,11 +28,13 @@ from webhelpers.date import time_ago_in_words
 class Income(Base):
     __tablename__ = 'incomes'
     id = Column(Integer, primary_key=True)
-    title = Column(String(255))
-    user_id = Column(Integer, ForeignKey('users.id'))
+    title = Column(String(255), nullable=False)
+    amount = Column(Float(16), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
+
     user = relationship('User', backref='incomes')
 
     @classmethod

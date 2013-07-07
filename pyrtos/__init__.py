@@ -76,6 +76,14 @@ def main(global_config, **settings):
     config.add_route('creditor_archive', '/creditor/archive/{id}')
     config.add_route('creditor_restore', '/creditor/restore/{id}')
 
+    # income
+    config.add_route('incomes', '/incomes')
+    config.add_route('incomes_archived', '/incomes/archived')
+    config.add_route('income_new', '/income/new')
+    config.add_route('income_edit', '/income/edit/{id}')
+    config.add_route('income_archive', '/income/archive/{id}')
+    config.add_route('income_restore', '/income/restore/{id}')
+
     config.scan()
     return config.make_wsgi_app()
 
