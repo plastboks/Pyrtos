@@ -9,7 +9,7 @@ from wtforms import (
 
 class CreditorCreateForm(BaseForm):
     title = TextField('Creditor Title',
-                      [validators.Length(max=255)],
+                      [validators.Length(min=3, max=255)],
                       filters=[strip_filter])
 
 class CreditorEditForm(CreditorCreateForm):

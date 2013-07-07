@@ -9,7 +9,7 @@ from wtforms import (
 
 class CategoryCreateForm(BaseForm):
     title = TextField('Category Title',
-                      [validators.Length(max=255)],
+                      [validators.Length(min=3, max=255)],
                       filters=[strip_filter])
 
 class CategoryEditForm(CategoryCreateForm):
