@@ -12,8 +12,12 @@ from pyramid.paster import (
     )
 
 from pyrtos.models.meta import DBSession, Base
+
 from pyrtos.models import (
     User,
+    Income,
+    Tag,
+    Creditor,
     Category,
 )
 
@@ -32,7 +36,7 @@ def main(argv=sys.argv):
     settings = get_appsettings(config_uri)
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine, checkfirst=True)
 
     m = BPM()
     a_email = raw_input('Enter email for admin account: ')
