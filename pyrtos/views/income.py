@@ -52,6 +52,7 @@ class IncomeViews(object):
         if self.request.method == 'POST' and form.validate():
             i = Income()
             form.populate_obj(i)
+            i.user_id = form.user_id.data.id
             DBSession.add(i)
             self.request.session.flash('Income %s created' % (i.title), 'success')
             return HTTPFound(location=self.request.route_url('incomes'))
@@ -64,14 +65,14 @@ class IncomeViews(object):
                  permission='edit')
     def income_edit(self):
         id = int(self.request.matchdict.get('id'))
-        c = Income.by_id(id)
-        if not c:
+        i = Income.by_id(id)
+        if not i:
             return HTTPNotFound()
-        form = IncomeEditForm(self.request.POST, c, csrf_context=self.request.session)
+        form = IncomeEditForm(self.request.POST, i, csrf_context=self.request.session)
         if self.request.method == 'POST' and form.validate():
-            form.populate_obj(c)
-            c.name = slugify(form.title.data)
-            self.request.session.flash('Income %s updated' % (c.title), 'status')
+            form.populate_obj(i)
+            i.user_id = form.user_id.data.id
+            self.request.session.flash('Income %s updated' % (i.title), 'status')
             return HTTPFound(location=self.request.route_url('incomes'))
         return {'title' : 'Edit income',
                 'form' : form,

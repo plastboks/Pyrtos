@@ -235,6 +235,27 @@ class ViewTests(BaseTestCase):
         response = c.creditor_create()
         self.assertEqual(response['title'], 'New creditor')
 
+    def test_income(self):
+        from pyrtos.views import IncomeViews
+        request = testing.DummyRequest()
+        i = IncomeViews(request)
+        response = i.incomes()
+        self.assertEqual(response['title'], 'Incomes')
+
+    def test_income_archived(self):
+        from pyrtos.views import IncomeViews
+        request = testing.DummyRequest()
+        i = IncomeViews(request)
+        response = i.incomes_archived()
+        self.assertEqual(response['title'], 'Archived incomes')
+
+    def test_income_new(self):
+        from pyrtos.views import IncomeViews
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        i = IncomeViews(request)
+        response = i.income_create()
+        self.assertEqual(response['title'], 'New income')
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
@@ -614,3 +635,51 @@ class TestViews(IntegrationTestBase):
         self.app.get('/creditor/edit/100', status=404)
         self.app.get('/creditor/archive/100', status=404)
         self.app.get('/creditor/restore/100', status=404)
+
+    def test_incomes(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/incomes')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/income/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/income/new', {'title' : 'testbest',
+                                            'amount' : '12345',
+                                            'user_id' : 1,
+                                            'csrf_token' : token}
+                           )
+        res = self.app.get('/incomes', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        res = self.app.get('/income/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/income/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'user_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        res = self.app.get('/incomes', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        res = self.app.get('/income/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/income/edit/100', status=404)
+
+        self.app.get('/income/archive/1', status=302)
+        res = self.app.get('/incomes/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/income/restore/1', status=302)
+        res = self.app.get('/incomes', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/income/edit/100', status=404)
+        self.app.get('/income/archive/100', status=404)
+        self.app.get('/income/restore/100', status=404)
