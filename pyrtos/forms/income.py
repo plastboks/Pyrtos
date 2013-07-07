@@ -14,8 +14,6 @@ from wtforms.ext.sqlalchemy.fields import (
 
 from pyrtos.models import User
 
-def users():
-    return User.all_users()
 
 class IncomeCreateForm(BaseForm):
     title = TextField('Income Title',
@@ -23,7 +21,6 @@ class IncomeCreateForm(BaseForm):
                       filters=[strip_filter])
     amount = FloatField('Income Amount')
     user_id = QuerySelectField('User',
-                                query_factory=users,
                                 get_label='email')
 
 class IncomeEditForm(IncomeCreateForm):

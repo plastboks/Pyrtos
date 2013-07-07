@@ -12,6 +12,7 @@ from pyramid.view import (
 )
 from pyrtos.models.meta import DBSession
 from pyrtos.models import (
+    User,
     Income,
 )
 from pyrtos.forms import (
@@ -30,9 +31,11 @@ class IncomeViews(object):
     def incomes(self):
         page = int (self.request.params.get('page', 1))
         incomes = Income.page(self.request, page)
+        amount_sum = Income.amount_sum()
         return {'paginator': incomes,
-                'title' : 'Incomes',
-                'archived' : False}
+                'title' : 'Monthly incomes',
+                'amount_sum' : amount_sum,
+                'archived' : False,}
 
     @view_config(route_name='incomes_archived',
                  renderer='pyrtos:templates/income/list.mako',
@@ -49,6 +52,7 @@ class IncomeViews(object):
                  permission='create')
     def income_create(self):
         form = IncomeCreateForm(self.request.POST, csrf_context=self.request.session)
+        form.user_id.query = User.all_users()
         if self.request.method == 'POST' and form.validate():
             i = Income()
             form.populate_obj(i)
@@ -69,11 +73,13 @@ class IncomeViews(object):
         if not i:
             return HTTPNotFound()
         form = IncomeEditForm(self.request.POST, i, csrf_context=self.request.session)
+        form.user_id.query = User.all_users()
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(i)
             i.user_id = form.user_id.data.id
             self.request.session.flash('Income %s updated' % (i.title), 'status')
             return HTTPFound(location=self.request.route_url('incomes'))
+        form.user_id.data = i.user
         return {'title' : 'Edit income',
                 'form' : form,
                 'id' : id,

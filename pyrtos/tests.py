@@ -240,7 +240,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         i = IncomeViews(request)
         response = i.incomes()
-        self.assertEqual(response['title'], 'Incomes')
+        self.assertEqual(response['title'], 'Monthly incomes')
 
     def test_income_archived(self):
         from pyrtos.views import IncomeViews

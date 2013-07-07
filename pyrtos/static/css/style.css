@@ -310,6 +310,12 @@ img {
   margin-right: 5px;
 }
 
+#content .tablesum {
+  margin-right: 40px;
+  font-weight: bold;
+  text-align: right;
+}
+
 #content .error {
   background: salmon;
   border: 1px solid red;
