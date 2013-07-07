@@ -20,6 +20,8 @@ from sqlalchemy import (
     and_,
     )
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
 from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import time_ago_in_words
@@ -55,4 +57,9 @@ class Income(Base):
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Income).filter(Income.id == id).first()
+
+    @classmethod
+    def amount_sum(cls):
+        return DBSession.query(func.sum(Income.amount).label('a_sum')).\
+                         filter(Income.archived == False).first()
 

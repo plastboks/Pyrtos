@@ -34,6 +34,13 @@
       </tbody>
     </table>
   </div>
+  <div class='tablesum'>
+  %if amount_sum:
+    %for s in amount_sum:
+      <span>Sum: ${s}</span>
+    %endfor
+  %endif
+  </div>
   <div class='pager'>
     ${paginator.pager()}
   </div>
