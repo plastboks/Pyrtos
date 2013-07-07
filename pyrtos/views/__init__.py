@@ -6,3 +6,4 @@ from pyrtos.views.category import CategoryViews
 from pyrtos.views.tag import TagViews
 from pyrtos.views.user import UserViews
 from pyrtos.views.creditor import CreditorViews
+from pyrtos.views.income import IncomeViews

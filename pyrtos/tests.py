@@ -16,22 +16,8 @@ from pyrtos.models import (
     User,
     Category,
     Creditor,
+    Income,
 )
-
-class BaseTestCase(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.engine = create_engine('sqlite://')
-
-    def setUp(self):
-        Base.metadata.create_all(self.engine)
-        DBSession.configure(bind=self.engine)
-        self.session = DBSession
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-        self.session.remove()
 
 def _initTestingDB(makeuser=False):
     engine = create_engine('sqlite://')
@@ -49,6 +35,20 @@ def _initTestingDB(makeuser=False):
           DBSession.add(user)
     return DBSession
 
+class BaseTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.engine = create_engine('sqlite://')
+
+    def setUp(self):
+        Base.metadata.create_all(self.engine)
+        DBSession.configure(bind=self.engine)
+        self.session = DBSession
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+        self.session.remove()
 
 class UserModelTests(BaseTestCase):
 
