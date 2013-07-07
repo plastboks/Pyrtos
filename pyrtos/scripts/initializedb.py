@@ -12,8 +12,12 @@ from pyramid.paster import (
     )
 
 from pyrtos.models.meta import DBSession, Base
+
 from pyrtos.models import (
     User,
+    Income,
+    Tag,
+    Creditor,
     Category,
 )
 

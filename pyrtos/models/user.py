@@ -51,6 +51,10 @@ class User(Base):
         return DBSession.query(User).filter(User.email == email).first()
 
     @classmethod
+    def all_users(cls):
+        return DBSession.query(User).all()
+
+    @classmethod
     def all_active(cls):
         return DBSession.query(User).filter(User.archived == False)
 

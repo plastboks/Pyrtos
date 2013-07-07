@@ -1,7 +1,7 @@
-<%inherit file="pyrtos:templates/category/base.mako" />
+<%inherit file="pyrtos:templates/income/base.mako" />
 <form action="${request.route_url(action, id=id)}" method="POST">
   ${form.csrf_token}
-  %if action == 'category_edit':
+  %if action == 'income_edit':
     ${form.id()}
   %endif
 
@@ -12,6 +12,16 @@
   <p>
     <label>${form.title.label}</label><br />
     ${form.title}
+  </p>
+
+  <p>
+    <label>${form.amount.label}</label><br />
+    ${form.amount}
+  </p>
+
+  <p>
+    <label>${form.user_id.label}</label>
+    ${form.user_id}
   </p>
 
   <p>

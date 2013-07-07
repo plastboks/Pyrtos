@@ -27,7 +27,7 @@ class MainViews(object):
                  renderer='pyrtos:templates/index.mako',
                  permission='view')
     def index(self):
-        return {'title': 'Hello world'}
+        return {'title': 'Dashboard'}
 
     @forbidden_view_config(renderer='string')
     def forbidden(self):

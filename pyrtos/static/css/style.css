@@ -32,15 +32,19 @@ img {
 #header {
   width: 980px;
   margin: 0 auto;
-  padding-top: 20px;
+  padding-left: 10px;
 }
+
+#header h1 {
+}
+
 
 
 /**
  * wrapper 
  */
 #wrapper {
-  width: 850px;
+  width: 950px;
   margin: 0 auto;
   margin-top: 30px;
   position: relative;
@@ -83,7 +87,7 @@ img {
  * sidebar
  */
 .sidebar {
-  width: 120px;
+  width: 130px;
   float: left;
   padding: 10px;
   background: none repeat scroll 0 0 #F7F7F7;
@@ -118,6 +122,9 @@ img {
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-radius-bottomleft: 5px;
   border-bottom-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  border-top-right-radius: 5px;
 }
 
 .upper_toolbar ul {
@@ -140,12 +147,12 @@ img {
  * content 
  */
 #content {
-  width: 665px;
+  width: 765px;
   float: left;
   min-height: 200px;
   background: none repeat scroll 0 0 #F7F7F7;
   border: 1px solid #E8E8E8;
-  margin-left: 20px;
+  margin-left: 10px;
   padding: 10px;
   position: relative;
 }
@@ -211,10 +218,12 @@ img {
 }
 
 #content form input[type='submit'] {
-  background: none repeat scroll 0 0 #FBFBFB;
-  border: 1px solid #E5E5E5;
+  background: none repeat scroll 0 0 lightskyblue;
+  border: 1px solid dodgerblue;
   padding: 4px;
-  font-size: 0.8em;
+  font-size: 1.4em;
+  color: dimgray;
+  width: 97%;
 }
 
 #content form label {
@@ -263,6 +272,11 @@ img {
   height: 25px;
 }
 
+#content tbody tr:nth-child(2n+2) {
+  border: 1px solid lavender;
+  background: ghostwhite;
+}
+
 #content tbody tr.inactive {
   font-style: italic;  
   background: lightsalmon;
@@ -296,10 +310,47 @@ img {
   margin-right: 5px;
 }
 
+#content .tablesum {
+  margin-right: 40px;
+  font-weight: bold;
+  text-align: right;
+}
+
 #content .error {
   background: salmon;
   border: 1px solid red;
   height: auto;
   padding: 2px;
   margin: 0px 6px 10px 6px;
+}
+
+#content .pager {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+#content .pager span,
+#content .pager a {
+  display: inline;
+  padding: 5px;
+}
+
+#content .pager span {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/**
+ * Footer
+ */
+#footer {
+  clear: both;
+  padding-top: 15px;
+}
+
+#footer p {
+  font-size: 0.8em;
+  text-align: center;
+  margin-left: 130px;
 }
