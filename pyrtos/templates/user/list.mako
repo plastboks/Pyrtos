@@ -51,7 +51,9 @@
       </tbody>
     </table>
   </div>
-  ${paginator.pager()}
+  <div class='pager'>
+    ${paginator.pager()}
+  </div>
 %else:
   <p>No users found.</p>
 %endif
