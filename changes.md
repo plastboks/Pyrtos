@@ -1,3 +1,10 @@
+0.0.4
+=====
+  * Income
+  * Creditors
+  * Site Settings
+  * Styles
+
 0.0.3
 =====
   * User CRUD
