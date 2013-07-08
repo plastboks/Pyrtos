@@ -17,3 +17,7 @@ from pyrtos.forms.income import (
     IncomeCreateForm,
     IncomeEditForm,
 )
+from pyrtos.forms.expenditure import (
+    ExpenditureCreateForm,
+    ExpenditureEditForm,
+)

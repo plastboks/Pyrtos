@@ -86,6 +86,15 @@ def main(global_config, **settings):
     config.add_route('income_archive', '/income/archive/{id}')
     config.add_route('income_restore', '/income/restore/{id}')
 
+    # expenditure
+    config.add_route('expenditures', '/expenditures')
+    config.add_route('expenditures_private', '/expenditures/private')
+    config.add_route('expenditures_archived', '/expenditures/archived')
+    config.add_route('expenditure_new', '/expenditure/new')
+    config.add_route('expenditure_edit', '/expenditure/edit/{id}')
+    config.add_route('expenditure_archive', '/expenditure/archive/{id}')
+    config.add_route('expenditure_restore', '/expenditure/restore/{id}')
+
     config.scan()
     return config.make_wsgi_app()
 
