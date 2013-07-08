@@ -57,3 +57,13 @@ Useful Links
   * [Testing page in wiki2 tutorial](http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/tutorials/wiki2/tests.html)
   * [Sonteks tests for Pyramid and SQLAlchemy](http://sontek.net/blog/detail/writing-tests-for-pyramid-and-sqlalchemy)
   * [Outgrowing Pyramid Handlers](http://michael.merickel.org/2011/8/23/outgrowing-pyramid-handlers/)
+
+License
+=======
+The Pyramid framework code is licensed under a BSD-style [PSFL](http://www.pylonsprojecct.org/about/license) license.
+All Pyrtos code is licensed under a BSD-style [PSFL](http://www.pylonsprojecct.org/about/license) license.
+
+Credits
+=======
+  * Icon set from [FAMFAMFAM](http://www.famfamfam.com)
+

@@ -15,15 +15,21 @@
             <td>${item.name}</td>
             <td class='actions'>
               %if request.can_i('edit'):
-                <a href="${request.route_url('creditor_edit', id=item.id)}">Edit</a>
+                <a href="${request.route_url('creditor_edit', id=item.id)}">
+                  <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
+                </a>
               %endif
               %if archived:
                 %if request.can_i('restore'):
-                  <a href="${request.route_url('creditor_restore', id=item.id)}">Restore</a>
+                  <a href="${request.route_url('creditor_restore', id=item.id)}">
+                    <img src='${request.static_url("pyrtos:static/icons/page_white_restore.png")}' title='Restore' alt='Restore' />
+                  </a>
                 %endif
               %else:
                 %if request.can_i('archive'):
-                  <a href="${request.route_url('creditor_archive', id=item.id)}">Archive</a>
+                  <a href="${request.route_url('creditor_archive', id=item.id)}">
+                    <img src='${request.static_url("pyrtos:static/icons/page_white_delete.png")}' title='Delete' alt='Delete' />
+                  </a>
                 %endif
               %endif
             </td>
