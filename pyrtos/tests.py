@@ -103,15 +103,12 @@ class CategoryModelTests(BaseTestCase):
         from pyrtos.models import Category
         return Category
 
-    def _makeOne(self, id, title, name):
-        return self._getTargetClass()(id=id, title=title, name=name)
+    def _makeOne(self, id, title):
+        return self._getTargetClass()(id=id, title=title, user_id=1)
 
     def test_constructor(self):
-        instance = self._makeOne(100, 'Test', 'best')
+        instance = self._makeOne(100, 'Test')
         self.session.add(instance)
-
-        qn = self._getTargetClass().by_name('best')
-        self.assertEqual(qn.title, 'Test')
 
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
@@ -166,7 +163,14 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         c = CategoryViews(request)
         response = c.categories()
-        self.assertEqual(response['title'], 'Categories')
+        self.assertEqual(response['title'], 'Public categories')
+
+    def test_private_categories(self):
+        from pyrtos.views import CategoryViews
+        request = testing.DummyRequest()
+        c = CategoryViews(request)
+        response = c.categories_private()
+        self.assertEqual(response['title'], 'Private categories')
 
     def test_archived_categories(self):
         from pyrtos.views import CategoryViews
@@ -355,7 +359,21 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/category/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
-        res = self.app.get('/category/edit/100', status=404)
+
+        res = self.app.get('/category/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/edit/1', params={'id' : 1,
+                                                        'title' : 'besttest',
+                                                        'private' : 'y',
+                                                        'csrf_token' : token}
+                           )
+
+        res = self.app.get('/categories/private', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        res = self.app.get('/categories', status=200)
+        self.assertFalse('besttest' in res.body)
+
 
         self.app.get('/category/archive/1', status=302)
         res = self.app.get('/categories/archived', status=200)
