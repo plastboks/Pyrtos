@@ -5,14 +5,12 @@
     <table id='creditors'>
       <thead>
         <th>Title</th>
-        <th>Name</th>
         <th>Actions</th>
       </thead>
       <tbody>
         %for item in paginator.items:
           <tr>
             <td>${item.title}</td>
-            <td>${item.name}</td>
             <td class='actions'>
               %if request.can_i('edit'):
                 <a href="${request.route_url('creditor_edit', id=item.id)}">

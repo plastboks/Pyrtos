@@ -120,15 +120,12 @@ class CreditorModelTests(BaseTestCase):
         from pyrtos.models import Creditor
         return Creditor
 
-    def _makeOne(self, id, title, name):
-        return self._getTargetClass()(id=id, title=title, name=name)
+    def _makeOne(self, id, title):
+        return self._getTargetClass()(id=id, title=title, user_id=1)
 
     def test_constructor(self):
-        instance = self._makeOne(100, 'Test', 'best')
+        instance = self._makeOne(100, 'Test')
         self.session.add(instance)
-
-        qn = self._getTargetClass().by_name('best')
-        self.assertEqual(qn.title, 'Test')
 
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
@@ -222,7 +219,14 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         c = CreditorViews(request)
         response = c.creditors()
-        self.assertEqual(response['title'], 'Creditors')
+        self.assertEqual(response['title'], 'Public creditors')
+
+    def test_creditor(self):
+        from pyrtos.views import CreditorViews
+        request = testing.DummyRequest()
+        c = CreditorViews(request)
+        response = c.creditors_private()
+        self.assertEqual(response['title'], 'Private creditors')
 
     def test_archived_creditors(self):
         from pyrtos.views import CreditorViews
@@ -640,7 +644,18 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/creditor/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
-        res = self.app.get('/creditor/edit/100', status=404)
+
+        res = self.app.get('/creditor/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/edit/1', params={'id' : 1,
+                                                        'title' : 'besttest',
+                                                        'private' : 'y',
+                                                        'csrf_token' : token}
+                           )
+        res = self.app.get('/creditors/private', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/creditors', status=200)
+        self.assertFalse('besttest' in res.body)
 
         self.app.get('/creditor/archive/1', status=302)
         res = self.app.get('/creditors/archived', status=200)

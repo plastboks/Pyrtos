@@ -13,6 +13,11 @@
     <label>${form.title.label}</label><br />
     ${form.title}
   </p>
+  
+  <p>
+    <label>${form.private.label}</label>
+    ${form.private}
+  </p>
 
   <p>
     <input type="submit" value="Submit" />
