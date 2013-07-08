@@ -15,6 +15,11 @@
   </p>
 
   <p>
+    <label>${form.private.label}</label>
+    ${form.private}
+  </p>
+
+  <p>
     <input type="submit" value="Submit" />
   </p>
 </form>
