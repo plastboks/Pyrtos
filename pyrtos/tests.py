@@ -17,6 +17,7 @@ from pyrtos.models import (
     Category,
     Creditor,
     Income,
+    Expenditure,
 )
 
 def _initTestingDB(makeuser=False):
@@ -113,7 +114,24 @@ class CategoryModelTests(BaseTestCase):
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
 
-  
+
+class TagModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Tag
+        return Tag
+
+    def _makeOne(self, id, name):
+        return self._getTargetClass()(id=id, name=name)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test')
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.name, 'Test')
+
+
 class CreditorModelTests(BaseTestCase):
 
     def _getTargetClass(self):
@@ -129,6 +147,49 @@ class CreditorModelTests(BaseTestCase):
 
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
+
+
+class IncomeModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Income
+        return Income
+
+    def _makeOne(self, id, title, amount):
+        return self._getTargetClass()(id=id,\
+                                      title=title,\
+                                      user_id=1,\
+                                      amount=amount)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 1234)
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+        self.assertEqual(qi.amount, 1234)
+
+
+class ExpenditureModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Expenditure
+        return Expenditure
+
+    def _makeOne(self, id, title, amount):
+        return self._getTargetClass()(id=id,\
+                                      title=title,\
+                                      amount=amount,\
+                                      category_id=1,\
+                                      user_id=1)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 1234)
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+        self.assertEqual(qi.amount, 1234)
 
 
 class ViewTests(BaseTestCase):
@@ -716,3 +777,58 @@ class TestViews(IntegrationTestBase):
         self.app.get('/income/edit/100', status=404)
         self.app.get('/income/archive/100', status=404)
         self.app.get('/income/restore/100', status=404)
+
+    def test_expenditures(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/expenditures')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+
+        res = self.app.get('/expenditure/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/new', {'title' : 'testbest',
+                                                 'amount' : '12345',
+                                                 'category_id' : 1,
+                                                 'csrf_token' : token}
+                           )
+
+        res = self.app.get('/expenditures', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        res = self.app.get('/expenditure/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'category_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        res = self.app.get('/expenditures', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        res = self.app.get('/expenditure/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/expenditure/edit/100', status=404)
+
+        self.app.get('/expenditure/archive/1', status=302)
+        res = self.app.get('/expenditures/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/expenditure/restore/1', status=302)
+        res = self.app.get('/expenditures', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/expenditure/edit/100', status=404)
+        self.app.get('/expenditure/archive/100', status=404)
+        self.app.get('/expenditure/restore/100', status=404)
