@@ -11,6 +11,7 @@ from pyramid.httpexceptions import (
 from pyramid.view import (
     view_config,
 )
+from pyramid.security import authenticated_userid
 from pyrtos.models.meta import DBSession
 from pyrtos.models import (
     Creditor,
@@ -32,7 +33,17 @@ class CreditorViews(object):
         page = int (self.request.params.get('page', 1))
         creditors = Creditor.page(self.request, page)
         return {'paginator': creditors,
-                'title' : 'Creditors',
+                'title' : 'Public creditors',
+                'archived' : False}
+
+    @view_config(route_name='creditors_private',
+                 renderer='pyrtos:templates/creditor/list.mako',
+                 permission='view')
+    def creditors_private(self):
+        page = int (self.request.params.get('page', 1))
+        creditors = Creditor.page(self.request, page, private=True)
+        return {'paginator': creditors,
+                'title' : 'Private creditors',
                 'archived' : False}
 
     @view_config(route_name='creditors_archived',
@@ -53,7 +64,7 @@ class CreditorViews(object):
         if self.request.method == 'POST' and form.validate():
             c = Creditor()
             form.populate_obj(c)
-            c.name = slugify(form.title.data)
+            c.user_id = authenticated_userid(self.request)
             DBSession.add(c)
             self.request.session.flash('Creditor %s created' % (c.title), 'success')
             return HTTPFound(location=self.request.route_url('creditors'))
@@ -72,7 +83,6 @@ class CreditorViews(object):
         form = CreditorEditForm(self.request.POST, c, csrf_context=self.request.session)
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(c)
-            c.name = slugify(form.title.data)
             self.request.session.flash('Creditor %s updated' % (c.title), 'status')
             return HTTPFound(location=self.request.route_url('creditors'))
         return {'title' : 'Edit creditor',
