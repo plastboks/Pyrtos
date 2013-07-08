@@ -87,12 +87,13 @@ img {
  * sidebar
  */
 .sidebar {
-  width: 130px;
+  width: 140px;
   float: left;
   padding: 10px;
   background: none repeat scroll 0 0 #F7F7F7;
-  border: 1px solid #E8E8E8;
-
+  border: 1px solid lightgray;
+  -webkit-box-shadow: 1px 1px 5px 1px #dcdcdc;
+  box-shadow: 1px 1px 5px 1px #dcdcdc;
 }
 
 .sidebar ul {
@@ -147,14 +148,16 @@ img {
  * content 
  */
 #content {
-  width: 765px;
+  width: 755px;
   float: left;
   min-height: 200px;
   background: none repeat scroll 0 0 #F7F7F7;
-  border: 1px solid #E8E8E8;
+  border: 1px solid lightgray;
   margin-left: 10px;
   padding: 10px;
   position: relative;
+  -webkit-box-shadow: 1px 1px 5px 1px #dcdcdc;
+  box-shadow: 1px 1px 5px 1px #dcdcdc;
 }
 
 #content .toolbar {
@@ -290,6 +293,10 @@ img {
 
 #content tbody td.actions{
   width: 100px;
+}
+
+#content tbody td.actions a{
+  margin: 0px 8px;
 }
 
 #content tbody .income {

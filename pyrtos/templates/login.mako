@@ -25,7 +25,7 @@
         <label>${form.password.label}</label><br />
         ${form.password}
       </p>
-        <input type="submit" value="Sign in">
+        <input type="submit" value="Login">
     </form>
   </div>
 </body>
