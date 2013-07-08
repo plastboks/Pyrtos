@@ -60,8 +60,8 @@ Useful Links
 
 License
 =======
-The Pyramid framework code is licensed under a BSD-style [PSFL](http://www.pylonsprojecct.org/about/license) license.
-All Pyrtos code is licensed under a BSD-style [PSFL](http://www.pylonsprojecct.org/about/license) license.
+The Pyramid framework code is licensed under a BSD-style [PSFL](http://www.pylonsproject.org/about/license) license.
+All Pyrtos code is licensed under a BSD-style [PSFL](http://en.wikipedia.org/wiki/Python_Software_Foundation_License) license.
 
 Credits
 =======
