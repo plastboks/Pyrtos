@@ -8,3 +8,4 @@ from pyrtos.views.user import UserViews
 from pyrtos.views.creditor import CreditorViews
 from pyrtos.views.income import IncomeViews
 from pyrtos.views.expenditure import ExpenditureViews
+from pyrtos.views.invoice import InvoiceViews

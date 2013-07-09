@@ -21,3 +21,7 @@ from pyrtos.forms.expenditure import (
     ExpenditureCreateForm,
     ExpenditureEditForm,
 )
+from pyrtos.forms.invoice import (
+    InvoiceCreateForm,
+    InvoiceEditForm,
+)

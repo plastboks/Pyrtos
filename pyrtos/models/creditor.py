@@ -41,6 +41,17 @@ class Creditor(Base):
     user = relationship('User', backref='creditors')
 
     @classmethod
+    def first_active(cls):
+        return DBSession.query(Creditor).filter(and_(Creditor.archived == False,
+                                                     Creditor.private == False)).first()
+    @classmethod
+    def first_private(cls, request):
+        id = authenticated_userid(request)
+        return DBSession.query(Creditor).filter(and_(Creditor.archived == False,\
+                                                     Creditor.private == True,\
+                                                     Creditor.user_id == id)).first()
+
+    @classmethod
     def all_active(cls):
         return DBSession.query(Creditor).filter(and_(Creditor.archived == False,
                                                      Creditor.private == False))

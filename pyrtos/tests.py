@@ -339,6 +339,20 @@ class ViewTests(BaseTestCase):
         e = ExpenditureViews(request)
         response = e.expenditures_archived()
         self.assertEqual(response['title'], 'Archived expenditures')
+    
+    def test_invoice(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        response = i.invoices()
+        self.assertEqual(response['title'], 'Public invoices')
+
+    def test_invoice_archived(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        response = i.invoices_archived()
+        self.assertEqual(response['title'], 'Archived invoices')
 
 
 class IntegrationTestBase(BaseTestCase):
@@ -886,3 +900,120 @@ class TestViews(IntegrationTestBase):
         self.app.get('/expenditure/edit/100', status=404)
         self.app.get('/expenditure/archive/100', status=404)
         self.app.get('/expenditure/restore/100', status=404)
+
+    def test_invoices(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/invoices')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/invoices?private=1')
+        self.assertTrue(res.status_int, 200)
+
+        self.app.get('/invoice/new', status=302)
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new pub category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+
+        # new priv category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+
+        self.app.get('/invoice/new', status=302)
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new pub creditor
+        res = self.app.get('/creditor/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+        
+
+        # new priv creditor
+        res = self.app.get('/creditor/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+
+        # new pub invoice
+        res = self.app.get('/invoice/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/new', {'title' : 'testbest',
+                                             'amount' : '12345',
+                                             'category_id' : 1,
+                                             'creditor_id' : 1,
+                                             'csrf_token' : token}
+                           )
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        # new priv invoice
+        res = self.app.get('/invoice/new?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/new?private=1', {'title' : 'testbest',
+                                                       'amount' : '12345',
+                                                       'category_id' : 2,
+                                                       'creditor_id' : 2,
+                                                       'csrf_token' : token}
+                           )
+        res = self.app.get('/invoices?private=1', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        # edit public invoice
+        res = self.app.get('/invoice/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'category_id' : 1,
+                                                      'creditor_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('besttest' in res.body)
+        
+        # edit priv invoice
+        res = self.app.get('/invoice/edit/2?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/2?private=1', params={'id' : 2,
+                                                                 'title' : 'testhest',
+                                                                 'amount' : '12345',
+                                                                 'category_id' : 2,
+                                                                 'creditor_id' : 2,
+                                                                 'csrf_token' : token}
+                           )
+        res = self.app.get('/invoices?private=1', status=200)
+        self.assertTrue('testhest' in res.body)
+
+        res = self.app.get('/invoice/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/invoice/edit/100', status=404)
+
+        self.app.get('/invoice/archive/1', status=302)
+        res = self.app.get('/invoices/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/invoice/restore/1', status=302)
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/invoice/edit/100', status=404)
+        self.app.get('/invoice/archive/100', status=404)
+        self.app.get('/invoice/restore/100', status=404)
