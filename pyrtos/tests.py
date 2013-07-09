@@ -1000,11 +1000,11 @@ class TestViews(IntegrationTestBase):
                                        'password' : '123456',}
                            )
 
-        # try to edit a credito the user do not have permission to
+        # try to edit an expenditure the user do not have permission to
         self.app.get('/expenditure/edit/2', status=403)
-        # try to archive a expenditure the user do not have permission to
+        # try to archive an expenditure the user do not have permission to
         self.app.get('/expenditure/archive/2', status=403)
-        # try to restore a expenditure the user do not have permission to
+        # try to restore an expenditure the user do not have permission to
         self.app.get('/expenditure/restore/2', status=403)
 
     def test_invoices(self):
@@ -1015,6 +1015,18 @@ class TestViews(IntegrationTestBase):
                                        'email': 'user@email.com',
                                        'password' : '1234567',}
                            )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
         res = self.app.get('/invoices')
         self.assertTrue(res.status_int, 200)
 
@@ -1162,3 +1174,60 @@ class TestViews(IntegrationTestBase):
         self.app.get('/invoice/edit/100', status=404)
         self.app.get('/invoice/archive/100', status=404)
         self.app.get('/invoice/restore/100', status=404)
+
+        # logout
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit an invoice the user do not have permission to
+        self.app.get('/invoice/edit/2', status=403)
+        # try to archive an invoice the user do not have permission to
+        self.app.get('/invoice/archive/2', status=403)
+        # try to restore an invoice the user do not have permission to
+        self.app.get('/invoice/restore/2', status=403)
+
+        # logout
+        self.app.get('/logout')
+
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+
+        # set private category shared
+        res = self.app.get('/category/edit/2')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/edit/2', {'id' : 2,
+                                                 'title' : 'hestbest',
+                                                 'csrf_token' : token}
+                           )
+
+        # logout
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit an invoice the user do not have permission to
+        self.app.get('/invoice/edit/2', status=403)
+        # try to archive an invoice the user do not have permission to
+        self.app.get('/invoice/archive/2', status=403)
+        # try to restore an invoice the user do not have permission to
+        self.app.get('/invoice/restore/2', status=403)

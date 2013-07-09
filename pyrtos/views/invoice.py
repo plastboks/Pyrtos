@@ -6,6 +6,7 @@ from sqlalchemy.exc import DBAPIError
 from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPFound,
+    HTTPForbidden,
 )
 from pyramid.security import (
     authenticated_userid
@@ -87,13 +88,13 @@ class InvoiceViews(object):
             form.category_id.query = Category.all_active()
             form.creditor_id.query = Creditor.all_active()
         if self.request.method == 'POST' and form.validate():
-            e = Invoice()
-            form.populate_obj(e)
-            e.user_id = authenticated_userid(self.request)
-            e.category_id = form.category_id.data.id
-            e.creditor_id = form.creditor_id.data.id
-            DBSession.add(e)
-            self.request.session.flash('Invoice %s created' % (e.title), 'success')
+            i = Invoice()
+            form.populate_obj(i)
+            i.user_id = authenticated_userid(self.request)
+            i.category_id = form.category_id.data.id
+            i.creditor_id = form.creditor_id.data.id
+            DBSession.add(i)
+            self.request.session.flash('Invoice %s created' % (i.title), 'success')
             if private:
                 return HTTPFound(location=self.request.route_url('invoices', _query={'private' : 1}))
             return HTTPFound(location=self.request.route_url('invoices'))
@@ -107,10 +108,14 @@ class InvoiceViews(object):
                  permission='edit')
     def invoice_edit(self):
         id = int(self.request.matchdict.get('id'))
-        e = Invoice.by_id(id)
-        if not e:
+        i = Invoice.by_id(id)
+        if not i:
             return HTTPNotFound()
-        form = InvoiceEditForm(self.request.POST, e, csrf_context=self.request.session)
+        if i.category.private and i.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        if i.creditor.private and i.creditor.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        form = InvoiceEditForm(self.request.POST, i, csrf_context=self.request.session)
         private = self.request.params.get('private')
         if private:
             if not Category.first_private(self.request):
@@ -135,15 +140,15 @@ class InvoiceViews(object):
             form.category_id.query = Category.all_active()
             form.creditor_id.query = Creditor.all_active()
         if self.request.method == 'POST' and form.validate():
-            form.populate_obj(e)
-            e.category_id = form.category_id.data.id
-            e.creditor_id = form.creditor_id.data.id
-            self.request.session.flash('Invoice %s updated' % (e.title), 'status')
+            form.populate_obj(i)
+            i.category_id = form.category_id.data.id
+            i.creditor_id = form.creditor_id.data.id
+            self.request.session.flash('Invoice %s updated' % (i.title), 'status')
             if private:
                 return HTTPFound(location=self.request.route_url('invoices', _query={'private' : 1}))
             return HTTPFound(location=self.request.route_url('invoices'))
-        form.category_id.data = e.category
-        form.creditor_id.data = e.creditor
+        form.category_id.data = i.category
+        form.creditor_id.data = i.creditor
         return {'title' : 'Edit private invoice' if private else 'Edit invoice',
                 'form' : form,
                 'id' : id,
@@ -155,12 +160,16 @@ class InvoiceViews(object):
                  permission='archive')
     def invoice_archive(self):
         id = int(self.request.matchdict.get('id'))
-        c = Invoice.by_id(id)
-        if not c:
+        i = Invoice.by_id(id)
+        if not i:
             return HTTPNotFound()
-        c.archived = True
-        DBSession.add(c)
-        self.request.session.flash('Invoice %s archived' % (c.title), 'status')
+        if i.category.private and i.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        if i.creditor.private and i.creditor.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        i.archived = True
+        DBSession.add(i)
+        self.request.session.flash('Invoice %s archived' % (i.title), 'status')
         return HTTPFound(location=self.request.route_url('invoices'))
 
     @view_config(route_name='invoice_restore',
@@ -168,11 +177,15 @@ class InvoiceViews(object):
                  permission='restore')
     def invoice_restore(self):
         id = int(self.request.matchdict.get('id'))
-        c = Invoice.by_id(id)
-        if not c:
+        i = Invoice.by_id(id)
+        if not i:
             return HTTPNotFound()
-        c.archived = False
-        DBSession.add(c)
-        self.request.session.flash('Invoice %s restored' % (c.title), 'status')
+        if i.category.private and i.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        if i.creditor.private and i.creditor.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        i.archived = False
+        DBSession.add(i)
+        self.request.session.flash('Invoice %s restored' % (i.title), 'status')
         return HTTPFound(location=self.request.route_url('invoices_archived'))
 
