@@ -6,6 +6,7 @@ from sqlalchemy.exc import DBAPIError
 from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPFound,
+    HTTPForbidden,
 )
 from pyramid.security import (
     authenticated_userid
@@ -98,6 +99,8 @@ class ExpenditureViews(object):
         e = Expenditure.by_id(id)
         if not e:
             return HTTPNotFound()
+        if e.category.private and e.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
         form = ExpenditureEditForm(self.request.POST, e, csrf_context=self.request.session)
         private = self.request.params.get('private')
         if private:
@@ -131,12 +134,14 @@ class ExpenditureViews(object):
                  permission='archive')
     def expenditure_archive(self):
         id = int(self.request.matchdict.get('id'))
-        c = Expenditure.by_id(id)
-        if not c:
+        e = Expenditure.by_id(id)
+        if not e:
             return HTTPNotFound()
-        c.archived = True
-        DBSession.add(c)
-        self.request.session.flash('Expenditure %s archived' % (c.title), 'status')
+        if e.category.private and e.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        e.archived = True
+        DBSession.add(e)
+        self.request.session.flash('Expenditure %s archived' % (e.title), 'status')
         return HTTPFound(location=self.request.route_url('expenditures'))
 
     @view_config(route_name='expenditure_restore',
@@ -144,11 +149,13 @@ class ExpenditureViews(object):
                  permission='restore')
     def expenditure_restore(self):
         id = int(self.request.matchdict.get('id'))
-        c = Expenditure.by_id(id)
-        if not c:
+        e = Expenditure.by_id(id)
+        if not e:
             return HTTPNotFound()
-        c.archived = False
-        DBSession.add(c)
-        self.request.session.flash('Expenditure %s restored' % (c.title), 'status')
+        if e.category.private and e.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        e.archived = False
+        DBSession.add(e)
+        self.request.session.flash('Expenditure %s restored' % (e.title), 'status')
         return HTTPFound(location=self.request.route_url('expenditures_archived'))
 
