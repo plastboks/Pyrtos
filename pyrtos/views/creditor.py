@@ -6,6 +6,7 @@ from sqlalchemy.exc import DBAPIError
 from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPFound,
+    HTTPForbidden,
 )
 
 from pyramid.view import (
@@ -80,6 +81,8 @@ class CreditorViews(object):
         c = Creditor.by_id(id)
         if not c:
             return HTTPNotFound()
+        if c.private and c.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
         form = CreditorEditForm(self.request.POST, c, csrf_context=self.request.session)
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(c)
@@ -98,6 +101,8 @@ class CreditorViews(object):
         c = Creditor.by_id(id)
         if not c:
             return HTTPNotFound()
+        if c.private and c.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
         c.archived = True
         DBSession.add(c)
         self.request.session.flash('Creditor %s archived' % (c.title), 'status')
@@ -111,6 +116,8 @@ class CreditorViews(object):
         c = Creditor.by_id(id)
         if not c:
             return HTTPNotFound()
+        if c.private and c.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
         c.archived = False
         DBSession.add(c)
         self.request.session.flash('Creditor %s restored' % (c.title), 'status')

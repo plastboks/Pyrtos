@@ -744,6 +744,18 @@ class TestViews(IntegrationTestBase):
                                        'email': 'user@email.com',
                                        'password' : '1234567',}
                            )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
         res = self.app.get('/creditors')
         self.assertTrue(res.status_int, 200)
 
@@ -790,6 +802,26 @@ class TestViews(IntegrationTestBase):
         self.app.get('/creditor/edit/100', status=404)
         self.app.get('/creditor/archive/100', status=404)
         self.app.get('/creditor/restore/100', status=404)
+
+        # logout 
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit a creditor the user do not have permission to
+        self.app.get('/creditor/edit/1', status=403)
+        # try to archive a creditor the user do not have permission to
+        self.app.get('/creditor/archive/1', status=403)
+        # try to restore a creditor the user do not have permission to
+        self.app.get('/creditor/restore/1', status=403)
+
 
     def test_incomes(self):
         res = self.app.get('/login')
@@ -838,6 +870,7 @@ class TestViews(IntegrationTestBase):
         self.app.get('/income/edit/100', status=404)
         self.app.get('/income/archive/100', status=404)
         self.app.get('/income/restore/100', status=404)
+
 
     def test_expenditures(self):
         res = self.app.get('/login')
@@ -942,6 +975,7 @@ class TestViews(IntegrationTestBase):
         self.app.get('/expenditure/edit/100', status=404)
         self.app.get('/expenditure/archive/100', status=404)
         self.app.get('/expenditure/restore/100', status=404)
+
 
     def test_invoices(self):
         res = self.app.get('/login')
