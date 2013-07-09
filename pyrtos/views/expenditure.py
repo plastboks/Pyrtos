@@ -52,6 +52,10 @@ class ExpenditureViews(object):
                  renderer='pyrtos:templates/expenditure/edit.mako',
                  permission='create')
     def expenditure_create(self):
+        if not Category.first_active():
+            self.request.session.flash('You must create at least one category\
+                                        before you can create expenditures', 'error')
+            return HTTPFound(location=self.request.route_url('expenditures'))
         form = ExpenditureCreateForm(self.request.POST, csrf_context=self.request.session)
         form.category_id.query = Category.all_active()
         if self.request.method == 'POST' and form.validate():
