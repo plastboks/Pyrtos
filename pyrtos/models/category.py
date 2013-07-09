@@ -40,6 +40,11 @@ class Category(Base):
     user = relationship('User', backref='categories')
 
     @classmethod
+    def first_active(cls):
+        return DBSession.query(Category).filter(and_(Category.archived == False,
+                                                     Category.private == False)).first()
+
+    @classmethod
     def all_active(cls):
         return DBSession.query(Category).filter(and_(Category.archived == False,
                                                      Category.private == False))
@@ -67,5 +72,4 @@ class Category(Base):
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Category).filter(Category.id == id).first()
-
 

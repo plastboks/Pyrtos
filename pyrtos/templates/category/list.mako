@@ -5,12 +5,14 @@
     <table id='categories'>
       <thead>
         <th>Title</th>
+        <th>Expenditures</th>
         <th>Actions</th>
       </thead>
       <tbody>
         %for item in paginator.items:
           <tr>
             <td>${item.title}</td>
+            <td>${len(item.expenditures)}</td>
             <td class='actions'>
               %if request.can_i('edit'):
                 <a href="${request.route_url('category_edit', id=item.id)}">

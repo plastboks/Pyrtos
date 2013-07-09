@@ -789,6 +789,8 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/expenditures')
         self.assertTrue(res.status_int, 200)
 
+        res = self.app.get('/expenditure/new', status=302)
+
         res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/category/new', {'title' : 'testbest',
