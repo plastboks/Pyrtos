@@ -889,6 +889,16 @@ class TestViews(IntegrationTestBase):
         self.assertTrue('besttest' in res.body)
         res = self.app.get('/expenditure/edit/100', status=404)
 
+        # archive the public category
+        self.app.get('/category/archive/1', status=302)
+        # try to edit public the expenditure without public category
+        self.app.get('/expenditure/edit/1', status=302)
+
+        # archive the private category
+        self.app.get('/category/archive/2', status=302)
+        # try to edit the private expenditure without the private category
+        self.app.get('/expenditure/edit/2?private=1', status=302)
+
         self.app.get('/expenditure/archive/1', status=302)
         res = self.app.get('/expenditures/archived', status=200)
         self.assertTrue('besttest' in res.body)
@@ -925,14 +935,6 @@ class TestViews(IntegrationTestBase):
                                               'csrf_token' : token}
                            )
 
-        # new priv category
-        res = self.app.get('/category/new')
-        token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/category/new', {'title' : 'hestbest',
-                                              'private' : 'y',
-                                              'csrf_token' : token}
-                           )
-
         self.app.get('/invoice/new', status=302)
         self.app.get('/invoice/new?private=1', status=302)
 
@@ -942,15 +944,9 @@ class TestViews(IntegrationTestBase):
         res = self.app.post('/creditor/new', {'title' : 'testbest',
                                               'csrf_token' : token}
                            )
-        
 
-        # new priv creditor
-        res = self.app.get('/creditor/new')
-        token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/creditor/new', {'title' : 'hestbest',
-                                              'private' : 'y',
-                                              'csrf_token' : token}
-                           )
+        self.app.get('/invoice/new', status=200)
+        self.app.get('/invoice/new?private=1', status=302)
 
         # new pub invoice
         res = self.app.get('/invoice/new')
@@ -963,6 +959,47 @@ class TestViews(IntegrationTestBase):
                            )
         res = self.app.get('/invoices', status=200)
         self.assertTrue('testbest' in res.body)
+        
+        # edit public invoice
+        res = self.app.get('/invoice/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'category_id' : 1,
+                                                      'creditor_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        # try to convert public invoice to private without private catgory
+        self.app.get('/invoice/edit/1?private=1', status=302)
+
+        # new priv category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+
+        # try to convert public invoice to private without private creditor
+        self.app.get('/invoice/edit/1?private=1', status=302)
+
+        # try to create a private invoice without private creditor
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new priv creditor
+        res = self.app.get('/creditor/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+
+        # try to convert public invoice to private with private creditor and category
+        self.app.get('/invoice/edit/1?private=1', status=200)
 
         # new priv invoice
         res = self.app.get('/invoice/new?private=1')
@@ -976,18 +1013,6 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/invoices?private=1', status=200)
         self.assertTrue('testbest' in res.body)
 
-        # edit public invoice
-        res = self.app.get('/invoice/edit/1')
-        token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/invoice/edit/1', params={'id' : 1,
-                                                      'title' : 'besttest',
-                                                      'amount' : '12345',
-                                                      'category_id' : 1,
-                                                      'creditor_id' : 1,
-                                                      'csrf_token' : token}
-                           )
-        res = self.app.get('/invoices', status=200)
-        self.assertTrue('besttest' in res.body)
         
         # edit priv invoice
         res = self.app.get('/invoice/edit/2?private=1')
@@ -1006,10 +1031,34 @@ class TestViews(IntegrationTestBase):
         self.assertTrue('besttest' in res.body)
         res = self.app.get('/invoice/edit/100', status=404)
 
+        # archive the public category
+        self.app.get('/category/archive/1', status=302)
+        # try to edit public the invoice without public category
+        self.app.get('/invoice/edit/1', status=302)
+        # restore the public category
+        self.app.get('/category/restore/1', status=302)
+        # archive the public creditor
+        self.app.get('/creditor/archive/1', status=302)
+        # try to edit the public invoice without the public creditor
+        self.app.get('/invoice/edit/1', status=302)
+
+        # archive the private category
+        self.app.get('/category/archive/2', status=302)
+        # try to edit the private invoice without the private category
+        self.app.get('/invoice/edit/2?private=1', status=302)
+        # archive the private category
+        self.app.get('/category/restore/2', status=302)
+        # archive the private creditor
+        self.app.get('/creditor/archive/2', status=302)
+        # try to edit the private invoice without the private creditor
+        self.app.get('/invoice/edit/2?private=1', status=302)
+        
+        # archive public invoice
         self.app.get('/invoice/archive/1', status=302)
         res = self.app.get('/invoices/archived', status=200)
         self.assertTrue('besttest' in res.body)
-
+        
+        # restore public invoice
         self.app.get('/invoice/restore/1', status=302)
         res = self.app.get('/invoices', status=200)
         self.assertTrue('besttest' in res.body)

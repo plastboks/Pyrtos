@@ -113,9 +113,25 @@ class InvoiceViews(object):
         form = InvoiceEditForm(self.request.POST, e, csrf_context=self.request.session)
         private = self.request.params.get('private')
         if private:
+            if not Category.first_private(self.request):
+                self.request.session.flash('You must create at least one private category\
+                                            before you can create private invoices', 'error')
+                return HTTPFound(location=self.request.route_url('invoices'))
+            if not Creditor.first_private(self.request):
+                self.request.session.flash('You must create at least one private creditor\
+                                            before you can create private invoices', 'error')
+                return HTTPFound(location=self.request.route_url('invoices'))
             form.category_id.query = Category.all_private(self.request)
             form.creditor_id.query = Creditor.all_private(self.request)
         else:
+            if not Category.first_active():
+                self.request.session.flash('You must create at least one category\
+                                            before you can create invoices', 'error')
+                return HTTPFound(location=self.request.route_url('invoices'))
+            if not Creditor.first_active():
+                self.request.session.flash('You must create at least one creditor\
+                                            before you can create invoices', 'error')
+                return HTTPFound(location=self.request.route_url('invoices'))
             form.category_id.query = Category.all_active()
             form.creditor_id.query = Creditor.all_active()
         if self.request.method == 'POST' and form.validate():
