@@ -1,15 +1,20 @@
 <%inherit file="pyrtos:templates/expenditure/base.mako" />
-<p class='changestate'>
   %if not private and action is not 'expenditure_edit':
-    Want to create a private expenditure? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
+    <p class='changestate'>
+      Want to create a private expenditure? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
+    </p>
   %endif
   %if action is 'expenditure_edit' and not private:
-    Want to make this expenditure public? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
+    <p class='changestate'>
+      Want to make this expenditure private? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
+    </p>
   %endif
   %if action is 'expenditure_edit' and private:
-    Want to make this expenditure private? <a href="${request.current_route_url()}">Click here.</a>
+    <p class='changestate'>
+      Want to make this expenditure public? <a href="${request.current_route_url()}">Click here.</a>
+    </p>
   %endif
-</p>
+
 %if private:
   <form action="${request.route_url(action, id=id, _query={'private' : '1'})}" method="POST">
 %else:
