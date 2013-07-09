@@ -65,5 +65,8 @@ All Pyrtos code is licensed under a BSD-style [PSFL](http://en.wikipedia.org/wik
 
 Credits
 =======
+  * [Pyramid framework](http://www.pylonsproject.org/)
+  * [WTForms](http://wtforms.simplecodes.com/docs/1.0.4/)
+  * [SQLAlchemy](http://www.sqlalchemy.org/)
   * Icon set from [FAMFAMFAM](http://www.famfamfam.com)
 
