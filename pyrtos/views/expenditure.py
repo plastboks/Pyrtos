@@ -44,7 +44,7 @@ class ExpenditureViews(object):
               s = Expenditure.with_category(c.id, total_only=True)
               result[c.title] = [e, s]
         return {'items': result,
-                'title' : 'Private expenditures' if private else 'Public expenditures',
+                'title' : 'Private expenditures' if private else 'Shared expenditures',
                 'private' : private,}
 
     @view_config(route_name='expenditures_archived',

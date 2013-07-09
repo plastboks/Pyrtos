@@ -36,7 +36,7 @@ class CategoryViews(object):
         page = int (self.request.params.get('page', 1))
         categories = Category.page(self.request, page)
         return {'paginator': categories,
-                'title' : 'Public categories',
+                'title' : 'Shared categories',
                 'archived' : False}
 
     @view_config(route_name='categories_private',

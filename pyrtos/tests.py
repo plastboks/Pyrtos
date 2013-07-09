@@ -221,7 +221,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         c = CategoryViews(request)
         response = c.categories()
-        self.assertEqual(response['title'], 'Public categories')
+        self.assertEqual(response['title'], 'Shared categories')
 
     def test_private_categories(self):
         from pyrtos.views import CategoryViews
@@ -280,7 +280,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         c = CreditorViews(request)
         response = c.creditors()
-        self.assertEqual(response['title'], 'Public creditors')
+        self.assertEqual(response['title'], 'Shared creditors')
 
     def test_creditor_private(self):
         from pyrtos.views import CreditorViews
@@ -331,7 +331,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         e = ExpenditureViews(request)
         response = e.expenditures()
-        self.assertEqual(response['title'], 'Public expenditures')
+        self.assertEqual(response['title'], 'Shared expenditures')
 
     def test_expenditures_archived(self):
         from pyrtos.views import ExpenditureViews
@@ -345,7 +345,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         i = InvoiceViews(request)
         response = i.invoices()
-        self.assertEqual(response['title'], 'Public invoices')
+        self.assertEqual(response['title'], 'Shared invoices')
 
     def test_invoice_archived(self):
         from pyrtos.views import InvoiceViews

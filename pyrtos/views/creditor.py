@@ -33,7 +33,7 @@ class CreditorViews(object):
         page = int (self.request.params.get('page', 1))
         creditors = Creditor.page(self.request, page)
         return {'paginator': creditors,
-                'title' : 'Public creditors',
+                'title' : 'Shared creditors',
                 'archived' : False}
 
     @view_config(route_name='creditors_private',

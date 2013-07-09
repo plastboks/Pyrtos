@@ -11,7 +11,7 @@
   %endif
   %if action is 'invoice_edit' and private:
     <p class='changestate'>
-      Want to make this invoice public? <a href="${request.current_route_url()}">Click here.</a>
+      Want to make this invoice shared? <a href="${request.current_route_url()}">Click here.</a>
     </p>
   %endif
 

@@ -45,7 +45,7 @@ class InvoiceViews(object):
               s = Invoice.with_category(c.id, total_only=True)
               result[c.title] = [e, s]
         return {'items': result,
-                'title' : 'Private invoices' if private else 'Public invoices',
+                'title' : 'Private invoices' if private else 'Shared invoices',
                 'private' : private,}
 
     @view_config(route_name='invoices_archived',
