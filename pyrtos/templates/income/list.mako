@@ -37,15 +37,14 @@
             </td>
           </tr>
         %endfor
+          %if amount_sum:
+            <tr class='totalrow'>
+              <td></td>
+              <td colspan='3'>${amount_sum[0]}</td>
+            </tr>
+          %endif
       </tbody>
     </table>
-  </div>
-  <div class='tablesum'>
-  %if amount_sum:
-    %for s in amount_sum:
-      <span>Sum: ${s}</span>
-    %endfor
-  %endif
   </div>
   <div class='pager'>
     ${paginator.pager()}
