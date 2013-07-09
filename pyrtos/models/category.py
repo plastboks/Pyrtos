@@ -43,6 +43,12 @@ class Category(Base):
     def first_active(cls):
         return DBSession.query(Category).filter(and_(Category.archived == False,
                                                      Category.private == False)).first()
+    @classmethod
+    def first_private(cls, request):
+        id = authenticated_userid(request)
+        return DBSession.query(Category).filter(and_(Category.archived == False,\
+                                                     Category.private == True,\
+                                                     Category.user_id == id)).first()
 
     @classmethod
     def all_active(cls):
@@ -56,7 +62,7 @@ class Category(Base):
     @classmethod
     def all_private(cls, request):
         id = authenticated_userid(request)
-        return DBSession.query(Category).filter(and_(Category.user_id == True,\
+        return DBSession.query(Category).filter(and_(Category.user_id == id,\
                                                      Category.private == True,\
                                                      Category.archived == False))
 

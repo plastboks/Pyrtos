@@ -282,7 +282,7 @@ class ViewTests(BaseTestCase):
         response = c.creditors()
         self.assertEqual(response['title'], 'Public creditors')
 
-    def test_creditor(self):
+    def test_creditor_private(self):
         from pyrtos.views import CreditorViews
         request = testing.DummyRequest()
         c = CreditorViews(request)
@@ -325,6 +325,21 @@ class ViewTests(BaseTestCase):
         i = IncomeViews(request)
         response = i.income_create()
         self.assertEqual(response['title'], 'New income')
+
+    def test_expenditures(self):
+        from pyrtos.views import ExpenditureViews
+        request = testing.DummyRequest()
+        e = ExpenditureViews(request)
+        response = e.expenditures()
+        self.assertEqual(response['title'], 'Public expenditures')
+
+    def test_expenditures_archived(self):
+        from pyrtos.views import ExpenditureViews
+        request = testing.DummyRequest()
+        e = ExpenditureViews(request)
+        response = e.expenditures_archived()
+        self.assertEqual(response['title'], 'Archived expenditures')
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
@@ -789,14 +804,28 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/expenditures')
         self.assertTrue(res.status_int, 200)
 
-        res = self.app.get('/expenditure/new', status=302)
+        res = self.app.get('/expenditures?private=1')
+        self.assertTrue(res.status_int, 200)
 
+        res = self.app.get('/expenditure/new', status=302)
+        res = self.app.get('/expenditure/new?private=1', status=302)
+
+        # new pub category
         res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/category/new', {'title' : 'testbest',
                                               'csrf_token' : token}
                            )
 
+        # new priv category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+        
+        # new pub expenditure
         res = self.app.get('/expenditure/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/expenditure/new', {'title' : 'testbest',
@@ -804,10 +833,21 @@ class TestViews(IntegrationTestBase):
                                                  'category_id' : 1,
                                                  'csrf_token' : token}
                            )
-
         res = self.app.get('/expenditures', status=200)
         self.assertTrue('testbest' in res.body)
 
+        # new priv expenditure
+        res = self.app.get('/expenditure/new?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/new?private=1', {'title' : 'testbest',
+                                                           'amount' : '12345',
+                                                           'category_id' : 2,
+                                                           'csrf_token' : token}
+                                     )
+        res = self.app.get('/expenditures?private=1', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        # edit public expenditure
         res = self.app.get('/expenditure/edit/1')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/expenditure/edit/1', params={'id' : 1,
@@ -818,6 +858,18 @@ class TestViews(IntegrationTestBase):
                            )
         res = self.app.get('/expenditures', status=200)
         self.assertTrue('besttest' in res.body)
+        
+        # edit priv expenditure
+        res = self.app.get('/expenditure/edit/2?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/edit/2?private=1', params={'id' : 2,
+                                                                     'title' : 'testhest',
+                                                                     'amount' : '12345',
+                                                                     'category_id' : 2,
+                                                                     'csrf_token' : token}
+                           )
+        res = self.app.get('/expenditures?private=1', status=200)
+        self.assertTrue('testhest' in res.body)
 
         res = self.app.get('/expenditure/edit/1', status=200)
         self.assertTrue('besttest' in res.body)

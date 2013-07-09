@@ -29,14 +29,23 @@ class ExpenditureViews(object):
         self.request = request
 
     @view_config(route_name='expenditures',
-                 renderer='pyrtos:templates/expenditure/list.mako',
+                 renderer='pyrtos:templates/expenditure/alist.mako',
                  permission='view')
     def expenditures(self):
-        page = int (self.request.params.get('page', 1))
-        expenditures = Expenditure.page(self.request, page)
-        return {'paginator': expenditures,
-                'title' : 'Public expenditures',
-                'archived' : False}
+        result = {}
+        private = self.request.params.get('private')
+        if private:
+            categories = Category.all_private(self.request).all()
+        else:
+            categories = Category.all_active().all()
+        for c in categories:
+            e = Expenditure.with_category(c.id)
+            if e:
+              s = Expenditure.with_category(c.id, total_only=True)
+              result[c.title] = [e, s]
+        return {'items': result,
+                'title' : 'Private expenditures' if private else 'Public expenditures',
+                'private' : private,}
 
     @view_config(route_name='expenditures_archived',
                  renderer='pyrtos:templates/expenditure/list.mako',
@@ -52,12 +61,20 @@ class ExpenditureViews(object):
                  renderer='pyrtos:templates/expenditure/edit.mako',
                  permission='create')
     def expenditure_create(self):
-        if not Category.first_active():
-            self.request.session.flash('You must create at least one category\
-                                        before you can create expenditures', 'error')
-            return HTTPFound(location=self.request.route_url('expenditures'))
+        private = self.request.params.get('private')
         form = ExpenditureCreateForm(self.request.POST, csrf_context=self.request.session)
-        form.category_id.query = Category.all_active()
+        if private:
+            if not Category.first_private(self.request):
+                self.request.session.flash('You must create at least one private category\
+                                            before you can create private expenditures', 'error')
+                return HTTPFound(location=self.request.route_url('expenditures'))
+            form.category_id.query = Category.all_private(self.request)
+        else:
+            if not Category.first_active():
+                self.request.session.flash('You must create at least one category\
+                                            before you can create expenditures', 'error')
+                return HTTPFound(location=self.request.route_url('expenditures'))
+            form.category_id.query = Category.all_active()
         if self.request.method == 'POST' and form.validate():
             e = Expenditure()
             form.populate_obj(e)
@@ -65,10 +82,13 @@ class ExpenditureViews(object):
             e.category_id = form.category_id.data.id
             DBSession.add(e)
             self.request.session.flash('Expenditure %s created' % (e.title), 'success')
+            if private:
+                return HTTPFound(location=self.request.route_url('expenditures', _query={'private' : 1}))
             return HTTPFound(location=self.request.route_url('expenditures'))
-        return {'title': 'New expenditure',
+        return {'title': 'New private expenditure' if private else 'New expenditure',
                 'form': form,
-                'action': 'expenditure_new'}
+                'action': 'expenditure_new',
+                'private' : private}
 
     @view_config(route_name='expenditure_edit',
                  renderer='pyrtos:templates/expenditure/edit.mako',
@@ -79,17 +99,24 @@ class ExpenditureViews(object):
         if not e:
             return HTTPNotFound()
         form = ExpenditureEditForm(self.request.POST, e, csrf_context=self.request.session)
-        form.category_id.query = Category.all_active()
+        private = self.request.params.get('private')
+        if private:
+            form.category_id.query = Category.all_private(self.request)
+        else:
+            form.category_id.query = Category.all_active()
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(e)
             e.category_id = form.category_id.data.id
             self.request.session.flash('Expenditure %s updated' % (e.title), 'status')
+            if private:
+                return HTTPFound(location=self.request.route_url('expenditures', _query={'private' : 1}))
             return HTTPFound(location=self.request.route_url('expenditures'))
         form.category_id.data = e.category
-        return {'title' : 'Edit expenditure',
+        return {'title' : 'Edit private expenditure' if private else 'Edit expenditure',
                 'form' : form,
                 'id' : id,
-                'action' : 'expenditure_edit'}
+                'action' : 'expenditure_edit',
+                'private' : private}
 
     @view_config(route_name='expenditure_archive',
                  renderer='string',
