@@ -42,6 +42,22 @@
     ${form.amount}
   </p>
 
+  %for error in form.due.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.due.label}</label><br />
+    ${form.due}
+  </p>
+
+  %for error in form.paid.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.paid.label}</label><br />
+    ${form.paid}
+  </p>
+
   <p>
     <label>${form.category_id.label}</label>
     ${form.category_id}

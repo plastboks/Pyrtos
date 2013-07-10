@@ -35,6 +35,8 @@ class Invoice(Base):
     creditor_id = Column(Integer, ForeignKey('creditors.id'), nullable=False)
     title = Column(String(255), nullable=False)
     amount = Column(Float(16), nullable=False)
+    due = Column(DateTime, nullable=False)
+    paid = Column(DateTime, default=None)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
@@ -49,14 +51,20 @@ class Invoice(Base):
                         .filter(Invoice.archived == True)
 
     @classmethod
-    def with_category(cls, id, total_only=False):
+    def with_category(cls, id, total_only=False, paid=False):
         if total_only:
             return DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
                             .filter(and_(Invoice.archived == False,
                                          Invoice.category_id == id)).first()
+        if paid:
+            return DBSession.query(Invoice)\
+                            .filter(and_(Invoice.category_id == id,
+                                         Invoice.archived == False,
+                                         Invoice.paid != None)).all()
         return DBSession.query(Invoice)\
                         .filter(and_(Invoice.category_id == id,
-                                     Invoice.archived == False)).all()
+                                     Invoice.archived == False,
+                                     Invoice.paid == None)).all()
 
     @classmethod
     def page(cls, request, page, archived=False):

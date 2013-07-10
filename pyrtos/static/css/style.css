@@ -319,9 +319,12 @@ img {
   width: 60px;
 }
 
-#content table.expenditures td:nth-child(1),
-#content table.invoices td:nth-child(1) {
+#content table.expenditures td:nth-child(1) {
   width: 300px;
+}
+
+#content table.invoices td:nth-child(1) {
+  width: 200px;
 }
 
 #content table .edit {
