@@ -8,7 +8,6 @@
   %for error in form.title.errors:
     <p class=error>${error}</p>
   %endfor
-
   <p>
     <label>${form.title.label}</label><br />
     ${form.title}

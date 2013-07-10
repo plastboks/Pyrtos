@@ -35,6 +35,9 @@
     ${form.title}
   </p>
 
+  %for error in form.amount.errors:
+    <p class=error>${error}</p>
+  %endfor
   <p>
     <label>${form.amount.label}</label><br />
     ${form.amount}
