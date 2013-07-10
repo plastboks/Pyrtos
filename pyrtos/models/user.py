@@ -66,8 +66,14 @@ class User(Base):
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-          return Page(User.all_archived(), page, url=page_url, items_per_page=IPP)
-        return Page(User.all_active(), page, url=page_url, items_per_page=IPP)
+          return Page(User.all_archived(),
+                      page,
+                      url=page_url,
+                      items_per_page=IPP)
+        return Page(User.all_active(),
+                    page,
+                    url=page_url,
+                    items_per_page=IPP)
     
     def verify_password(self, password):
         return self.pm.check(self.password, password)

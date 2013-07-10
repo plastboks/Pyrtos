@@ -41,39 +41,53 @@ class Category(Base):
 
     @classmethod
     def first_active(cls):
-        return DBSession.query(Category).filter(and_(Category.archived == False,
-                                                     Category.private == False)).first()
+        return DBSession.query(Category)\
+                        .filter(and_(Category.archived == False,
+                                     Category.private == False)).first()
     @classmethod
     def first_private(cls, request):
         id = authenticated_userid(request)
-        return DBSession.query(Category).filter(and_(Category.archived == False,\
-                                                     Category.private == True,\
-                                                     Category.user_id == id)).first()
+        return DBSession.query(Category)\
+                        .filter(and_(Category.archived == False,\
+                                     Category.private == True,\
+                                     Category.user_id == id)).first()
 
     @classmethod
     def all_active(cls):
-        return DBSession.query(Category).filter(and_(Category.archived == False,
-                                                     Category.private == False))
+        return DBSession.query(Category)\
+                        .filter(and_(Category.archived == False,
+                                     Category.private == False))
 
     @classmethod
     def all_archived(cls):
-        return DBSession.query(Category).filter(Category.archived == True)
+        return DBSession.query(Category)\
+                        .filter(Category.archived == True)
 
     @classmethod
     def all_private(cls, request):
         id = authenticated_userid(request)
-        return DBSession.query(Category).filter(and_(Category.user_id == id,\
-                                                     Category.private == True,\
-                                                     Category.archived == False))
+        return DBSession.query(Category)\
+                        .filter(and_(Category.user_id == id,\
+                                     Category.private == True,\
+                                     Category.archived == False))
 
     @classmethod
     def page(cls, request, page, archived=False, private=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Category.all_archived(), page, url=page_url, items_per_page=IPP)
+            return Page(Category.all_archived(),
+                        page, 
+                        url=page_url,
+                        items_per_page=IPP)
         if private:
-            return Page(Category.all_private(request), page, url=page_url, items_per_page=IPP)
-        return Page(Category.all_active(), page, url=page_url, items_per_page=IPP)
+            return Page(Category.all_private(request),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
+        return Page(Category.all_active(),
+                    page,
+                    url=page_url,
+                    items_per_page=IPP)
     
     @classmethod
     def by_id(cls, id):

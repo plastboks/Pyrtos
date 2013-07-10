@@ -25,6 +25,7 @@ class IncomeViews(object):
     def __init__(self,request):
         self.request = request
 
+
     @view_config(route_name='incomes',
                  renderer='pyrtos:templates/income/list.mako',
                  permission='view')
@@ -37,6 +38,7 @@ class IncomeViews(object):
                 'amount_sum' : amount_sum,
                 'archived' : False,}
 
+
     @view_config(route_name='incomes_archived',
                  renderer='pyrtos:templates/income/list.mako',
                  permission='view')
@@ -47,37 +49,47 @@ class IncomeViews(object):
                 'title' : 'Archived incomes',
                 'archived' : True,}
 
+
     @view_config(route_name='income_new',
                  renderer='pyrtos:templates/income/edit.mako',
                  permission='create')
     def income_create(self):
-        form = IncomeCreateForm(self.request.POST, csrf_context=self.request.session)
+        form = IncomeCreateForm(self.request.POST,
+                                csrf_context=self.request.session)
         form.user_id.query = User.all_users()
+
         if self.request.method == 'POST' and form.validate():
             i = Income()
             form.populate_obj(i)
             i.user_id = form.user_id.data.id
             DBSession.add(i)
-            self.request.session.flash('Income %s created' % (i.title), 'success')
+            self.request.session.flash('Income %s created' %\
+                                            (i.title), 'success')
             return HTTPFound(location=self.request.route_url('incomes'))
         return {'title': 'New income',
                 'form': form,
                 'action': 'income_new'}
+
 
     @view_config(route_name='income_edit',
                  renderer='pyrtos:templates/income/edit.mako',
                  permission='edit')
     def income_edit(self):
         id = int(self.request.matchdict.get('id'))
+
         i = Income.by_id(id)
         if not i:
             return HTTPNotFound()
-        form = IncomeEditForm(self.request.POST, i, csrf_context=self.request.session)
+
+        form = IncomeEditForm(self.request.POST, i,
+                              csrf_context=self.request.session)
         form.user_id.query = User.all_users()
+
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(i)
             i.user_id = form.user_id.data.id
-            self.request.session.flash('Income %s updated' % (i.title), 'status')
+            self.request.session.flash('Income %s updated' %\
+                                            (i.title), 'status')
             return HTTPFound(location=self.request.route_url('incomes'))
         form.user_id.data = i.user
         return {'title' : 'Edit income',
@@ -85,29 +97,37 @@ class IncomeViews(object):
                 'id' : id,
                 'action' : 'income_edit'}
 
+
     @view_config(route_name='income_archive',
                  renderer='string',
                  permission='archive')
     def income_archive(self):
         id = int(self.request.matchdict.get('id'))
+
         c = Income.by_id(id)
         if not c:
             return HTTPNotFound()
+
         c.archived = True
         DBSession.add(c)
-        self.request.session.flash('Income %s archived' % (c.title), 'status')
+        self.request.session.flash('Income %s archived' %\
+                                        (c.title), 'status')
         return HTTPFound(location=self.request.route_url('incomes'))
+
 
     @view_config(route_name='income_restore',
                  renderer='string',
                  permission='restore')
     def income_restore(self):
         id = int(self.request.matchdict.get('id'))
+
         c = Income.by_id(id)
         if not c:
             return HTTPNotFound()
+
         c.archived = False
         DBSession.add(c)
-        self.request.session.flash('Income %s restored' % (c.title), 'status')
+        self.request.session.flash('Income %s restored' %\
+                                        (c.title), 'status')
         return HTTPFound(location=self.request.route_url('incomes_archived'))
 

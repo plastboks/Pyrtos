@@ -45,23 +45,27 @@ class Invoice(Base):
 
     @classmethod
     def all_archived(cls):
-        return DBSession.query(Invoice).filter(Invoice.archived == True)
+        return DBSession.query(Invoice)\
+                        .filter(Invoice.archived == True)
 
     @classmethod
     def with_category(cls, id, total_only=False):
         if total_only:
-            return DBSession.query(func.sum(Invoice.amount).label('a_sum')).\
-                             filter(and_(Invoice.archived == False,
+            return DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
+                            .filter(and_(Invoice.archived == False,
                                          Invoice.category_id == id)).first()
-        return DBSession.query(Invoice).filter(and_(Invoice.category_id == id,
-                                                        Invoice.archived == False)).all()
+        return DBSession.query(Invoice)\
+                        .filter(and_(Invoice.category_id == id,
+                                     Invoice.archived == False)).all()
 
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Invoice.all_archived(), page, url=page_url, items_per_page=IPP)
-        #return Page(Invoice.all_active(), page, url=page_url, items_per_page=IPP)
+            return Page(Invoice.all_archived(),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
     
     @classmethod
     def by_id(cls, id):

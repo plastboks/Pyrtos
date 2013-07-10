@@ -42,39 +42,53 @@ class Creditor(Base):
 
     @classmethod
     def first_active(cls):
-        return DBSession.query(Creditor).filter(and_(Creditor.archived == False,
-                                                     Creditor.private == False)).first()
+        return DBSession.query(Creditor)\
+                        .filter(and_(Creditor.archived == False,
+                                     Creditor.private == False)).first()
     @classmethod
     def first_private(cls, request):
         id = authenticated_userid(request)
-        return DBSession.query(Creditor).filter(and_(Creditor.archived == False,\
-                                                     Creditor.private == True,\
-                                                     Creditor.user_id == id)).first()
+        return DBSession.query(Creditor)\
+                        .filter(and_(Creditor.archived == False,\
+                                     Creditor.private == True,\
+                                     Creditor.user_id == id)).first()
 
     @classmethod
     def all_active(cls):
-        return DBSession.query(Creditor).filter(and_(Creditor.archived == False,
-                                                     Creditor.private == False))
+        return DBSession.query(Creditor)\
+                        .filter(and_(Creditor.archived == False,
+                                     Creditor.private == False))
 
     @classmethod
     def all_archived(cls):
-        return DBSession.query(Creditor).filter(Creditor.archived == True)
+        return DBSession.query(Creditor)\
+                        .filter(Creditor.archived == True)
 
     @classmethod
     def all_private(cls, request):
         id = authenticated_userid(request)
-        return DBSession.query(Creditor).filter(and_(Creditor.user_id == True,\
-                                                     Creditor.private == True,\
-                                                     Creditor.archived == False))
+        return DBSession.query(Creditor)\
+                        .filter(and_(Creditor.user_id == True,\
+                                     Creditor.private == True,\
+                                     Creditor.archived == False))
 
     @classmethod
     def page(cls, request, page, archived=False, private=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Creditor.all_archived(), page, url=page_url, items_per_page=IPP)
+            return Page(Creditor.all_archived(),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
         if private:
-            return Page(Creditor.all_private(request), page, url=page_url, items_per_page=IPP)
-        return Page(Creditor.all_active(), page, url=page_url, items_per_page=IPP)
+            return Page(Creditor.all_private(request),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
+        return Page(Creditor.all_active(),
+                    page,
+                    url=page_url,
+                    items_per_page=IPP)
     
     @classmethod
     def by_id(cls, id):

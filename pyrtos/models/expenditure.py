@@ -43,25 +43,30 @@ class Expenditure(Base):
 
     @classmethod
     def all_archived(cls):
-        return DBSession.query(Expenditure).filter(Expenditure.archived == True)
+        return DBSession.query(Expenditure)\
+                        .filter(Expenditure.archived == True)
 
     @classmethod
     def with_category(cls, id, total_only=False):
         if total_only:
-            return DBSession.query(func.sum(Expenditure.amount).label('a_sum')).\
-                             filter(and_(Expenditure.archived == False,
+            return DBSession.query(func.sum(Expenditure.amount).label('a_sum'))\
+                            .filter(and_(Expenditure.archived == False,
                                          Expenditure.category_id == id)).first()
-        return DBSession.query(Expenditure).filter(and_(Expenditure.category_id == id,
-                                                        Expenditure.archived == False)).all()
+        return DBSession.query(Expenditure)\
+                        .filter(and_(Expenditure.category_id == id,
+                                     Expenditure.archived == False)).all()
 
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Expenditure.all_archived(), page, url=page_url, items_per_page=IPP)
-        #return Page(Expenditure.all_active(), page, url=page_url, items_per_page=IPP)
+            return Page(Expenditure.all_archived(),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
     
     @classmethod
     def by_id(cls, id):
-        return DBSession.query(Expenditure).filter(Expenditure.id == id).first()
+        return DBSession.query(Expenditure)\
+                        .filter(Expenditure.id == id).first()
 

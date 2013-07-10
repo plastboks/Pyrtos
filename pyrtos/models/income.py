@@ -51,8 +51,14 @@ class Income(Base):
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Income.all_archived(), page, url=page_url, items_per_page=IPP)
-        return Page(Income.all_active(), page, url=page_url, items_per_page=IPP)
+            return Page(Income.all_archived(),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
+        return Page(Income.all_active(),
+                    page,
+                    url=page_url,
+                    items_per_page=IPP)
     
     @classmethod
     def by_id(cls, id):
@@ -60,6 +66,6 @@ class Income(Base):
 
     @classmethod
     def amount_sum(cls):
-        return DBSession.query(func.sum(Income.amount).label('a_sum')).\
-                         filter(Income.archived == False).first()
+        return DBSession.query(func.sum(Income.amount).label('a_sum'))\
+                        .filter(Income.archived == False).first()
 
