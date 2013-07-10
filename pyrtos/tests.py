@@ -1062,6 +1062,7 @@ class TestViews(IntegrationTestBase):
         res = self.app.post('/invoice/new', {'title' : 'testbest',
                                              'amount' : '12345',
                                              'category_id' : 1,
+                                             'due' : '2013-07-07',
                                              'creditor_id' : 1,
                                              'csrf_token' : token}
                            )
@@ -1074,6 +1075,7 @@ class TestViews(IntegrationTestBase):
         res = self.app.post('/invoice/edit/1', params={'id' : 1,
                                                       'title' : 'besttest',
                                                       'amount' : '12345',
+                                                      'paid' : '2013-07-07',
                                                       'category_id' : 1,
                                                       'creditor_id' : 1,
                                                       'csrf_token' : token}
@@ -1115,6 +1117,7 @@ class TestViews(IntegrationTestBase):
         res = self.app.post('/invoice/new?private=1', {'title' : 'testbest',
                                                        'amount' : '12345',
                                                        'category_id' : 2,
+                                                       'due' : '2013-07-07',
                                                        'creditor_id' : 2,
                                                        'csrf_token' : token}
                            )

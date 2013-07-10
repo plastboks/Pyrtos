@@ -44,7 +44,8 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/alist.mako',
                  permission='view')
     def invoices(self):
-        result = {}
+        paid_result = {}
+        unpaid_result = {}
 
         private = self.request.params.get('private')
         if private:
@@ -53,11 +54,18 @@ class InvoiceViews(object):
             categories = Category.all_active().all()
 
         for c in categories:
-            e = Invoice.with_category(c.id)
-            if e:
-                s = Invoice.with_category(c.id, total_only=True)
-                result[c.title] = [e, s]
-        return {'items': result,
+            paid_invoices = Invoice.with_category(c.id, paid=True)
+            if paid_invoices:
+                total = Invoice.with_category(c.id, total_only=True)
+                paid_result[c.title] = [paid_invoices, total]
+
+            unpaid_invoices = Invoice.with_category(c.id)
+            if unpaid_invoices:
+                total = Invoice.with_category(c.id, total_only=True)
+                unpaid_result[c.title] = [unpaid_invoices, total]
+
+        return {'paiditems': paid_result,
+                'unpaiditems' : unpaid_result,
                 'title' : 'Private invoices' if private else 'Shared invoices',
                 'private' : private,}
 

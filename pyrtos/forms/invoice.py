@@ -4,6 +4,7 @@ from wtforms import (
     validators,
     TextField,
     FloatField,
+    DateField,
     HiddenField,
     SelectField,
     PasswordField,
@@ -20,6 +21,10 @@ class InvoiceCreateForm(BaseForm):
                       [validators.Length(min=3, max=255)],
                       filters=[strip_filter])
     amount = FloatField('Invoice Amount')
+    due = DateField('Due date', format='%Y-%m-%d')
+    paid = DateField('Paid date',
+                     [validators.optional()],
+                     format='%Y-%m-%d')
     category_id = QuerySelectField('Category',
                                     get_label='title')
     creditor_id = QuerySelectField('Creditor',
