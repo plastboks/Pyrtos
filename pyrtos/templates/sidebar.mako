@@ -4,9 +4,15 @@
   <li><a href="${request.route_url('expenditures')}">Expenditures</a></li>
   <li>
       <a href="${request.route_url('invoices')}">Invoices</a>
-      %if 1 is 2:
-      <sup class='unpaids shared'>3</sup>
-      <sup class='unpaids private'>3</sup>
+      %if request.session.peek_flash('shared_unpaid_invoices')[0]:
+        <sup class='unpaids shared'>
+          ${request.session.peek_flash('shared_unpaid_invoices')[0]}
+        </sup>
+      %endif
+      %if request.session.peek_flash('private_unpaid_invoices')[0]:
+        <sup class='unpaids private'>
+          ${request.session.peek_flash('private_unpaid_invoices')[0]}
+        </sup>
       %endif
   </li>
   <li><a href="${request.route_url('creditors')}">Creditors</a></li>

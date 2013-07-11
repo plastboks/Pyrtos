@@ -1157,13 +1157,15 @@ class TestViews(IntegrationTestBase):
         self.app.get('/category/archive/2', status=302)
         # try to edit the private invoice without the private category
         self.app.get('/invoice/edit/2?private=1', status=302)
-        # archive the private category
+        # restore the private category
         self.app.get('/category/restore/2', status=302)
         # archive the private creditor
         self.app.get('/creditor/archive/2', status=302)
         # try to edit the private invoice without the private creditor
         self.app.get('/invoice/edit/2?private=1', status=302)
-        
+        # restore the private creditor
+        self.app.get('/creditor/restore/2', status=302)
+
         # archive public invoice
         self.app.get('/invoice/archive/1', status=302)
         res = self.app.get('/invoices/archived', status=200)

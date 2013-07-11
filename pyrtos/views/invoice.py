@@ -39,6 +39,28 @@ class InvoiceViews(object):
     def __init__(self,request):
         self.request = request
 
+    
+    def update_flash(self): 
+        shared_unpaid_invoices = 0;
+        shared_categories = Category.all_active().all()
+        for c in shared_categories:
+            unpaid_invoices = Invoice.with_category(c.id)
+            if unpaid_invoices:
+                shared_unpaid_invoices += len(unpaid_invoices)
+        self.request.session.pop_flash('shared_unpaid_invoices')
+        self.request.session.flash(shared_unpaid_invoices,
+                                   'shared_unpaid_invoices')
+
+        private_unpaid_invoices = 0;
+        private_categories = Category.all_private(self.request).all()
+        for c in private_categories:
+            unpaid_invoices = Invoice.with_category(c.id)
+            if unpaid_invoices:
+                private_unpaid_invoices += len(unpaid_invoices)
+        self.request.session.pop_flash('private_unpaid_invoices')
+        self.request.session.flash(private_unpaid_invoices,
+                                   'private_unpaid_invoices')
+
 
     @view_config(route_name='invoices',
                  renderer='pyrtos:templates/invoice/alist.mako',
@@ -117,6 +139,7 @@ class InvoiceViews(object):
             DBSession.add(i)
             self.request.session.flash('Invoice %s created' %\
                                           (i.title), 'success')
+            self.update_flash()
             if private:
                 return HTTPFound(location=self.request.route_url('invoices',
                                                                  _query={'private' : 1}))
@@ -172,6 +195,7 @@ class InvoiceViews(object):
             i.creditor_id = form.creditor_id.data.id
             self.request.session.flash('Invoice %s updated' %\
                                           (i.title), 'status')
+            self.update_flash()
             if private:
                 return HTTPFound(location=self.request.route_url('invoices', 
                                                                  _query={'private' : 1}))
@@ -205,6 +229,7 @@ class InvoiceViews(object):
         i.paid = datetime.now()
         self.request.session.flash('Invoice %s is now paid' %\
                                         (i.title), 'success')
+        self.update_flash()
         return HTTPFound(location=self.request.route_url('invoices'))
 
 

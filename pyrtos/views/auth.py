@@ -15,6 +15,8 @@ from pyramid.view import (
 )
 from pyrtos.models import (
     User,
+    Category,
+    Invoice,
 )
 from pyrtos.forms import (
     LoginForm,
@@ -39,6 +41,29 @@ class AuthViews(object):
               and user.blocked is not True\
               and user.archived is not True:
               headers = remember(self.request, user.id)
+
+              shared_unpaid_invoices = 0;
+              shared_categories = Category.all_active().all()
+              for c in shared_categories:
+                  unpaid_invoices = Invoice.with_category(c.id)
+                  if unpaid_invoices:
+                      shared_unpaid_invoices += len(unpaid_invoices)
+              self.request.session.pop_flash('shared_unpaid_invoices')
+              self.request.session.flash(shared_unpaid_invoices,
+                                         'shared_unpaid_invoices')
+
+              private_unpaid_invoices = 0;
+              private_categories = Category.all_private(self.request,
+                                                        id=user.id)\
+                                           .all()
+              for c in private_categories:
+                  unpaid_invoices = Invoice.with_category(c.id)
+                  if unpaid_invoices:
+                      private_unpaid_invoices += len(unpaid_invoices)
+              self.request.session.pop_flash('private_unpaid_invoices')
+              self.request.session.flash(private_unpaid_invoices,
+                                         'private_unpaid_invoices')
+
               self.request.session.flash('Welcome back %s' %\
                                               (user.email), 'success')
               return HTTPFound(location=self.request.route_url('index'),
@@ -59,6 +84,8 @@ class AuthViews(object):
   @view_config(route_name='logout',
                renderer='string')
   def logout(self):
+      self.request.session.pop_flash('shared_unpaid_invoices')
+      self.request.session.pop_flash('private_unpaid_invoices')
       headers = forget(self.request)
       return HTTPFound(location=self.request.route_url('login'),
                        headers=headers)
