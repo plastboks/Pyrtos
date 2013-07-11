@@ -44,7 +44,7 @@ class InvoiceViews(object):
         shared_unpaid_invoices = 0;
         shared_categories = Category.all_active().all()
         for c in shared_categories:
-            unpaid_invoices = Invoice.with_category(c.id)
+            unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
             if unpaid_invoices:
                 shared_unpaid_invoices += len(unpaid_invoices)
         self.request.session.pop_flash('shared_unpaid_invoices')
@@ -54,7 +54,7 @@ class InvoiceViews(object):
         private_unpaid_invoices = 0;
         private_categories = Category.all_private(self.request).all()
         for c in private_categories:
-            unpaid_invoices = Invoice.with_category(c.id)
+            unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
             if unpaid_invoices:
                 private_unpaid_invoices += len(unpaid_invoices)
         self.request.session.pop_flash('private_unpaid_invoices')
@@ -68,6 +68,8 @@ class InvoiceViews(object):
     def invoices(self):
         paid_result = {}
         unpaid_result = {}
+        year = datetime.now().strftime('%Y')
+        month = datetime.now().strftime('%m')
 
         private = self.request.params.get('private')
         if private:
@@ -76,20 +78,28 @@ class InvoiceViews(object):
             categories = Category.all_active().all()
 
         for c in categories:
-            paid_invoices = Invoice.with_category(c.id, paid=True)
+            paid_invoices = Invoice.with_category_paid(c.id,
+                                                       year,
+                                                       month)
             if paid_invoices:
-                total = Invoice.with_category(c.id, total_only=True)
+                total = Invoice.with_category_paid(c.id,
+                                                   year,
+                                                   month,
+                                                   total_only=True)
                 paid_result[c.title] = [paid_invoices, total]
 
-            unpaid_invoices = Invoice.with_category(c.id)
+            unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
             if unpaid_invoices:
-                total = Invoice.with_category(c.id, total_only=True)
+                total = Invoice.with_category_all_unpaid(c.id, total_only=True)
                 unpaid_result[c.title] = [unpaid_invoices, total]
 
         return {'paiditems': paid_result,
                 'unpaiditems' : unpaid_result,
                 'title' : 'Private invoices' if private else 'Shared invoices',
-                'private' : private,}
+                'private' : private,
+                'month' : month,
+                'year' : year,}
+
 
 
     @view_config(route_name='invoices_archived',

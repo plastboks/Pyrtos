@@ -45,7 +45,7 @@ class AuthViews(object):
               shared_unpaid_invoices = 0;
               shared_categories = Category.all_active().all()
               for c in shared_categories:
-                  unpaid_invoices = Invoice.with_category(c.id)
+                  unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
                   if unpaid_invoices:
                       shared_unpaid_invoices += len(unpaid_invoices)
               self.request.session.pop_flash('shared_unpaid_invoices')
@@ -57,7 +57,7 @@ class AuthViews(object):
                                                         id=user.id)\
                                            .all()
               for c in private_categories:
-                  unpaid_invoices = Invoice.with_category(c.id)
+                  unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
                   if unpaid_invoices:
                       private_unpaid_invoices += len(unpaid_invoices)
               self.request.session.pop_flash('private_unpaid_invoices')
