@@ -68,8 +68,10 @@ class InvoiceViews(object):
     def invoices(self):
         paid_result = {}
         unpaid_result = {}
-        year = datetime.now().strftime('%Y')
-        month = datetime.now().strftime('%m')
+        year = self.request.params.get('year',
+                                           datetime.now().strftime('%Y'))
+        month = self.request.params.get('month',
+                                            datetime.now().strftime('%m'))
 
         private = self.request.params.get('private')
         if private:
@@ -106,7 +108,7 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/list.mako',
                  permission='view')
     def invoices_archived(self):
-        page = int (self.request.params.get('page', 1))
+        page = int(self.request.params.get('page', 1))
         invoices = Invoice.page(self.request, page, archived=True)
         return {'paginator': invoices,
                 'title' : 'Archived invoices',

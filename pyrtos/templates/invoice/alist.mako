@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/invoice/base.mako"/>
 
 %if paiditems:
-  <h2>Paid invoices for: ${year}-${month}</h2>
+  <h2>Paid invoices for: ${year}-${month}.</h2>
   %for cat,invoices in paiditems.iteritems():
     <div class='tablelist'>
       <table class='invoices'>
@@ -62,7 +62,7 @@
     </div>
   %endfor
 %else:
-  <p>No paid invoices found.</p>
+  <p>No paid invoices found for: ${year}-${month}.</p>
 %endif
 %if unpaiditems:
   <h2>Unpaid invoices</h2>
