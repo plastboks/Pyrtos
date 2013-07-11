@@ -4,10 +4,10 @@
   <li><a href="${request.route_url('expenditures')}">Expenditures</a></li>
   <li>
       <a href="${request.route_url('invoices')}">Invoices</a>
-      %if request.session.peek_flash('shared_unpaid_invoices')[0]:
+      %if request.session.peek_flash('shared_unpaid_invoices')[-1]:
         <sup class='unpaids shared'>${request.session.peek_flash('shared_unpaid_invoices')[0]}</sup>
       %endif
-      %if request.session.peek_flash('private_unpaid_invoices')[0]:
+      %if request.session.peek_flash('private_unpaid_invoices')[-1]:
         <sup class='unpaids private'>${request.session.peek_flash('private_unpaid_invoices')[0]}</sup>
       %endif
   </li>
