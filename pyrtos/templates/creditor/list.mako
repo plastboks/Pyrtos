@@ -5,7 +5,7 @@
     <table id='creditors'>
       <thead>
         <th>Title</th>
-        <th>Expenditures</th>
+        <th>Invoices</th>
         <th>Actions</th>
       </thead>
       <tbody>

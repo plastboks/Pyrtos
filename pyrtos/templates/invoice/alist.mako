@@ -94,6 +94,9 @@
                   %endif
                       <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
                   </a>
+                  <a href="${request.route_url('invoice_quickpay', id=item.id)}">
+                      <img src='${request.static_url("pyrtos:static/icons/page_white_go.png")}' title='Quickpay' alt='Quickpay' />
+                  </a>
                 %endif
                 %if archived:
                   %if request.can_i('restore'):

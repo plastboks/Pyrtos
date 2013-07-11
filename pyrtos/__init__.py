@@ -101,6 +101,7 @@ def main(global_config, **settings):
     config.add_route('invoices_archived', '/invoices/archived')
     config.add_route('invoice_new', '/invoice/new')
     config.add_route('invoice_edit', '/invoice/edit/{id}')
+    config.add_route('invoice_quickpay', '/invoice/quickpay/{id}')
     config.add_route('invoice_archive', '/invoice/archive/{id}')
     config.add_route('invoice_restore', '/invoice/restore/{id}')
 

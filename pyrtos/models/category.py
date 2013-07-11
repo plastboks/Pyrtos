@@ -64,8 +64,9 @@ class Category(Base):
                         .filter(Category.archived == True)
 
     @classmethod
-    def all_private(cls, request):
-        id = authenticated_userid(request)
+    def all_private(cls, request, id=False):
+        if not id:
+            id = authenticated_userid(request)
         return DBSession.query(Category)\
                         .filter(and_(Category.user_id == id,\
                                      Category.private == True,\

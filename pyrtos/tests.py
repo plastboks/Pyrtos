@@ -1157,13 +1157,15 @@ class TestViews(IntegrationTestBase):
         self.app.get('/category/archive/2', status=302)
         # try to edit the private invoice without the private category
         self.app.get('/invoice/edit/2?private=1', status=302)
-        # archive the private category
+        # restore the private category
         self.app.get('/category/restore/2', status=302)
         # archive the private creditor
         self.app.get('/creditor/archive/2', status=302)
         # try to edit the private invoice without the private creditor
         self.app.get('/invoice/edit/2?private=1', status=302)
-        
+        # restore the private creditor
+        self.app.get('/creditor/restore/2', status=302)
+
         # archive public invoice
         self.app.get('/invoice/archive/1', status=302)
         res = self.app.get('/invoices/archived', status=200)
@@ -1174,9 +1176,25 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/invoices', status=200)
         self.assertTrue('besttest' in res.body)
 
+        # edit public invoice
+        self.app.get('/category/restore/1', status=302)
+        self.app.get('/creditor/restore/1', status=302)
+        res = self.app.get('/invoice/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'category_id' : 1,
+                                                      'creditor_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        # try to quickpay the invoice
+        self.app.get('/invoice/quickpay/1', status=302)
+
         self.app.get('/invoice/edit/100', status=404)
         self.app.get('/invoice/archive/100', status=404)
         self.app.get('/invoice/restore/100', status=404)
+        self.app.get('/invoice/quickpay/100', status=404)
 
         # logout
         self.app.get('/logout')
@@ -1192,6 +1210,7 @@ class TestViews(IntegrationTestBase):
 
         # try to edit an invoice the user do not have permission to
         self.app.get('/invoice/edit/2', status=403)
+        self.app.get('/invoice/quickpay/2', status=403)
         # try to archive an invoice the user do not have permission to
         self.app.get('/invoice/archive/2', status=403)
         # try to restore an invoice the user do not have permission to
@@ -1230,6 +1249,7 @@ class TestViews(IntegrationTestBase):
 
         # try to edit an invoice the user do not have permission to
         self.app.get('/invoice/edit/2', status=403)
+        self.app.get('/invoice/quickpay/2', status=403)
         # try to archive an invoice the user do not have permission to
         self.app.get('/invoice/archive/2', status=403)
         # try to restore an invoice the user do not have permission to
