@@ -24,7 +24,10 @@ from sqlalchemy.sql import func
 
 from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
-from webhelpers.date import time_ago_in_words
+from webhelpers.date import (
+  distance_of_time_in_words,
+  time_ago_in_words,
+)
 
 
 class Invoice(Base):
@@ -79,3 +82,21 @@ class Invoice(Base):
     def by_id(cls, id):
         return DBSession.query(Invoice).filter(Invoice.id == id).first()
 
+
+    def time_to_expires_in_words(self):
+      distance =  distance_of_time_in_words(from_time=self.due,
+                                            to_time=datetime.utcnow(),
+                                            round=True,
+                                            granularity='day')
+      if datetime.utcnow() > self.due:
+          return 'Expired by: '+distance
+      return 'In: '+distance
+
+    def css_class_for_time_distance(self):
+      distance =  distance_of_time_in_words(from_time=self.due,
+                                            to_time=datetime.utcnow(),
+                                            round=True,
+                                            granularity='day')
+      if datetime.utcnow() > self.due:
+          return 'expired'
+      return 'd'+distance.split(' ')[0]

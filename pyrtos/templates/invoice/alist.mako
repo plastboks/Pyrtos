@@ -68,7 +68,7 @@
   <h2>Unpaid invoices</h2>
   %for cat,invoices in unpaiditems.iteritems():
     <div class='tablelist'>
-      <table class='invoices'>
+      <table class='invoices unpaid'>
         <thead>
           <th>Title</th>
           <th>Amount</th>
@@ -79,10 +79,12 @@
         </thead>
         <tbody>
           %for item in invoices[0]:
-            <tr>
+            <tr class='${item.css_class_for_time_distance()}'>
               <td>${item.title}</td>
               <td>${item.amount}</td>
-              <td>${item.due.date()}</td>
+              <td>
+                ${item.time_to_expires_in_words()}
+              </td>
               <td>${item.category.title}</td>
               <td>${item.creditor.title}</td>
               <td class='actions'>

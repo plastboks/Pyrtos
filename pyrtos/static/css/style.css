@@ -349,6 +349,46 @@ img {
   width: 200px;
 }
 
+#content table.unpaid tbody tr {
+  background: #E0FFFF;
+}
+
+#content table.unpaid tbody tr.d10,
+#content table.unpaid tbody tr.d9 {
+  background: #CCFFE6;
+}
+
+#content table.unpaid tbody tr.d8,
+#content table.unpaid tbody tr.d7 {
+  background: #E6FFE6;
+}
+
+#content table.unpaid tbody tr.d6,
+#content table.unpaid tbody tr.d5 {
+  background: #E6FFCC;
+}
+
+#content table.unpaid tbody tr.d4,
+#content table.unpaid tbody tr.d3 {
+  background: #FFFFCC;
+}
+
+#content table.unpaid tbody tr.d2 {
+  background: #FFEB99;
+}
+
+#content table.unpaid tbody tr.d1 {
+  background: #FFE6B2;
+}
+
+#content table.unpaid tbody tr.dless {
+  background: #FFCC99;
+}
+
+#content table.unpaid tbody tr.expired {
+  background: #FF9980;
+}
+
 #content table .edit {
   margin-left: 7px;
   margin-right: 2px;
