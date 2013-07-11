@@ -186,6 +186,28 @@ class InvoiceViews(object):
                 'private' : private}
 
 
+    @view_config(route_name='invoice_quickpay',
+                 renderer='string',
+                 permission='edit')
+    def invoice_quickpay(self):
+        id = int(self.request.matchdict.get('id'))
+        i = Invoice.by_id(id)
+
+        if not i:
+            return HTTPNotFound()
+        if i.category.private\
+            and i.category.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+        if i.creditor.private\
+            and i.creditor.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+
+        i.paid = datetime.now()
+        self.request.session.flash('Invoice %s is now paid' %\
+                                        (i.title), 'success')
+        return HTTPFound(location=self.request.route_url('invoices'))
+
+
     @view_config(route_name='invoice_archive',
                  renderer='string',
                  permission='archive')
