@@ -113,6 +113,20 @@ img {
   color: #30363D;
 }
 
+.sidebar .unpaids {
+  font-size: 0.5em;
+  padding: 4px 6px;
+  border-radius: 50%;
+}
+
+.sidebar .private {
+  background: orange;
+}
+
+.sidebar .shared {
+  background: salmon;
+}
+
 
 /**
  * toolbar
