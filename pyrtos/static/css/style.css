@@ -45,7 +45,7 @@ img {
  * wrapper 
  */
 #wrapper {
-  width: 950px;
+  width: 960px;
   margin: 0 auto;
   margin-top: 30px;
   position: relative;
@@ -88,7 +88,7 @@ img {
  * sidebar
  */
 .sidebar {
-  width: 140px;
+  width: 150px;
   float: left;
   padding: 10px;
   background: none repeat scroll 0 0 #D6DBE0;
@@ -100,13 +100,21 @@ img {
 .sidebar ul {
   list-style: none;
   margin-left: 0px;
-  padding: 5px 0px;
+  padding: 1px 0px;
 }
 
 .sidebar li {
   margin: 10px 5px;
   padding-left: 20px;
   background: url('/static/icons/bullet_blue.png') left center no-repeat;
+}
+
+.sidebar li.group {
+  background: url('/static/icons/bullet_green.png') left center no-repeat;
+}
+
+.sidebar li.user {
+  background: url('/static/icons/bullet_red.png') left center no-repeat;
 }
 
 .sidebar li a{
