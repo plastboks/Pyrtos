@@ -7,7 +7,6 @@
       <li><a href="${request.route_url('category_new')}">New</a></li>
     %endif
     <li><a href="${request.route_url('categories')}">All</a></li>
-    <li><a href="${request.route_url('categories_private')}">Private</a></li>
     %if request.can_i('archive'):
       <li><a href="${request.route_url('categories_archived')}">Archived</a></li>
     %endif

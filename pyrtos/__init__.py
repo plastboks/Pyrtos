@@ -51,7 +51,6 @@ def main(global_config, **settings):
 
     # category
     config.add_route('categories', '/categories')
-    config.add_route('categories_private', '/categories/private')
     config.add_route('categories_archived', '/categories/archived')
     config.add_route('category_new', '/category/new')
     config.add_route('category_edit', '/category/edit/{id}')
@@ -71,7 +70,6 @@ def main(global_config, **settings):
 
     # creditor
     config.add_route('creditors', '/creditors')
-    config.add_route('creditors_private', '/creditors/private')
     config.add_route('creditors_archived', '/creditors/archived')
     config.add_route('creditor_new', '/creditor/new')
     config.add_route('creditor_edit', '/creditor/edit/{id}')
