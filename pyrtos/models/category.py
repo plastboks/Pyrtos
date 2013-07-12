@@ -63,9 +63,12 @@ class Category(Base):
                                           Category.user_id != id)))
 
     @classmethod
-    def all_archived(cls):
+    def all_archived(cls, request):
+        id = authenticated_userid(request)
         return DBSession.query(Category)\
-                        .filter(Category.archived == True)
+                        .filter(Category.archived == True)\
+                        .filter(not_(and_(Category.private == True,
+                                          Category.user_id != id)))
 
     @classmethod
     def all_private(cls, request, id=False):
@@ -80,7 +83,7 @@ class Category(Base):
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Category.all_archived(),
+            return Page(Category.all_archived(request),
                         page, 
                         url=page_url,
                         items_per_page=IPP)

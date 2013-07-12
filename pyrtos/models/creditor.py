@@ -64,9 +64,12 @@ class Creditor(Base):
                                           Creditor.user_id != id)))
 
     @classmethod
-    def all_archived(cls):
+    def all_archived(cls, request):
+        id = authenticated_userid(request)
         return DBSession.query(Creditor)\
-                        .filter(Creditor.archived == True)
+                        .filter(Creditor.archived == True)\
+                        .filter(not_(and_(Creditor.private == True,
+                                          Creditor.user_id != id)))
 
     @classmethod
     def all_private(cls, request):
@@ -80,7 +83,7 @@ class Creditor(Base):
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Creditor.all_archived(),
+            return Page(Creditor.all_archived(request),
                         page,
                         url=page_url,
                         items_per_page=IPP)
