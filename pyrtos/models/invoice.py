@@ -5,6 +5,8 @@ from pyrtos.models.meta import (
     IPP,
 )
 
+from pyrtos.models import Category
+
 from datetime import datetime
 from sqlalchemy import (
     Column,
@@ -19,10 +21,13 @@ from sqlalchemy import (
     ForeignKey,
     or_,
     and_,
+    not_,
     extract,
     )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
+from pyramid.security import authenticated_userid
 
 from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
@@ -51,13 +56,20 @@ class Invoice(Base):
     creditor = relationship('Creditor', backref='invoices')
 
     @classmethod
-    def all_archived(cls):
+    def all_archived(cls, id):
         return DBSession.query(Invoice)\
-                        .filter(Invoice.archived == True)
+                        .join(Invoice.category)\
+                        .filter(Invoice.archived == True)\
+                        .filter(not_(and_(Category.private == True,
+                                          Category.user_id != id)))
+
 
     @classmethod
-    def all_queryed(cls):
-        return DBSession.query(Invoice).all()
+    def all_queryed(cls, id):
+        return DBSession.query(Invoice)\
+                        .join(Invoice.category)\
+                        .filter(not_(and_(Category.private == True,
+                                          Category.user_id != id)))
 
     @classmethod
     def with_category_paid(cls, cid, year, month, total_only=False):
@@ -98,17 +110,19 @@ class Invoice(Base):
 
     @classmethod
     def page(cls, request, page, archived=False):
+        id = authenticated_userid(request)
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Invoice.all_archived(),
+            return Page(Invoice.all_archived(id),
                         page,
                         url=page_url,
                         items_per_page=IPP)
     
     @classmethod
     def searchpage(cls, request, page):
+        id = authenticated_userid(request)
         page_url = PageURL_WebOb(request)
-        return Page(Invoice.all_queryed(),
+        return Page(Invoice.all_queryed(id),
                     page,
                     url=page_url,
                     items_per_page=IPP)
