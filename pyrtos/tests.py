@@ -392,6 +392,22 @@ class ViewTests(BaseTestCase):
         response = i.invoices_archived()
         self.assertEqual(response['title'], 'Archived invoices')
 
+    def test_invoice_month_switcher(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        r = i.month_switcher(2013, 5)
+        self.assertEqual(r[0], 2013)
+        self.assertEqual(r[1], 4)
+
+        r = i.month_switcher(2013, 12, next=True)
+        self.assertEqual(r[0], 2014)
+        self.assertEqual(r[1], 1)
+
+        r = i.month_switcher(2013, 1)
+        self.assertEqual(r[0], 2012)
+        self.assertEqual(r[1], 12)
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod

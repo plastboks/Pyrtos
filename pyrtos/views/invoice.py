@@ -62,16 +62,26 @@ class InvoiceViews(object):
                                    'private_unpaid_invoices')
 
 
+    def month_switcher(self, year, month, next=False):
+        if next:
+            if month >= 12:
+                return [year+1, 1]
+            return [year, month+1]
+        if month <= 1:
+            return [year-1, 12]
+        return [year, month-1]
+
+
     @view_config(route_name='invoices',
                  renderer='pyrtos:templates/invoice/alist.mako',
                  permission='view')
     def invoices(self):
         paid_result = {}
         unpaid_result = {}
-        year = self.request.params.get('year',
-                                           datetime.now().strftime('%Y'))
-        month = self.request.params.get('month',
-                                            datetime.now().strftime('%m'))
+        year = int(self.request.params.get('year',
+                                           datetime.now().strftime('%Y')))
+        month = int(self.request.params.get('month',
+                                            datetime.now().strftime('%m')))
 
         private = self.request.params.get('private')
         if private:
@@ -100,7 +110,9 @@ class InvoiceViews(object):
                 'title' : 'Private invoices' if private else 'Shared invoices',
                 'private' : private,
                 'month' : month,
-                'year' : year,}
+                'year' : year,
+                'nextmonth' : self.month_switcher(year, month, next=True),
+                'prevmonth' : self.month_switcher(year, month)}
 
 
 

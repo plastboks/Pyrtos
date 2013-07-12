@@ -227,6 +227,7 @@ img {
 }
 
 #content h2 {
+  clear: both;
   margin: 20px 0px 10px 0px;
   font-size: 1.0em;
 }
@@ -398,6 +399,26 @@ img {
 #content table .delete {
   margin-left: 2px;
   margin-right: 5px;
+}
+
+#content .nextprev {
+ clear: both;
+ padding-bottom: 20px;
+ font-size: 0.7em;
+}
+
+#content .nextprev .prev a{
+  background: url('/static/icons/control_rewind.png') left center no-repeat;
+  padding-left: 20px;
+  margin-left: 20px;
+  float: left;
+}
+
+#content .nextprev .next a{
+  background: url('/static/icons/control_fastforward.png') right center no-repeat;
+  padding-right: 20px;
+  margin-right: 20px;
+  float: right;
 }
 
 #content .tablesum {
