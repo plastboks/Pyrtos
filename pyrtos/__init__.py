@@ -99,6 +99,7 @@ def main(global_config, **settings):
     config.add_route('invoices', '/invoices')
     config.add_route('invoices_private', '/invoices/private')
     config.add_route('invoices_archived', '/invoices/archived')
+    config.add_route('invoices_search', '/invoices/search')
     config.add_route('invoice_new', '/invoice/new')
     config.add_route('invoice_edit', '/invoice/edit/{id}')
     config.add_route('invoice_quickpay', '/invoice/quickpay/{id}')

@@ -56,6 +56,10 @@ class Invoice(Base):
                         .filter(Invoice.archived == True)
 
     @classmethod
+    def all_queryed(cls):
+        return DBSession.query(Invoice).all()
+
+    @classmethod
     def with_category_paid(cls, cid, year, month, total_only=False):
         if total_only:
             return DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
@@ -101,6 +105,14 @@ class Invoice(Base):
                         url=page_url,
                         items_per_page=IPP)
     
+    @classmethod
+    def searchpage(cls, request, page):
+        page_url = PageURL_WebOb(request)
+        return Page(Invoice.all_queryed(),
+                    page,
+                    url=page_url,
+                    items_per_page=IPP)
+
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Invoice).filter(Invoice.id == id).first()

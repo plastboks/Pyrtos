@@ -8,7 +8,7 @@
         <thead>
           <th>Title</th>
           <th>Amount</th>
-          <th>Due</th>
+          <th>Expired</th>
           <th>Paid</th>
           <th>Category</th>
           <th>Creditor</th>

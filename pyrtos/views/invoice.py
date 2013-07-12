@@ -115,6 +115,17 @@ class InvoiceViews(object):
                 'prevmonth' : self.month_switcher(year, month)}
 
 
+    @view_config(route_name='invoices_search',
+                 renderer='pyrtos:templates/invoice/list.mako',
+                 permission='view')
+    def invoices_search(self):
+       page = int(self.request.params.get('page', 1)) 
+       query = self.request.params.get('q')
+       invoices = Invoice.searchpage(self.request, page)
+       return {'paginator': invoices,
+               'title' : 'Search',
+               'archived' : False}
+
 
     @view_config(route_name='invoices_archived',
                  renderer='pyrtos:templates/invoice/list.mako',

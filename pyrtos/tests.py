@@ -392,6 +392,13 @@ class ViewTests(BaseTestCase):
         response = i.invoices_archived()
         self.assertEqual(response['title'], 'Archived invoices')
 
+    def test_invoice_search(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        response = i.invoices_search()
+        self.assertEqual(response['title'], 'Search')
+
     def test_invoice_month_switcher(self):
         from pyrtos.views import InvoiceViews
         request = testing.DummyRequest()
@@ -1244,6 +1251,10 @@ class TestViews(IntegrationTestBase):
                            )
         # try to quickpay the invoice
         self.app.get('/invoice/quickpay/1', status=302)
+
+        # visit the query page
+        res = self.app.get('/invoices/search', status=200)
+        self.assertIn('Search', res.body)
 
         self.app.get('/invoice/edit/100', status=404)
         self.app.get('/invoice/archive/100', status=404)
