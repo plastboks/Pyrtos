@@ -42,7 +42,7 @@ class InvoiceViews(object):
     
     def update_flash(self): 
         shared_unpaid_invoices = 0;
-        shared_categories = Category.all_active().all()
+        shared_categories = Category.all_active(self.request).all()
         for c in shared_categories:
             unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
             if unpaid_invoices:
@@ -87,7 +87,7 @@ class InvoiceViews(object):
         if private:
             categories = Category.all_private(self.request).all()
         else:
-            categories = Category.all_active().all()
+            categories = Category.all_active(self.request).all()
 
         for c in categories:
             paid_invoices = Invoice.with_category_paid(c.id,
@@ -162,7 +162,7 @@ class InvoiceViews(object):
             if not Creditor.first_active():
                 self.request.session.flash(self.missing_shared_cred, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
-            form.category_id.query = Category.all_active()
+            form.category_id.query = Category.all_active(self.request)
             form.creditor_id.query = Creditor.all_active()
 
         if self.request.method == 'POST' and form.validate():
@@ -221,7 +221,7 @@ class InvoiceViews(object):
             if not Creditor.first_active():
                 self.request.session.flash(self.missing_shared_cred, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
-            form.category_id.query = Category.all_active()
+            form.category_id.query = Category.all_active(self.request)
             form.creditor_id.query = Creditor.all_active()
 
         if self.request.method == 'POST' and form.validate():

@@ -45,7 +45,7 @@ class ExpenditureViews(object):
         if private:
             categories = Category.all_private(self.request).all()
         else:
-            categories = Category.all_active().all()
+            categories = Category.all_active(self.request).all()
 
         for c in categories:
             e = Expenditure.with_category(c.id)
@@ -86,7 +86,7 @@ class ExpenditureViews(object):
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request.route_url('expenditures'))
-            form.category_id.query = Category.all_active()
+            form.category_id.query = Category.all_active(self.request)
 
         if self.request.method == 'POST' and form.validate():
             e = Expenditure()
@@ -131,7 +131,7 @@ class ExpenditureViews(object):
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request.route_url('expenditures'))
-            form.category_id.query = Category.all_active()
+            form.category_id.query = Category.all_active(self.request)
 
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(e)

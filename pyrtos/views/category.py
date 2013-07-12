@@ -38,20 +38,8 @@ class CategoryViews(object):
         page = int (self.request.params.get('page', 1))
         categories = Category.page(self.request, page)
         return {'paginator': categories,
-                'title' : 'Shared categories',
+                'title' : 'Categories',
                 'archived' : False}
-
-
-    @view_config(route_name='categories_private',
-                 renderer='pyrtos:templates/category/list.mako',
-                 permission='view')
-    def categories_private(self):
-        page = int (self.request.params.get('page', 1))
-        categories = Category.page(self.request, page, private=True)
-        return {'paginator': categories,
-                'title' : 'Private categories',
-                'archived' : False}
-
 
     @view_config(route_name='categories_archived',
                  renderer='pyrtos:templates/category/list.mako',

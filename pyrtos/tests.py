@@ -259,14 +259,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         c = CategoryViews(request)
         response = c.categories()
-        self.assertEqual(response['title'], 'Shared categories')
-
-    def test_private_categories(self):
-        from pyrtos.views import CategoryViews
-        request = testing.DummyRequest()
-        c = CategoryViews(request)
-        response = c.categories_private()
-        self.assertEqual(response['title'], 'Private categories')
+        self.assertEqual(response['title'], 'Categories')
 
     def test_archived_categories(self):
         from pyrtos.views import CategoryViews
@@ -535,20 +528,11 @@ class TestViews(IntegrationTestBase):
                                                         'csrf_token' : token}
                            )
 
-        res = self.app.get('/categories/private', status=200)
-        self.assertTrue('besttest' in res.body)
-
-        res = self.app.get('/categories', status=200)
-        self.assertFalse('besttest' in res.body)
-
-
         self.app.get('/category/archive/1', status=302)
         res = self.app.get('/categories/archived', status=200)
         self.assertTrue('besttest' in res.body)
 
         self.app.get('/category/restore/1', status=302)
-        res = self.app.get('/categories', status=200)
-        self.assertTrue('besttest' in res.body)
 
         self.app.get('/category/edit/100', status=404)
         self.app.get('/category/archive/100', status=404)
@@ -847,10 +831,6 @@ class TestViews(IntegrationTestBase):
                                                         'private' : 'y',
                                                         'csrf_token' : token}
                            )
-        res = self.app.get('/creditors/private', status=200)
-        self.assertTrue('besttest' in res.body)
-        res = self.app.get('/creditors', status=200)
-        self.assertFalse('besttest' in res.body)
 
         self.app.get('/creditor/archive/1', status=302)
         res = self.app.get('/creditors/archived', status=200)

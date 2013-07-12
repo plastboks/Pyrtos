@@ -17,6 +17,7 @@ from sqlalchemy import (
     ForeignKey,
     or_,
     and_,
+    not_,
     )
 
 from sqlalchemy.orm import relationship
@@ -53,10 +54,13 @@ class Category(Base):
                                      Category.user_id == id)).first()
 
     @classmethod
-    def all_active(cls):
+    def all_active(cls, request, id=False):
+        if not id:
+            id = authenticated_userid(request)
         return DBSession.query(Category)\
-                        .filter(and_(Category.archived == False,
-                                     Category.private == False))
+                        .filter(Category.archived == False)\
+                        .filter(not_(and_(Category.private == True,
+                                          Category.user_id != id)))
 
     @classmethod
     def all_archived(cls):
@@ -73,19 +77,14 @@ class Category(Base):
                                      Category.archived == False))
 
     @classmethod
-    def page(cls, request, page, archived=False, private=False):
+    def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
             return Page(Category.all_archived(),
                         page, 
                         url=page_url,
                         items_per_page=IPP)
-        if private:
-            return Page(Category.all_private(request),
-                        page,
-                        url=page_url,
-                        items_per_page=IPP)
-        return Page(Category.all_active(),
+        return Page(Category.all_active(request),
                     page,
                     url=page_url,
                     items_per_page=IPP)
