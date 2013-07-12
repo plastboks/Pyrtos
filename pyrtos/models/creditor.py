@@ -17,6 +17,7 @@ from sqlalchemy import (
     ForeignKey,
     or_,
     and_,
+    not_,
     )
 
 from sqlalchemy.orm import relationship
@@ -54,10 +55,13 @@ class Creditor(Base):
                                      Creditor.user_id == id)).first()
 
     @classmethod
-    def all_active(cls):
+    def all_active(cls, request, id=False):
+        if not id:
+            id = authenticated_userid(request)
         return DBSession.query(Creditor)\
-                        .filter(and_(Creditor.archived == False,
-                                     Creditor.private == False))
+                        .filter(Creditor.archived == False)\
+                        .filter(not_(and_(Creditor.private == True,
+                                          Creditor.user_id != id)))
 
     @classmethod
     def all_archived(cls):
@@ -73,19 +77,14 @@ class Creditor(Base):
                                      Creditor.archived == False))
 
     @classmethod
-    def page(cls, request, page, archived=False, private=False):
+    def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
             return Page(Creditor.all_archived(),
                         page,
                         url=page_url,
                         items_per_page=IPP)
-        if private:
-            return Page(Creditor.all_private(request),
-                        page,
-                        url=page_url,
-                        items_per_page=IPP)
-        return Page(Creditor.all_active(),
+        return Page(Creditor.all_active(request),
                     page,
                     url=page_url,
                     items_per_page=IPP)

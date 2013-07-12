@@ -163,7 +163,7 @@ class InvoiceViews(object):
                 self.request.session.flash(self.missing_shared_cred, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
             form.category_id.query = Category.all_active(self.request)
-            form.creditor_id.query = Creditor.all_active()
+            form.creditor_id.query = Creditor.all_active(self.request)
 
         if self.request.method == 'POST' and form.validate():
             i = Invoice()
@@ -222,7 +222,7 @@ class InvoiceViews(object):
                 self.request.session.flash(self.missing_shared_cred, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
             form.category_id.query = Category.all_active(self.request)
-            form.creditor_id.query = Creditor.all_active()
+            form.creditor_id.query = Creditor.all_active(self.request)
 
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(i)

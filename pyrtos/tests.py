@@ -311,14 +311,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         c = CreditorViews(request)
         response = c.creditors()
-        self.assertEqual(response['title'], 'Shared creditors')
-
-    def test_creditor_private(self):
-        from pyrtos.views import CreditorViews
-        request = testing.DummyRequest()
-        c = CreditorViews(request)
-        response = c.creditors_private()
-        self.assertEqual(response['title'], 'Private creditors')
+        self.assertEqual(response['title'], 'Creditors')
 
     def test_archived_creditors(self):
         from pyrtos.views import CreditorViews

@@ -35,18 +35,7 @@ class CreditorViews(object):
         page = int (self.request.params.get('page', 1))
         creditors = Creditor.page(self.request, page)
         return {'paginator': creditors,
-                'title' : 'Shared creditors',
-                'archived' : False}
-
-
-    @view_config(route_name='creditors_private',
-                 renderer='pyrtos:templates/creditor/list.mako',
-                 permission='view')
-    def creditors_private(self):
-        page = int (self.request.params.get('page', 1))
-        creditors = Creditor.page(self.request, page, private=True)
-        return {'paginator': creditors,
-                'title' : 'Private creditors',
+                'title' : 'Creditors',
                 'archived' : False}
 
 
