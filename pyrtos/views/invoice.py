@@ -23,6 +23,7 @@ from pyrtos.models import (
 from pyrtos.forms import (
     InvoiceCreateForm,
     InvoiceEditForm,
+    InvoiceSearchForm,
 )
 
 class InvoiceViews(object):
@@ -115,10 +116,17 @@ class InvoiceViews(object):
                  permission='view')
     def invoices_search(self):
        page = int(self.request.params.get('page', 1)) 
-       query = self.request.params.get('q')
-       invoices = Invoice.searchpage(self.request, page)
+       form = InvoiceSearchForm(self.request.POST,
+                                csrf_context=self.request.session)
+       if self.request.method == 'POST' and form.validate():
+           q = form.query.data
+           invoices = Invoice.searchpage(self.request, page, qry=q)
+       else:
+           invoices = Invoice.searchpage(self.request, page)
        return {'paginator': invoices,
-               'title' : 'Search',}
+               'form' : form,
+               'title' : 'Search',
+               'searchpage' : True,}
 
 
     @view_config(route_name='invoices_archived',
@@ -128,7 +136,8 @@ class InvoiceViews(object):
         page = int(self.request.params.get('page', 1))
         invoices = Invoice.page(self.request, page, archived=True)
         return {'paginator': invoices,
-                'title' : 'Archived invoices',}
+                'title' : 'Archived invoices',
+                'searchpage' : False}
 
 
     @view_config(route_name='invoice_new',
@@ -155,8 +164,8 @@ class InvoiceViews(object):
             if not Creditor.first_active():
                 self.request.session.flash(self.missing_shared_cred, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
-            form.category_id.query = Category.all_active(self.request)
-            form.creditor_id.query = Creditor.all_active(self.request)
+            form.category_id.query = Category.all_shared(self.request)
+            form.creditor_id.query = Creditor.all_shared(self.request)
 
         if self.request.method == 'POST' and form.validate():
             i = Invoice()
@@ -214,8 +223,8 @@ class InvoiceViews(object):
             if not Creditor.first_active():
                 self.request.session.flash(self.missing_shared_cred, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
-            form.category_id.query = Category.all_active(self.request)
-            form.creditor_id.query = Creditor.all_active(self.request)
+            form.category_id.query = Category.all_shared(self.request)
+            form.creditor_id.query = Creditor.all_shared(self.request)
 
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(i)

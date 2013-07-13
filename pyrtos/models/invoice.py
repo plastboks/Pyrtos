@@ -65,11 +65,15 @@ class Invoice(Base):
 
 
     @classmethod
-    def all_queryed(cls, id):
-        return DBSession.query(Invoice)\
+    def all_queryed(cls, id, q=False):
+        base = DBSession.query(Invoice)\
                         .join(Invoice.category)\
                         .filter(not_(and_(Category.private == True,
                                           Category.user_id != id)))
+        if q:
+            q = "%"+q+"%"
+            base.filter(Category.title.like(q))
+        return base
 
     @classmethod
     def with_category_paid(cls, cid, year, month, total_only=False):
@@ -119,9 +123,14 @@ class Invoice(Base):
                         items_per_page=IPP)
     
     @classmethod
-    def searchpage(cls, request, page):
+    def searchpage(cls, request, page, qry=False):
         id = authenticated_userid(request)
         page_url = PageURL_WebOb(request)
+        if qry:
+            return Page(Invoice.all_queryed(id, q=qry),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
         return Page(Invoice.all_queryed(id),
                     page,
                     url=page_url,

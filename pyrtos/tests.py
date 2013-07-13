@@ -381,6 +381,7 @@ class ViewTests(BaseTestCase):
     def test_invoice_search(self):
         from pyrtos.views import InvoiceViews
         request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
         i = InvoiceViews(request)
         response = i.invoices_search()
         self.assertEqual(response['title'], 'Search')
@@ -1063,10 +1064,9 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/invoices')
         self.assertTrue(res.status_int, 200)
-
-        res = self.app.get('/invoices?private=1')
-        self.assertTrue(res.status_int, 200)
-
+        self.assertIn('No paid invoices', res.body)
+        
+        # try to create a new invoice without categories and creditors
         self.app.get('/invoice/new', status=302)
         self.app.get('/invoice/new?private=1', status=302)
 
@@ -1077,6 +1077,7 @@ class TestViews(IntegrationTestBase):
                                               'csrf_token' : token}
                            )
 
+        # try to create a new invoice without creditors
         self.app.get('/invoice/new', status=302)
         self.app.get('/invoice/new?private=1', status=302)
 
@@ -1105,6 +1106,7 @@ class TestViews(IntegrationTestBase):
         
         # edit public invoice
         res = self.app.get('/invoice/edit/1')
+        self.assertIn('testbest', res.body)
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoice/edit/1', params={'id' : 1,
                                                       'title' : 'besttest',
@@ -1147,6 +1149,8 @@ class TestViews(IntegrationTestBase):
 
         # new priv invoice
         res = self.app.get('/invoice/new?private=1')
+        self.assertIn('hestbest', res.body)
+        self.assertFalse('testbest' in res.body)
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoice/new?private=1', {'title' : 'testbest',
                                                        'amount' : '12345',
@@ -1228,6 +1232,12 @@ class TestViews(IntegrationTestBase):
         # visit the query page
         res = self.app.get('/invoices/search', status=200)
         self.assertIn('Search', res.body)
+        # to a testsearch
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoices/search', {'submit': True,
+                                                 'csrf_token' : token,
+                                                 'query' : 'test'}
+                           )
 
         self.app.get('/invoice/edit/100', status=404)
         self.app.get('/invoice/archive/100', status=404)

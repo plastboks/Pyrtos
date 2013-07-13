@@ -1,5 +1,17 @@
 <%inherit file="pyrtos:templates/invoice/base.mako"/>
 
+%if searchpage:
+  <form action="${request.route_url('invoices_search')}" method="POST">
+    ${form.csrf_token}
+    %for error in form.query.errors:
+      <p class=error>${error}</p>
+    %endfor
+    <p>
+      <label>${form.query.label}</label><br />
+      ${form.query}
+    </p>
+  </form>
+%endif
 %if paginator.items:
   <div class='tablelist'>
     <table id='invoices'>

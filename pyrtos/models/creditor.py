@@ -62,6 +62,12 @@ class Creditor(Base):
                         .filter(Creditor.archived == False)\
                         .filter(not_(and_(Creditor.private == True,
                                           Creditor.user_id != id)))
+    @classmethod
+    def all_shared(cls, request):
+        id = authenticated_userid(request)
+        return DBSession.query(Creditor)\
+                        .filter(Creditor.archived == False)\
+                        .filter(Creditor.private == False)
 
     @classmethod
     def all_archived(cls, request):

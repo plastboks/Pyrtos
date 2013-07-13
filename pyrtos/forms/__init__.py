@@ -24,4 +24,5 @@ from pyrtos.forms.expenditure import (
 from pyrtos.forms.invoice import (
     InvoiceCreateForm,
     InvoiceEditForm,
+    InvoiceSearchForm,
 )

@@ -18,7 +18,7 @@ from pyrtos.models import User
 
 class InvoiceCreateForm(BaseForm):
     title = TextField('Invoice Title',
-                      [validators.Length(min=3, max=255)],
+                      [validators.Length(min=2, max=255)],
                       filters=[strip_filter])
     amount = FloatField('Invoice Amount')
     due = DateField('Due date', format='%Y-%m-%d')
@@ -32,3 +32,8 @@ class InvoiceCreateForm(BaseForm):
 
 class InvoiceEditForm(InvoiceCreateForm):
     id = HiddenField()
+
+class InvoiceSearchForm(BaseForm):
+    query = TextField('Search',
+                      [validators.Length(min=2, max=255)],
+                      filters=[strip_filter])
