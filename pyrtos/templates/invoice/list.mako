@@ -26,6 +26,9 @@
       <label>${form.creditors.label}</label><br />
       ${form.creditors}
     </p>
+    <p>
+      <input type="submit" value="Submit" />
+    </p>
   </form>
 %endif
 %if paginator.items:
@@ -67,6 +70,12 @@
             </td>
           </tr>
         %endfor
+        %if total:
+          <tr class='totalrow'>
+            <td></td>
+            <td colspan=3>${total[0][0]}</td>
+          </tr>
+        %endif
       </tbody>
     </table>
   </div>
