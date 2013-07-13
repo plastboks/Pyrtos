@@ -62,8 +62,7 @@ class Category(Base):
                         .filter(not_(and_(Category.private == True,
                                           Category.user_id != id)))
     @classmethod
-    def all_shared(cls, request):
-        id = authenticated_userid(request)
+    def all_shared(cls):
         return DBSession.query(Category)\
                         .filter(Category.archived == False)\
                         .filter(Category.private == False)

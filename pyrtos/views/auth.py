@@ -43,8 +43,7 @@ class AuthViews(object):
               headers = remember(self.request, user.id)
 
               shared_unpaid_invoices = 0;
-              shared_categories = Category.all_active(self.request,
-                                                      id=user.id).all()
+              shared_categories = Category.all_shared()
               for c in shared_categories:
                   unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
                   if unpaid_invoices:
