@@ -5,7 +5,10 @@ from pyrtos.models.meta import (
     IPP,
 )
 
-from pyrtos.models import Category
+from pyrtos.models import (
+    Category,
+    Creditor,
+)
 
 from datetime import datetime
 from sqlalchemy import (
@@ -65,52 +68,62 @@ class Invoice(Base):
 
 
     @classmethod
-    def all_queryed(cls, id, q=False):
-        base = DBSession.query(Invoice)\
-                        .join(Invoice.category)\
-                        .filter(not_(and_(Category.private == True,
-                                          Category.user_id != id)))
-        if q:
-            q = "%"+q+"%"
-            base = base.filter(Invoice.title.like(q))
+    def all_queryed(cls,
+                    id,
+                    qry=False,
+                    cats=False,
+                    creds=False,
+                    total_only=False):
+        base = DBSession.query(Invoice)
+        if total_only:
+            base = DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
+            
+        base = base.join(Invoice.category)\
+                   .join(Invoice.creditor)\
+                   .filter(not_(and_(Category.private == True,
+                                     Category.user_id != id)))
+        if qry:
+            qry = "%"+qry+"%"
+            base = base.filter(Invoice.title.like(qry))
+        if cats:
+            for c in cats:
+                base = base.filter(Category.id == c.id)
+        if creds:
+            for c in creds:
+                base = base.filter(Creditor.id == c.id)
         return base
+
 
     @classmethod
     def with_category_paid(cls, cid, year, month, total_only=False):
-        if total_only:
-            return DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
-                            .filter(and_(Invoice.archived == False,
-                                         Invoice.category_id == cid,
-                                         Invoice.paid != None,
-                                        ))\
-                            .filter(extract('year', Invoice.due) == year)\
-                            .filter(extract('month', Invoice.due) == month)\
-                            .first()
+        base = DBSession.query(Invoice)
 
-        return DBSession.query(Invoice)\
-                        .filter(and_(Invoice.category_id == cid,
-                                     Invoice.archived == False,
-                                     Invoice.paid != None))\
-                        .filter(extract('year', Invoice.due) == year)\
-                        .filter(extract('month', Invoice.due) == month)\
-                        .all()
+        if total_only:
+            base = DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
+
+        base = base.filter(and_(Invoice.category_id == cid,
+                                Invoice.archived == False,
+                                Invoice.paid != None))\
+                    .filter(extract('year', Invoice.due) == year)\
+                    .filter(extract('month', Invoice.due) == month)\
+                    .all()
+        return base
+
 
     @classmethod
     def with_category_all_unpaid(cls, cid, total_only=False):
-        if total_only:
-            return DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
-                            .filter(and_(Invoice.archived == False,
-                                         Invoice.category_id == cid,
-                                         Invoice.paid == None,
-                                        ))\
-                            .first()
+        base = DBSession.query(Invoice)
 
-        return DBSession.query(Invoice)\
-                        .filter(and_(Invoice.category_id == cid,
-                                     Invoice.archived == False,
-                                     Invoice.paid == None,
-                                    ))\
-                        .all()
+        if total_only:
+            base = DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
+
+        base = base.filter(and_(Invoice.category_id == cid,
+                                Invoice.archived == False,
+                                Invoice.paid == None,
+                          ))\
+                   .all()
+        return base
+
 
     @classmethod
     def page(cls, request, page, archived=False):
@@ -123,18 +136,28 @@ class Invoice(Base):
                         items_per_page=IPP)
     
     @classmethod
-    def searchpage(cls, request, page, qry=False):
+    def searchpage(cls,
+                   request,
+                   page,
+                   qry=False,
+                   categories=False,
+                   creditors=False,
+                   total_only=False):
         id = authenticated_userid(request)
         page_url = PageURL_WebOb(request)
-        return Page(Invoice.all_queryed(id, q=qry),
+        return Page(Invoice.all_queryed(id,
+                                        qry=qry,
+                                        cats=categories,
+                                        creds=creditors,
+                                        total_only=total_only),
                     page,
                     url=page_url,
                     items_per_page=IPP)
 
+
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Invoice).filter(Invoice.id == id).first()
-
 
 
     def time_to_expires_in_words(self):
@@ -145,6 +168,7 @@ class Invoice(Base):
       if datetime.utcnow() > self.due:
           return 'Expired by: '+distance
       return 'In: '+distance
+
 
     def css_class_for_time_distance(self):
       distance =  distance_of_time_in_words(from_time=self.due,

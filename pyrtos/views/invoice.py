@@ -122,13 +122,27 @@ class InvoiceViews(object):
        form.creditors.query = Creditor.all_active(self.request)
        if self.request.method == 'POST' and form.validate():
            q = form.query.data
-           invoices = Invoice.searchpage(self.request, page, qry=q)
+           categories = form.categories.data
+           creditors = form.creditors.data
+           invoices = Invoice.searchpage(self.request,
+                                         page,
+                                         qry=q,
+                                         categories=categories,
+                                         creditors=creditors)
+           total = Invoice.searchpage(self.request,
+                                         page,
+                                         qry=q,
+                                         categories=categories,
+                                         creditors=creditors,
+                                         total_only=True)
        else:
            invoices = Invoice.searchpage(self.request, page)
+           total = Invoice.searchpage(self.request, page, total_only=True)
        return {'paginator': invoices,
                'form' : form,
                'title' : 'Search',
-               'searchpage' : True,}
+               'searchpage' : True,
+               'total' : total}
 
 
     @view_config(route_name='invoices_archived',
@@ -139,7 +153,8 @@ class InvoiceViews(object):
         invoices = Invoice.page(self.request, page, archived=True)
         return {'paginator': invoices,
                 'title' : 'Archived invoices',
-                'searchpage' : False}
+                'searchpage' : False,
+                'total' : False,}
 
 
     @view_config(route_name='invoice_new',

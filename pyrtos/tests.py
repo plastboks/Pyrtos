@@ -1236,6 +1236,8 @@ class TestViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoices/search', {'submit': True,
                                                  'csrf_token' : token,
+                                                 'categories' : 1,
+                                                 'creditors' : 1,
                                                  'query' : 'test'}
                            )
 

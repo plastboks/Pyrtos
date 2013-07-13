@@ -47,7 +47,7 @@ class InvoiceEditForm(InvoiceCreateForm):
 
 class InvoiceSearchForm(BaseForm):
     query = TextField('Search',
-                      [validators.Length(min=2, max=255)],
+                      [validators.Length(max=255)],
                       filters=[strip_filter])
 
     categories = MultiCheckboxField('Categories',
