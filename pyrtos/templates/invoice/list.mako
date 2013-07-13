@@ -50,9 +50,13 @@
             <td>${item.creditor.title}</td>
             <td class='actions'>
               %if request.can_i('edit'):
-                <a href="${request.route_url('invoice_edit', id=item.id)}">
+                %if item.category.private or item.creditor.private:
+                  <a href="${request.route_url('invoice_edit', id=item.id, _query={'private' : '1'})}">
+                %else:
+                  <a href="${request.route_url('invoice_edit', id=item.id)}">
+                %endif
                     <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
-                </a>
+                  </a>
               %endif
               %if item.archived:
                 %if request.can_i('restore'):
