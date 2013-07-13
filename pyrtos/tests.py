@@ -1063,10 +1063,9 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/invoices')
         self.assertTrue(res.status_int, 200)
-
-        res = self.app.get('/invoices?private=1')
-        self.assertTrue(res.status_int, 200)
-
+        self.assertIn('No paid invoices', res.body)
+        
+        # try to create a new invoice without categories and creditors
         self.app.get('/invoice/new', status=302)
         self.app.get('/invoice/new?private=1', status=302)
 
@@ -1077,6 +1076,7 @@ class TestViews(IntegrationTestBase):
                                               'csrf_token' : token}
                            )
 
+        # try to create a new invoice without creditors
         self.app.get('/invoice/new', status=302)
         self.app.get('/invoice/new?private=1', status=302)
 
@@ -1105,6 +1105,7 @@ class TestViews(IntegrationTestBase):
         
         # edit public invoice
         res = self.app.get('/invoice/edit/1')
+        self.assertIn('testbest', res.body)
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoice/edit/1', params={'id' : 1,
                                                       'title' : 'besttest',
@@ -1147,6 +1148,8 @@ class TestViews(IntegrationTestBase):
 
         # new priv invoice
         res = self.app.get('/invoice/new?private=1')
+        self.assertIn('hestbest', res.body)
+        self.assertFalse('testbest' in res.body)
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoice/new?private=1', {'title' : 'testbest',
                                                        'amount' : '12345',
