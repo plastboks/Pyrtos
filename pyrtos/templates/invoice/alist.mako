@@ -55,7 +55,7 @@
           %endfor
             <tr class='totalrow'>
               <td></td>
-              <td colspan=3>${invoices[1][0]}</td>
+              <td colspan=3>${invoices[1][0][0]}</td>
             </tr>
         </tbody>
       </table>
@@ -130,7 +130,7 @@
           %endfor
             <tr class='totalrow'>
               <td></td>
-              <td colspan=3>${invoices[1][0]}</td>
+              <td colspan=3>${invoices[1][0][0]}</td>
             </tr>
         </tbody>
       </table>
