@@ -124,17 +124,25 @@ class InvoiceViews(object):
            q = form.query.data
            categories = form.categories.data
            creditors = form.creditors.data
+           fromdate = form.fromdate.data
+           todate = form.todate.data
            invoices = Invoice.searchpage(self.request,
                                          page,
                                          qry=q,
                                          categories=categories,
-                                         creditors=creditors)
+                                         creditors=creditors,
+                                         fromdate=fromdate,
+                                         todate=todate,
+                                         )
            total = Invoice.searchpage(self.request,
                                          page,
                                          qry=q,
                                          categories=categories,
                                          creditors=creditors,
-                                         total_only=True)
+                                         fromdate=fromdate,
+                                         todate=todate,
+                                         total_only=True,
+                                         )
        else:
            invoices = Invoice.searchpage(self.request, page)
            total = Invoice.searchpage(self.request, page, total_only=True)

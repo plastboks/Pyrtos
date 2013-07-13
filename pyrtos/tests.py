@@ -1237,6 +1237,8 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/invoices/search', {'submit': True,
                                                  'csrf_token' : token,
                                                  'categories' : 1,
+                                                 'fromdate' : '2013-07-07',
+                                                 'todate' : '2013-07-07',
                                                  'creditors' : 1,
                                                  'query' : 'test'}
                           )
