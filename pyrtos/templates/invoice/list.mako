@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         %for item in paginator.items:
-          <tr>
+          <tr class="${'archived' if item.archived else 'active'}">
             <td>${item.title}</td>
             <td>${item.amount}</td>
             <td>${item.category.title}</td>
@@ -23,7 +23,7 @@
                     <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
                 </a>
               %endif
-              %if archived:
+              %if item.archived:
                 %if request.can_i('restore'):
                   <a href="${request.route_url('invoice_restore', id=item.id)}">
                     <img src='${request.static_url("pyrtos:static/icons/page_white_restore.png")}' title='Restore' alt='Restore' />
