@@ -116,25 +116,33 @@ class InvoiceViews(object):
                  permission='view')
     def invoices_search(self):
        page = int(self.request.params.get('page', 1)) 
-       form = InvoiceSearchForm(self.request.POST,
+       form = InvoiceSearchForm(self.request.GET,
                                 csrf_context=self.request.session)
        form.categories.query = Category.all_active(self.request)
        form.creditors.query = Creditor.all_active(self.request)
-       if self.request.method == 'POST' and form.validate():
+       if self.request.method == 'GET' and form.validate():
            q = form.query.data
            categories = form.categories.data
            creditors = form.creditors.data
+           fromdate = form.fromdate.data
+           todate = form.todate.data
            invoices = Invoice.searchpage(self.request,
                                          page,
                                          qry=q,
                                          categories=categories,
-                                         creditors=creditors)
+                                         creditors=creditors,
+                                         fromdate=fromdate,
+                                         todate=todate,
+                                         )
            total = Invoice.searchpage(self.request,
                                          page,
                                          qry=q,
                                          categories=categories,
                                          creditors=creditors,
-                                         total_only=True)
+                                         fromdate=fromdate,
+                                         todate=todate,
+                                         total_only=True,
+                                         )
        else:
            invoices = Invoice.searchpage(self.request, page)
            total = Invoice.searchpage(self.request, page, total_only=True)

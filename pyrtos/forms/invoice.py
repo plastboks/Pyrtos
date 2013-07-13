@@ -55,3 +55,9 @@ class InvoiceSearchForm(BaseForm):
 
     creditors = MultiCheckboxField('Creditors',
                                     get_label='title')
+    fromdate = DateField('From date',
+                     [validators.optional()],
+                     format='%Y-%m-%d')
+    todate = DateField('To date',
+                     [validators.optional()],
+                     format='%Y-%m-%d')

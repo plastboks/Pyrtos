@@ -73,7 +73,9 @@ class Invoice(Base):
                     qry=False,
                     cats=False,
                     creds=False,
-                    total_only=False):
+                    total_only=False,
+                    fromdate=False,
+                    todate=False,):
         base = DBSession.query(Invoice)
         if total_only:
             base = DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
@@ -91,6 +93,11 @@ class Invoice(Base):
         if creds:
             for c in creds:
                 base = base.filter(Creditor.id == c.id)
+        if fromdate:
+            base = base.filter(Invoice.due >= fromdate)
+        if todate:
+            base = base.filter(Invoice.due <= todate)
+
         return base
 
 
@@ -142,14 +149,18 @@ class Invoice(Base):
                    qry=False,
                    categories=False,
                    creditors=False,
-                   total_only=False):
+                   total_only=False,
+                   fromdate=False,
+                   todate=False,):
         id = authenticated_userid(request)
         page_url = PageURL_WebOb(request)
         return Page(Invoice.all_queryed(id,
                                         qry=qry,
                                         cats=categories,
                                         creds=creditors,
-                                        total_only=total_only),
+                                        total_only=total_only,
+                                        fromdate=fromdate,
+                                        todate=todate,),
                     page,
                     url=page_url,
                     items_per_page=IPP)

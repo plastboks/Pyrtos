@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/invoice/base.mako"/>
 
 %if searchpage:
-  <form action="${request.route_url('invoices_search')}" method="POST">
+  <form action="${request.route_url('invoices_search')}" method="GET">
     ${form.csrf_token}
     %for error in form.query.errors:
       <p class=error>${error}</p>
@@ -26,6 +26,23 @@
       <label>${form.creditors.label}</label><br />
       ${form.creditors}
     </p>
+
+    %for error in form.fromdate.errors:
+      <p class=error>${error}</p>
+    %endfor
+    <p>
+      <label>${form.fromdate.label}</label><br />
+      ${form.fromdate}
+    </p>
+
+    %for error in form.todate.errors:
+      <p class=error>${error}</p>
+    %endfor
+    <p>
+      <label>${form.todate.label}</label><br />
+      ${form.todate}
+    </p>
+
     <p>
       <input type="submit" value="Submit" />
     </p>
@@ -37,6 +54,7 @@
       <thead>
         <th>Title</th>
         <th>Amount</th>
+        <th>Due</th>
         <th>Category</th>
         <th>Creditor</th>
         <th>Actions</th>
@@ -46,6 +64,7 @@
           <tr class="${'archived' if item.archived else 'active'}">
             <td>${item.title}</td>
             <td>${item.amount}</td>
+            <td>${item.due.date()}</td>
             <td>${item.category.title}</td>
             <td>${item.creditor.title}</td>
             <td class='actions'>
