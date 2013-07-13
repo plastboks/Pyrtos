@@ -83,11 +83,7 @@ class InvoiceViews(object):
         month = int(self.request.params.get('month',
                                             datetime.now().strftime('%m')))
 
-        private = self.request.params.get('private')
-        if private:
-            categories = Category.all_private(self.request).all()
-        else:
-            categories = Category.all_active(self.request).all()
+        categories = Category.all_active(self.request).all()
 
         for c in categories:
             paid_invoices = Invoice.with_category_paid(c.id,
@@ -107,8 +103,7 @@ class InvoiceViews(object):
 
         return {'paiditems': paid_result,
                 'unpaiditems' : unpaid_result,
-                'title' : 'Private invoices' if private else 'Shared invoices',
-                'private' : private,
+                'title' : 'Invoices',
                 'month' : month,
                 'year' : year,
                 'nextmonth' : self.month_switcher(year, month, next=True),
