@@ -116,11 +116,11 @@ class InvoiceViews(object):
                  permission='view')
     def invoices_search(self):
        page = int(self.request.params.get('page', 1)) 
-       form = InvoiceSearchForm(self.request.POST,
+       form = InvoiceSearchForm(self.request.GET,
                                 csrf_context=self.request.session)
        form.categories.query = Category.all_active(self.request)
        form.creditors.query = Creditor.all_active(self.request)
-       if self.request.method == 'POST' and form.validate():
+       if self.request.method == 'GET' and form.validate():
            q = form.query.data
            categories = form.categories.data
            creditors = form.creditors.data

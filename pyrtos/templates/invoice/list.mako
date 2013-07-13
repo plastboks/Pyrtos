@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/invoice/base.mako"/>
 
 %if searchpage:
-  <form action="${request.route_url('invoices_search')}" method="POST">
+  <form action="${request.route_url('invoices_search')}" method="GET">
     ${form.csrf_token}
     %for error in form.query.errors:
       <p class=error>${error}</p>
