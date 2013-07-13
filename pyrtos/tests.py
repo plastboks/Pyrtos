@@ -369,7 +369,7 @@ class ViewTests(BaseTestCase):
         request = testing.DummyRequest()
         i = InvoiceViews(request)
         response = i.invoices()
-        self.assertEqual(response['title'], 'Shared invoices')
+        self.assertEqual(response['title'], 'Invoices')
 
     def test_invoice_archived(self):
         from pyrtos.views import InvoiceViews

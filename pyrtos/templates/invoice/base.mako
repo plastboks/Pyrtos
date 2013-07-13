@@ -8,7 +8,6 @@
     %endif
     <li><a href="${request.route_url('invoices')}">All</a></li>
     <li><a href="${request.route_url('invoices_search')}">Search</a></li>
-    <li><a href="${request.route_url('invoices', _query={'private' : 1})}">Private</a></li>
     %if request.can_i('archive'):
       <li><a href="${request.route_url('invoices_archived')}">Archived</a></li>
     %endif
