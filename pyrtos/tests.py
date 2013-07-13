@@ -381,6 +381,7 @@ class ViewTests(BaseTestCase):
     def test_invoice_search(self):
         from pyrtos.views import InvoiceViews
         request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
         i = InvoiceViews(request)
         response = i.invoices_search()
         self.assertEqual(response['title'], 'Search')
@@ -1231,6 +1232,12 @@ class TestViews(IntegrationTestBase):
         # visit the query page
         res = self.app.get('/invoices/search', status=200)
         self.assertIn('Search', res.body)
+        # to a testsearch
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoices/search', {'submit': True,
+                                                 'csrf_token' : token,
+                                                 'query' : 'test'}
+                           )
 
         self.app.get('/invoice/edit/100', status=404)
         self.app.get('/invoice/archive/100', status=404)
