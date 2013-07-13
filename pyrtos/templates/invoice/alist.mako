@@ -29,13 +29,13 @@
               <td>${item.creditor.title}</td>
               <td class='actions'>
                 %if request.can_i('edit'):
-                  %if private:
+                  %if item.category.private or item.creditor.private:
                     <a href="${request.route_url('invoice_edit', id=item.id, _query={'private' : '1'})}">
                   %else:
                     <a href="${request.route_url('invoice_edit', id=item.id)}">
                   %endif
                       <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
-                  </a>
+                    </a>
                 %endif
                 %if archived:
                   %if request.can_i('restore'):
@@ -55,7 +55,7 @@
           %endfor
             <tr class='totalrow'>
               <td></td>
-              <td colspan=3>${invoices[1][0]}</td>
+              <td colspan=3>${invoices[1][0][0]}</td>
             </tr>
         </tbody>
       </table>
@@ -101,7 +101,7 @@
               <td>${item.creditor.title}</td>
               <td class='actions'>
                 %if request.can_i('edit'):
-                  %if private:
+                  %if item.category.private or item.creditor.private:
                     <a href="${request.route_url('invoice_edit', id=item.id, _query={'private' : '1'})}">
                   %else:
                     <a href="${request.route_url('invoice_edit', id=item.id)}">
@@ -130,7 +130,7 @@
           %endfor
             <tr class='totalrow'>
               <td></td>
-              <td colspan=3>${invoices[1][0]}</td>
+              <td colspan=3>${invoices[1][0][0]}</td>
             </tr>
         </tbody>
       </table>
