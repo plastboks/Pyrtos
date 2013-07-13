@@ -10,6 +10,22 @@
       <label>${form.query.label}</label><br />
       ${form.query}
     </p>
+
+    %for error in form.categories.errors:
+      <p class=error>${error}</p>
+    %endfor
+    <p>
+      <label>${form.categories.label}</label><br />
+      ${form.categories}
+    </p>
+
+    %for error in form.creditors.errors:
+      <p class=error>${error}</p>
+    %endfor
+    <p>
+      <label>${form.creditors.label}</label><br />
+      ${form.creditors}
+    </p>
   </form>
 %endif
 %if paginator.items:

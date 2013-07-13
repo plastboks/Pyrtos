@@ -2,19 +2,31 @@ from pyrtos.forms.meta import BaseForm, strip_filter
 
 from wtforms import (
     validators,
+    widgets,
     TextField,
     FloatField,
     DateField,
     HiddenField,
     SelectField,
     PasswordField,
+    SelectMultipleField,
 )
 from wtforms.ext.sqlalchemy.fields import (
     QuerySelectField,
+    QuerySelectMultipleField,
 )
 
 from pyrtos.models import User
 
+class MultiCheckboxField(QuerySelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 class InvoiceCreateForm(BaseForm):
     title = TextField('Invoice Title',
@@ -37,3 +49,9 @@ class InvoiceSearchForm(BaseForm):
     query = TextField('Search',
                       [validators.Length(min=2, max=255)],
                       filters=[strip_filter])
+
+    categories = MultiCheckboxField('Categories',
+                                    get_label='title')
+
+    creditors = MultiCheckboxField('Creditors',
+                                    get_label='title')
