@@ -118,8 +118,7 @@ class InvoiceViews(object):
        query = self.request.params.get('q')
        invoices = Invoice.searchpage(self.request, page)
        return {'paginator': invoices,
-               'title' : 'Search',
-               'archived' : False}
+               'title' : 'Search',}
 
 
     @view_config(route_name='invoices_archived',
@@ -129,8 +128,7 @@ class InvoiceViews(object):
         page = int(self.request.params.get('page', 1))
         invoices = Invoice.page(self.request, page, archived=True)
         return {'paginator': invoices,
-                'title' : 'Archived invoices',
-                'archived' : True,}
+                'title' : 'Archived invoices',}
 
 
     @view_config(route_name='invoice_new',

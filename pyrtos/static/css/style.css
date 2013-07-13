@@ -311,6 +311,11 @@ img {
   height: 25px;
 }
 
+#content table tbody .archived {
+  color: gray;
+  font-style: italic !important;
+}
+
 #content tbody tr:nth-child(2n+2) {
   border: 1px solid lavender;
   background: ghostwhite;
