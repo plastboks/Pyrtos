@@ -72,7 +72,7 @@ class Invoice(Base):
                                           Category.user_id != id)))
         if q:
             q = "%"+q+"%"
-            base.filter(Category.title.like(q))
+            base = base.filter(Invoice.title.like(q))
         return base
 
     @classmethod
@@ -126,12 +126,7 @@ class Invoice(Base):
     def searchpage(cls, request, page, qry=False):
         id = authenticated_userid(request)
         page_url = PageURL_WebOb(request)
-        if qry:
-            return Page(Invoice.all_queryed(id, q=qry),
-                        page,
-                        url=page_url,
-                        items_per_page=IPP)
-        return Page(Invoice.all_queryed(id),
+        return Page(Invoice.all_queryed(id, q=qry),
                     page,
                     url=page_url,
                     items_per_page=IPP)
