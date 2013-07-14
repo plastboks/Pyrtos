@@ -103,6 +103,9 @@ def main(global_config, **settings):
     config.add_route('invoice_archive', '/invoice/archive/{id}')
     config.add_route('invoice_restore', '/invoice/restore/{id}')
 
+    # file
+    config.add_route('files', '/files')
+    
     config.scan()
     return config.make_wsgi_app()
 
