@@ -230,6 +230,26 @@ class InvoiceModelTests(BaseTestCase):
         self.assertIn('10 days', time_to)
 
 
+class FileModelTests(BaseTestCase):
+    
+    def _getTargetClass(self):
+        from pyrtos.models import File
+        return File
+
+    def _makeOne(self, id, title, filename):
+        return self._getTargetClass()(id=id,
+                                      title=title,
+                                      filename=filename,)
+
+    def test_constructur(self):
+        instance = self._makeOne(1, 'test', 'test.jpg')
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(1)
+        self.assertEqual(qi.title, 'test')
+        self.assertEqual(qi.filename, 'test.jpg')
+
+
 class ViewTests(BaseTestCase):
 
     def test_index(self):
