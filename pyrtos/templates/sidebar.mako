@@ -16,6 +16,7 @@
   <li class='group'><a href="${request.route_url('creditors')}">Creditors</a></li>
   <li class='group'><a href="${request.route_url('categories')}">Categories</a></li>
   <li class='group'><a href="${request.route_url('tags')}">Tags</a></li>
+  <li class='group'><a href="${request.route_url('files')}">Files</a></li>
 </ul>
 <ul>
   <li class='user'><a href="${request.route_url('users')}">Users</a></li>

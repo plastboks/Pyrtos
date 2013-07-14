@@ -422,6 +422,13 @@ class ViewTests(BaseTestCase):
         self.assertEqual(r[0], 2012)
         self.assertEqual(r[1], 12)
 
+    def test_files(self):
+        from pyrtos.views import FileViews
+        request = testing.DummyRequest()
+        f = FileViews(request)
+        r = f.files()
+        self.assertEqual(r['title'], 'Files')
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
@@ -1326,3 +1333,14 @@ class TestViews(IntegrationTestBase):
         self.app.get('/invoice/archive/2', status=403)
         # try to restore an invoice the user do not have permission to
         self.app.get('/invoice/restore/2', status=403)
+
+    def test_files(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+        res = self.app.get('/files')
+        self.assertIn('Files', res.body)
