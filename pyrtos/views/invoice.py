@@ -1,4 +1,6 @@
 from datetime import datetime
+import os, hashlib, shutil
+
 from slugify import slugify
 from pyramid.response import Response
 from sqlalchemy.exc import DBAPIError
@@ -19,6 +21,7 @@ from pyrtos.models import (
     Category,
     Invoice,
     Creditor,
+    File,
 )
 from pyrtos.forms import (
     InvoiceCreateForm,
@@ -61,6 +64,20 @@ class InvoiceViews(object):
         self.request.session.pop_flash('private_unpaid_invoices')
         self.request.session.flash(private_unpaid_invoices,
                                    'private_unpaid_invoices')
+
+    def file_save(self, fileobj):
+        input_file = fileobj.file
+        tmp_fileparts = os.path.splitext(fileobj.filename)
+    
+        final_filename = hashlib.sha1(tmp_fileparts[0])\
+                         .hexdigest()+tmp_fileparts[1]
+
+        file_path = os.path.join('pyrtos/uploads', final_filename)
+        with open(file_path, 'wb') as output_file:
+            shutil.copyfileobj(input_file, output_file)
+        
+        return final_filename
+
 
 
     def month_switcher(self, year, month, next=False):
@@ -193,11 +210,30 @@ class InvoiceViews(object):
             form.creditor_id.query = Creditor.all_shared()
 
         if self.request.method == 'POST' and form.validate():
+
             i = Invoice()
             form.populate_obj(i)
             i.user_id = authenticated_userid(self.request)
             i.category_id = form.category_id.data.id
             i.creditor_id = form.creditor_id.data.id
+
+            upload = self.request.POST.get('attachment')
+            try:
+                attachment = self.file_save(upload)
+                f = File()
+                f.filename = attachment
+                f.title = 'Invoice.'+\
+                          form.title.data+'.'+\
+                          form.category_id.data.title+'.'+\
+                          form.creditor_id.data.title+'.'+\
+                          str(i.due)
+                f.user_id = authenticated_userid(self.request)
+                DBSession.add(f)
+                i.files = [f]
+            except Exception:
+                self.request.session.flash('No file added.',\
+                                           'status')
+
             DBSession.add(i)
             self.request.session.flash('Invoice %s created' %\
                                           (i.title), 'success')

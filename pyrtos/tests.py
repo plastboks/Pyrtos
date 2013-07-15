@@ -1138,13 +1138,15 @@ class TestViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoice/new', {'title' : 'testbest',
                                              'amount' : '12345',
-                                             'category_id' : 1,
                                              'due' : '2013-07-07',
+                                             'category_id' : 1,
                                              'creditor_id' : 1,
-                                             'csrf_token' : token}
-                           )
-        res = self.app.get('/invoices', status=200)
-        self.assertTrue('testbest' in res.body)
+                                             'csrf_token' : token},
+                            upload_files=[('attachment', 'foo.pdf', b'foo')],
+                            status=302)
+
+#        res = self.app.get('/invoices', status=200)
+#        self.assertTrue('testbest' in res.body)
         
         # edit public invoice
         res = self.app.get('/invoice/edit/1')

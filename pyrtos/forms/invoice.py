@@ -10,6 +10,7 @@ from wtforms import (
     SelectField,
     PasswordField,
     SelectMultipleField,
+    FileField,
 )
 from wtforms.ext.sqlalchemy.fields import (
     QuerySelectField,
@@ -37,6 +38,7 @@ class InvoiceCreateForm(BaseForm):
     paid = DateField('Paid date',
                      [validators.optional()],
                      format='%Y-%m-%d')
+    attachment = FileField('Attachment')
     category_id = QuerySelectField('Category',
                                     get_label='title')
     creditor_id = QuerySelectField('Creditor',

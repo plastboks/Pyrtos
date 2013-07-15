@@ -16,9 +16,9 @@
   %endif
 
 %if private:
-  <form action="${request.route_url(action, id=id, _query={'private' : '1'})}" method="POST">
+  <form action="${request.route_url(action, id=id, _query={'private' : '1'})}" method="POST" enctype="multipart/form-data">
 %else:
-  <form action="${request.route_url(action, id=id)}" method="POST">
+  <form action="${request.route_url(action, id=id)}" method="POST" enctype="multipart/form-data">
 %endif
 
   ${form.csrf_token}
@@ -40,6 +40,14 @@
   <p>
     <label>${form.amount.label}</label><br />
     ${form.amount}
+  </p>
+
+  %for error in form.attachment.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.attachment.label}</label><br />
+    ${form.attachment}
   </p>
 
   %for error in form.due.errors:
