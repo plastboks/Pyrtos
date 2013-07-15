@@ -66,8 +66,8 @@ class FileViews(object):
             f = File()
             form.populate_obj(f)
             
-            if self.request.POST.get('file'):
-                upload = self.request.POST.get('file')
+            upload = self.request.POST.get('file')
+            try:
                 input_file = upload.file
 
                 tmp_fileparts = os.path.splitext(upload.filename)
@@ -80,6 +80,10 @@ class FileViews(object):
                     shutil.copyfileobj(input_file, output_file)
 
                 f.filename = final_filename
+            except Exception:
+                self.request.session.flash('File %s created but no file added' %\
+                                                (f.title), 'status')
+
             f.user_id = authenticated_userid(self.request)
             DBSession.add(f)
             self.request.session.flash('File %s created' %\
@@ -97,15 +101,14 @@ class FileViews(object):
         f = File.by_id(id)
         if not f:
             return HTTPNotFound()
-        if f.private and c.user_id is not authenticated_userid(self.request):
+        if f.private and f.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
-
+        
         if f.filename:
-            response = FileResponse(
-                'pyrtos/uploads/'+f.filename,
-                request=self.request,
-                content_type='application/pdf'
-            )
-            return response
+          response = FileResponse(
+              'pyrtos/uploads/'+f.filename,
+              request=self.request,
+              content_type='application/pdf'
+          )
+          return response
         return HTTPNotFound()
-
