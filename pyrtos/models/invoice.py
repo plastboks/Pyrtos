@@ -10,9 +10,12 @@ from pyrtos.models import (
     Creditor,
 )
 
+from pyrtos.models.file import File
+
 from datetime import datetime
 from sqlalchemy import (
     Column,
+    Table,
     Integer,
     Float,
     Text,
@@ -39,6 +42,10 @@ from webhelpers.date import (
   time_ago_in_words,
 )
 
+association_table = Table('invoice_files', Base.metadata,
+    Column('left_id', Integer, ForeignKey('invoices.id')),
+    Column('right_id', Integer, ForeignKey('files.id'))
+)
 
 class Invoice(Base):
     __tablename__ = 'invoices'
@@ -57,6 +64,9 @@ class Invoice(Base):
     user = relationship('User', backref='invoices')
     category = relationship('Category', backref='invoices')
     creditor = relationship('Creditor', backref='invoices')
+    files = relationship('File',
+                    secondary=association_table,
+                    backref='invoices')
 
     @classmethod
     def all_archived(cls, id):
