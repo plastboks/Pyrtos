@@ -239,7 +239,8 @@ class FileModelTests(BaseTestCase):
     def _makeOne(self, id, title, filename):
         return self._getTargetClass()(id=id,
                                       title=title,
-                                      filename=filename,)
+                                      filename=filename,
+                                      user_id=1,)
 
     def test_constructur(self):
         instance = self._makeOne(1, 'test', 'test.jpg')
@@ -428,6 +429,13 @@ class ViewTests(BaseTestCase):
         f = FileViews(request)
         r = f.files()
         self.assertEqual(r['title'], 'Files')
+
+    def test_files_archived(self):
+        from pyrtos.views import FileViews
+        request = testing.DummyRequest()
+        f = FileViews(request)
+        r = f.files_archived()
+        self.assertEqual(r['title'], 'Archived files')
 
 
 class IntegrationTestBase(BaseTestCase):
@@ -1342,5 +1350,6 @@ class TestViews(IntegrationTestBase):
                                        'email': 'user@email.com',
                                        'password' : '1234567',}
                            )
+
         res = self.app.get('/files')
         self.assertIn('Files', res.body)

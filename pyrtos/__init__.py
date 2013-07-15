@@ -105,6 +105,9 @@ def main(global_config, **settings):
 
     # file
     config.add_route('files', '/files')
+    config.add_route('files_archived', '/files/archived')
+    config.add_route('file_new', '/file/new')
+    config.add_route('file_edit', '/file/edit')
     
     config.scan()
     return config.make_wsgi_app()

@@ -36,3 +36,12 @@ class FileViews(object):
         return {'paginator': files,
                 'title' : 'Files',}
 
+    @view_config(route_name='files_archived',
+                 renderer='pyrtos:templates/file/list.mako',
+                 permission='view')
+    def files_archived(self):
+        page = int(self.request.params.get('page', 1))
+        files = File.page(self.request, page, archived=True)
+        return {'paginator': files,
+                'title' : 'Archived files',
+                'archived' : True,}
