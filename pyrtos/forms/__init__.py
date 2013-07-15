@@ -26,3 +26,7 @@ from pyrtos.forms.invoice import (
     InvoiceEditForm,
     InvoiceSearchForm,
 )
+from pyrtos.forms.file import (
+    FileCreateForm,
+    FileEditForm,
+)

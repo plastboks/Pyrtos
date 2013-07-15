@@ -33,8 +33,8 @@ class File(Base):
     __tablename__ = 'files'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    title = Column(String(255), unique=True, nullable=False)
-    filename = Column(String(255), unique=True, nullable=False)
+    title = Column(String(255), nullable=False)
+    filename = Column(String(255), unique=True)
     private = Column(Boolean, default=False)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)

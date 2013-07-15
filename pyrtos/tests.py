@@ -1,4 +1,5 @@
 import unittest
+import cgi
 import transaction
 
 from datetime import datetime, timedelta, date
@@ -20,6 +21,8 @@ from pyrtos.models import (
     Income,
     Expenditure,
 )
+
+from StringIO import StringIO
 
 def _initTestingDB(makeuser=False):
     engine = create_engine('sqlite://')
@@ -449,6 +452,9 @@ class IntegrationTestBase(BaseTestCase):
         self.app = TestApp(self.app)
         self.config = testing.setUp()
         super(IntegrationTestBase, self).setUp()
+
+class MockCGIFieldStorage(object):
+   pass
 
 class TestViews(IntegrationTestBase):
 
@@ -1353,3 +1359,18 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/files')
         self.assertIn('Files', res.body)
+
+        res = self.app.get('/file/new')
+        self.assertIn('New file', res.body)
+        token = res.form.fields['csrf_token'][0].value
+
+        res = self.app.post('/file/new', {'submit' : True,
+                                          'title' : 'foo',
+                                          'csrf_token' : token,
+                                         }, status=302)
+
+        res = self.app.get('/files')
+        self.assertIn('foo', res.body)
+
+        res = self.app.get('/file/download/1', status=404)
+
