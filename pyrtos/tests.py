@@ -1,4 +1,5 @@
 import unittest
+import cgi
 import transaction
 
 from datetime import datetime, timedelta, date
@@ -20,6 +21,8 @@ from pyrtos.models import (
     Income,
     Expenditure,
 )
+
+from StringIO import StringIO
 
 def _initTestingDB(makeuser=False):
     engine = create_engine('sqlite://')
@@ -239,7 +242,8 @@ class FileModelTests(BaseTestCase):
     def _makeOne(self, id, title, filename):
         return self._getTargetClass()(id=id,
                                       title=title,
-                                      filename=filename,)
+                                      filename=filename,
+                                      user_id=1,)
 
     def test_constructur(self):
         instance = self._makeOne(1, 'test', 'test.jpg')
@@ -429,6 +433,13 @@ class ViewTests(BaseTestCase):
         r = f.files()
         self.assertEqual(r['title'], 'Files')
 
+    def test_files_archived(self):
+        from pyrtos.views import FileViews
+        request = testing.DummyRequest()
+        f = FileViews(request)
+        r = f.files_archived()
+        self.assertEqual(r['title'], 'Archived files')
+
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
@@ -441,6 +452,9 @@ class IntegrationTestBase(BaseTestCase):
         self.app = TestApp(self.app)
         self.config = testing.setUp()
         super(IntegrationTestBase, self).setUp()
+
+class MockCGIFieldStorage(object):
+   pass
 
 class TestViews(IntegrationTestBase):
 
@@ -1342,5 +1356,21 @@ class TestViews(IntegrationTestBase):
                                        'email': 'user@email.com',
                                        'password' : '1234567',}
                            )
+
         res = self.app.get('/files')
         self.assertIn('Files', res.body)
+
+        res = self.app.get('/file/new')
+        self.assertIn('New file', res.body)
+        token = res.form.fields['csrf_token'][0].value
+
+        res = self.app.post('/file/new', {'submit' : True,
+                                          'title' : 'foo',
+                                          'csrf_token' : token,
+                                         }, status=302)
+
+        res = self.app.get('/files')
+        self.assertIn('foo', res.body)
+
+        res = self.app.get('/file/download/1', status=404)
+

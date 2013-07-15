@@ -17,9 +17,13 @@ from sqlalchemy import (
     ForeignKey,
     or_,
     and_,
+    not_,
     desc,
     asc,
 )
+
+from sqlalchemy.orm import relationship
+from pyrtos.security import authenticated_userid
 
 from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
@@ -28,23 +32,46 @@ from webhelpers.date import time_ago_in_words
 class File(Base):
     __tablename__ = 'files'
     id = Column(Integer, primary_key=True)
-    title = Column(String(255), unique=True, nullable=False)
-    filename = Column(String(255), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    title = Column(String(255), nullable=False)
+    filename = Column(String(255), unique=True)
+    private = Column(Boolean, default=False)
+    archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
+    user = relationship('User', backref='files')
+
     @classmethod
-    def all_active(cls):
-        return DBSession.query(File)
+    def all_active(cls, request):
+        id = authenticated_userid(request)
+        return DBSession.query(File)\
+                        .filter(File.archived == False)\
+                        .filter(not_(and_(File.private == True,
+                                          File.user_id != id)))
+
+    @classmethod
+    def all_archived(cls, request):
+        id = authenticated_userid(request)
+        return DBSession.query(File)\
+                        .filter(File.archived == True)\
+                        .filter(not_(and_(File.private == True,
+                                          File.user_id != id)))
 
     @classmethod
     def by_id(cls, id):
         return DBSession.query(File).filter(File.id == id).first()
 
     @classmethod
-    def page(cls, request, page):
+    def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
-        return Page(File.all_active(),
+        if archived:
+            return Page(File.all_archived(request),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
+        return Page(File.all_active(request),
                     page,
                     url=page_url,
                     items_per_page=IPP)
+
