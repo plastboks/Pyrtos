@@ -9,6 +9,7 @@ from wtforms import (
     FileField,
 )
 
+
 class FileCreateForm(BaseForm):
     title = TextField('File Title',
                       [validators.Length(min=3, max=255)],
@@ -17,6 +18,7 @@ class FileCreateForm(BaseForm):
     file = FileField(u'File',
                      # add validation here
                      )
+
 
 class FileEditForm(FileCreateForm):
     id = HiddenField()
