@@ -22,6 +22,7 @@ requires = [
     'nose',
     'coverage',
     'slugify',
+    'pep8',
     ]
 
 setup(name='pyrtos',
