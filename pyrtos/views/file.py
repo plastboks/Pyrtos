@@ -45,6 +45,7 @@ class FileViews(object):
         return {'paginator': files,
                 'title' : 'Files',}
 
+
     @view_config(route_name='files_archived',
                  renderer='pyrtos:templates/file/list.mako',
                  permission='view')
@@ -54,6 +55,7 @@ class FileViews(object):
         return {'paginator': files,
                 'title' : 'Archived files',
                 'archived' : True,}
+
 
     @view_config(route_name='file_new',
                  renderer='pyrtos:templates/file/edit.mako',
@@ -84,6 +86,7 @@ class FileViews(object):
                 'form': form,
                 'action': 'file_new'}
 
+
     @view_config(route_name='file_download',
                   permission='view')
     def file_download(self):
@@ -99,7 +102,7 @@ class FileViews(object):
           response = FileResponse(
               'pyrtos/uploads/'+f.filename,
               request=self.request,
-              content_type='application/pdf'
+              content_type=f.filemime
           )
           return response
         return HTTPNotFound()
