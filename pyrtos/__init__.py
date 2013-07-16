@@ -84,6 +84,31 @@ def main(global_config, **settings):
     config.add_route('income_archive', '/income/archive/{id}')
     config.add_route('income_restore', '/income/restore/{id}')
 
+    # expenditure
+    config.add_route('expenditures', '/expenditures')
+    config.add_route('expenditures_private', '/expenditures/private')
+    config.add_route('expenditures_archived', '/expenditures/archived')
+    config.add_route('expenditure_new', '/expenditure/new')
+    config.add_route('expenditure_edit', '/expenditure/edit/{id}')
+    config.add_route('expenditure_archive', '/expenditure/archive/{id}')
+    config.add_route('expenditure_restore', '/expenditure/restore/{id}')
+
+    # invoice
+    config.add_route('invoices', '/invoices')
+    config.add_route('invoices_archived', '/invoices/archived')
+    config.add_route('invoices_search', '/invoices/search')
+    config.add_route('invoice_new', '/invoice/new')
+    config.add_route('invoice_edit', '/invoice/edit/{id}')
+    config.add_route('invoice_quickpay', '/invoice/quickpay/{id}')
+    config.add_route('invoice_archive', '/invoice/archive/{id}')
+    config.add_route('invoice_restore', '/invoice/restore/{id}')
+
+    # file
+    config.add_route('files', '/files')
+    config.add_route('files_archived', '/files/archived')
+    config.add_route('file_new', '/file/new')
+    config.add_route('file_download', '/file/download/{id}')
+    
     config.scan()
     return config.make_wsgi_app()
 

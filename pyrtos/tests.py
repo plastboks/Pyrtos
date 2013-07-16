@@ -1,8 +1,11 @@
 import unittest
+import cgi
 import transaction
 
+from datetime import datetime, timedelta, date
 from pyramid import testing
 from webtest import TestApp
+from webtest import Upload
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
@@ -17,7 +20,10 @@ from pyrtos.models import (
     Category,
     Creditor,
     Income,
+    Expenditure,
 )
+
+from StringIO import StringIO
 
 def _initTestingDB(makeuser=False):
     engine = create_engine('sqlite://')
@@ -103,38 +109,150 @@ class CategoryModelTests(BaseTestCase):
         from pyrtos.models import Category
         return Category
 
-    def _makeOne(self, id, title, name):
-        return self._getTargetClass()(id=id, title=title, name=name)
+    def _makeOne(self, id, title):
+        return self._getTargetClass()(id=id, title=title, user_id=1)
 
     def test_constructor(self):
-        instance = self._makeOne(100, 'Test', 'best')
+        instance = self._makeOne(100, 'Test')
         self.session.add(instance)
-
-        qn = self._getTargetClass().by_name('best')
-        self.assertEqual(qn.title, 'Test')
 
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
 
-  
+
+class TagModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Tag
+        return Tag
+
+    def _makeOne(self, id, name):
+        return self._getTargetClass()(id=id, name=name)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test')
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.name, 'Test')
+
+
 class CreditorModelTests(BaseTestCase):
 
     def _getTargetClass(self):
         from pyrtos.models import Creditor
         return Creditor
 
-    def _makeOne(self, id, title, name):
-        return self._getTargetClass()(id=id, title=title, name=name)
+    def _makeOne(self, id, title):
+        return self._getTargetClass()(id=id, title=title, user_id=1)
 
     def test_constructor(self):
-        instance = self._makeOne(100, 'Test', 'best')
+        instance = self._makeOne(100, 'Test')
         self.session.add(instance)
-
-        qn = self._getTargetClass().by_name('best')
-        self.assertEqual(qn.title, 'Test')
 
         qi = self._getTargetClass().by_id(100)
         self.assertEqual(qi.title, 'Test')
+
+
+class IncomeModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Income
+        return Income
+
+    def _makeOne(self, id, title, amount):
+        return self._getTargetClass()(id=id,\
+                                      title=title,\
+                                      user_id=1,\
+                                      amount=amount)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 1234)
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+        self.assertEqual(qi.amount, 1234)
+
+
+class ExpenditureModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Expenditure
+        return Expenditure
+
+    def _makeOne(self, id, title, amount):
+        return self._getTargetClass()(id=id,\
+                                      title=title,\
+                                      amount=amount,\
+                                      category_id=1,\
+                                      user_id=1)
+
+    def test_constructor(self):
+        instance = self._makeOne(100, 'Test', 1234)
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(100)
+        self.assertEqual(qi.title, 'Test')
+        self.assertEqual(qi.amount, 1234)
+
+
+class InvoiceModelTests(BaseTestCase):
+    
+    def _getTargetClass(self):
+        from pyrtos.models import Invoice
+        return Invoice
+
+    def _makeOne(self, id, title, amount):
+        return self._getTargetClass()(id=id,\
+                                      title=title,\
+                                      amount=amount,\
+                                      due=datetime.utcnow(),\
+                                      category_id=1,\
+                                      creditor_id=1,\
+                                      user_id=1)
+
+    def test_constructor(self):
+        instance = self._makeOne(1, 'Test', 1234)
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(1)
+        self.assertEqual(qi.title, 'Test')
+        self.assertEqual(qi.amount, 1234)
+        
+        css_time = instance.css_class_for_time_distance()
+        self.assertEqual(css_time, 'expired')
+
+        time_to = instance.time_to_expires_in_words()
+        self.assertIn('less', time_to)
+
+        instance.due = datetime.utcnow()+timedelta(days=10)
+        css_time = instance.css_class_for_time_distance()
+        self.assertEqual(css_time, 'd10')
+        
+        time_to = instance.time_to_expires_in_words()
+        self.assertIn('10 days', time_to)
+
+
+class FileModelTests(BaseTestCase):
+    
+    def _getTargetClass(self):
+        from pyrtos.models import File
+        return File
+
+    def _makeOne(self, id, title, filename):
+        return self._getTargetClass()(id=id,
+                                      title=title,
+                                      filename=filename,
+                                      user_id=1,)
+
+    def test_constructur(self):
+        instance = self._makeOne(1, 'test', 'test.jpg')
+        self.session.add(instance)
+
+        qi = self._getTargetClass().by_id(1)
+        self.assertEqual(qi.title, 'test')
+        self.assertEqual(qi.filename, 'test.jpg')
 
 
 class ViewTests(BaseTestCase):
@@ -257,6 +375,73 @@ class ViewTests(BaseTestCase):
         response = i.income_create()
         self.assertEqual(response['title'], 'New income')
 
+    def test_expenditures(self):
+        from pyrtos.views import ExpenditureViews
+        request = testing.DummyRequest()
+        e = ExpenditureViews(request)
+        response = e.expenditures()
+        self.assertEqual(response['title'], 'Shared expenditures')
+
+    def test_expenditures_archived(self):
+        from pyrtos.views import ExpenditureViews
+        request = testing.DummyRequest()
+        e = ExpenditureViews(request)
+        response = e.expenditures_archived()
+        self.assertEqual(response['title'], 'Archived expenditures')
+    
+    def test_invoice(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        response = i.invoices()
+        self.assertEqual(response['title'], 'Invoices')
+
+    def test_invoice_archived(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        response = i.invoices_archived()
+        self.assertEqual(response['title'], 'Archived invoices')
+
+    def test_invoice_search(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        request.GET = multidict.MultiDict()
+        i = InvoiceViews(request)
+        response = i.invoices_search()
+        self.assertEqual(response['title'], 'Search')
+
+    def test_invoice_month_switcher(self):
+        from pyrtos.views import InvoiceViews
+        request = testing.DummyRequest()
+        i = InvoiceViews(request)
+        r = i.month_switcher(2013, 5)
+        self.assertEqual(r[0], 2013)
+        self.assertEqual(r[1], 4)
+
+        r = i.month_switcher(2013, 12, next=True)
+        self.assertEqual(r[0], 2014)
+        self.assertEqual(r[1], 1)
+
+        r = i.month_switcher(2013, 1)
+        self.assertEqual(r[0], 2012)
+        self.assertEqual(r[1], 12)
+
+    def test_files(self):
+        from pyrtos.views import FileViews
+        request = testing.DummyRequest()
+        f = FileViews(request)
+        r = f.files()
+        self.assertEqual(r['title'], 'Files')
+
+    def test_files_archived(self):
+        from pyrtos.views import FileViews
+        request = testing.DummyRequest()
+        f = FileViews(request)
+        r = f.files_archived()
+        self.assertEqual(r['title'], 'Archived files')
+
+
 class IntegrationTestBase(BaseTestCase):
     @classmethod
     def setUpClass(cls):
@@ -268,6 +453,9 @@ class IntegrationTestBase(BaseTestCase):
         self.app = TestApp(self.app)
         self.config = testing.setUp()
         super(IntegrationTestBase, self).setUp()
+
+class MockCGIFieldStorage(object):
+   pass
 
 class TestViews(IntegrationTestBase):
 
@@ -333,6 +521,18 @@ class TestViews(IntegrationTestBase):
                                        'email': 'user@email.com',
                                        'password' : '1234567',}
                            )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
         res = self.app.get('/categories')
         self.assertTrue(res.status_int, 200)
 
@@ -355,19 +555,44 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/category/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
-        res = self.app.get('/category/edit/100', status=404)
+
+        res = self.app.get('/category/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/edit/1', params={'id' : 1,
+                                                        'title' : 'besttest',
+                                                        'private' : 'y',
+                                                        'csrf_token' : token}
+                           )
 
         self.app.get('/category/archive/1', status=302)
         res = self.app.get('/categories/archived', status=200)
         self.assertTrue('besttest' in res.body)
 
         self.app.get('/category/restore/1', status=302)
-        res = self.app.get('/categories', status=200)
-        self.assertTrue('besttest' in res.body)
 
         self.app.get('/category/edit/100', status=404)
         self.app.get('/category/archive/100', status=404)
         self.app.get('/category/restore/100', status=404)
+
+        # logout 
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit a category the user do not have permission to
+        self.app.get('/category/edit/1', status=403)
+        # try to archive a category the user do not have permission to
+        self.app.get('/category/archive/1', status=403)
+        # try to restore a category the user do not have permission to
+        self.app.get('/category/restore/1', status=403)
+
 
     def test_users(self):
         res = self.app.get('/login')
@@ -600,6 +825,18 @@ class TestViews(IntegrationTestBase):
                                        'email': 'user@email.com',
                                        'password' : '1234567',}
                            )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
         res = self.app.get('/creditors')
         self.assertTrue(res.status_int, 200)
 
@@ -622,7 +859,14 @@ class TestViews(IntegrationTestBase):
 
         res = self.app.get('/creditor/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
-        res = self.app.get('/creditor/edit/100', status=404)
+
+        res = self.app.get('/creditor/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/edit/1', params={'id' : 1,
+                                                        'title' : 'besttest',
+                                                        'private' : 'y',
+                                                        'csrf_token' : token}
+                           )
 
         self.app.get('/creditor/archive/1', status=302)
         res = self.app.get('/creditors/archived', status=200)
@@ -635,6 +879,26 @@ class TestViews(IntegrationTestBase):
         self.app.get('/creditor/edit/100', status=404)
         self.app.get('/creditor/archive/100', status=404)
         self.app.get('/creditor/restore/100', status=404)
+
+        # logout 
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit a creditor the user do not have permission to
+        self.app.get('/creditor/edit/1', status=403)
+        # try to archive a creditor the user do not have permission to
+        self.app.get('/creditor/archive/1', status=403)
+        # try to restore a creditor the user do not have permission to
+        self.app.get('/creditor/restore/1', status=403)
+
 
     def test_incomes(self):
         res = self.app.get('/login')
@@ -683,3 +947,493 @@ class TestViews(IntegrationTestBase):
         self.app.get('/income/edit/100', status=404)
         self.app.get('/income/archive/100', status=404)
         self.app.get('/income/restore/100', status=404)
+
+
+    def test_expenditures(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
+        res = self.app.get('/expenditures')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/expenditures?private=1')
+        self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/expenditure/new', status=302)
+        res = self.app.get('/expenditure/new?private=1', status=302)
+
+        # new pub category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+
+        # new priv category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+        
+        # new pub expenditure
+        res = self.app.get('/expenditure/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/new', {'title' : 'testbest',
+                                                 'amount' : '12345',
+                                                 'category_id' : 1,
+                                                 'csrf_token' : token}
+                           )
+        res = self.app.get('/expenditures', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        # new priv expenditure
+        res = self.app.get('/expenditure/new?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/new?private=1', {'title' : 'testbest',
+                                                           'amount' : '12345',
+                                                           'category_id' : 2,
+                                                           'csrf_token' : token}
+                                     )
+        res = self.app.get('/expenditures?private=1', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        # edit public expenditure
+        res = self.app.get('/expenditure/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'category_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        res = self.app.get('/expenditures', status=200)
+        self.assertTrue('besttest' in res.body)
+        
+        # edit priv expenditure
+        res = self.app.get('/expenditure/edit/2?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/expenditure/edit/2?private=1', params={'id' : 2,
+                                                                     'title' : 'testhest',
+                                                                     'amount' : '12345',
+                                                                     'category_id' : 2,
+                                                                     'csrf_token' : token}
+                           )
+        res = self.app.get('/expenditures?private=1', status=200)
+        self.assertTrue('testhest' in res.body)
+
+        res = self.app.get('/expenditure/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/expenditure/edit/100', status=404)
+
+        # archive the public category
+        self.app.get('/category/archive/1', status=302)
+        # try to edit public the expenditure without public category
+        self.app.get('/expenditure/edit/1', status=302)
+
+        # archive the private category
+        self.app.get('/category/archive/2', status=302)
+        # try to edit the private expenditure without the private category
+        self.app.get('/expenditure/edit/2?private=1', status=302)
+
+        self.app.get('/expenditure/archive/1', status=302)
+        res = self.app.get('/expenditures/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/expenditure/restore/1', status=302)
+        res = self.app.get('/expenditures', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        self.app.get('/expenditure/edit/100', status=404)
+        self.app.get('/expenditure/archive/100', status=404)
+        self.app.get('/expenditure/restore/100', status=404)
+
+        # logout 
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit an expenditure the user do not have permission to
+        self.app.get('/expenditure/edit/2', status=403)
+        # try to archive an expenditure the user do not have permission to
+        self.app.get('/expenditure/archive/2', status=403)
+        # try to restore an expenditure the user do not have permission to
+        self.app.get('/expenditure/restore/2', status=403)
+
+    def test_invoices(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
+        res = self.app.get('/invoices')
+        self.assertTrue(res.status_int, 200)
+        self.assertIn('No paid invoices', res.body)
+        
+        # try to create a new invoice without categories and creditors
+        self.app.get('/invoice/new', status=302)
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new pub category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+
+        # try to create a new invoice without creditors
+        self.app.get('/invoice/new', status=302)
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new pub creditor
+        res = self.app.get('/creditor/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/new', {'title' : 'testbest',
+                                              'csrf_token' : token}
+                           )
+
+        self.app.get('/invoice/new', status=200)
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new pub invoice
+        res = self.app.get('/invoice/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/new', {'title' : 'testbest',
+                                             'amount' : '12345',
+                                             'due' : '2013-07-07',
+                                             'category_id' : 1,
+                                             'creditor_id' : 1,
+                                             'csrf_token' : token},
+                            upload_files=[('attachment', 'foo.pdf', b'foo')],
+                            status=302)
+
+        #res = self.app.get('/invoices', status=200)
+        #self.assertTrue('testbest' in res.body)
+        
+        # edit public invoice
+        res = self.app.get('/invoice/edit/1')
+        self.assertIn('testbest', res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'paid' : '2013-07-07',
+                                                      'files-0' : 1,
+                                                      'category_id' : 1,
+                                                      'creditor_id' : 1,
+                                                      'csrf_token' : token},
+                            upload_files=[('attachment', 'boo.pdf', b'boo')],
+                           )
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        # try to convert public invoice to private without private catgory
+        self.app.get('/invoice/edit/1?private=1', status=302)
+
+        # new priv category
+        res = self.app.get('/category/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+
+        # try to convert public invoice to private without private creditor
+        self.app.get('/invoice/edit/1?private=1', status=302)
+
+        # try to create a private invoice without private creditor
+        self.app.get('/invoice/new?private=1', status=302)
+
+        # new priv creditor
+        res = self.app.get('/creditor/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/creditor/new', {'title' : 'hestbest',
+                                              'private' : 'y',
+                                              'csrf_token' : token}
+                           )
+
+        # try to convert public invoice to private with private creditor and category
+        self.app.get('/invoice/edit/1?private=1', status=200)
+
+        # new priv invoice
+        res = self.app.get('/invoice/new?private=1')
+        self.assertIn('hestbest', res.body)
+        self.assertFalse('testbest' in res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/new?private=1', {'title' : 'testbest',
+                                                       'amount' : '12345',
+                                                       'due' : '2013-07-07',
+                                                       'category_id' : 2,
+                                                       'creditor_id' : 2,
+                                                       'csrf_token' : token}
+                           )
+        res = self.app.get('/invoices?private=1', status=200)
+        self.assertTrue('testbest' in res.body)
+
+        
+        # edit priv invoice
+        res = self.app.get('/invoice/edit/2?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/2?private=1', params={'id' : 2,
+                                                                 'title' : 'testhest',
+                                                                 'amount' : '12345',
+                                                                 'category_id' : 2,
+                                                                 'creditor_id' : 2,
+                                                                 'csrf_token' : token},
+                            upload_files=[('attachment', 'coo.pdf', b'coo')],
+                           )
+        res = self.app.get('/invoices?private=1', status=200)
+        self.assertTrue('testhest' in res.body)
+
+        res = self.app.get('/invoice/edit/1', status=200)
+        self.assertTrue('besttest' in res.body)
+        res = self.app.get('/invoice/edit/100', status=404)
+
+        # new priv invoice
+        res = self.app.get('/invoice/new?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/new?private=1', {'title' : 'testpriv',
+                                                       'amount' : '12345',
+                                                       'due' : '2013-07-07',
+                                                       'category_id' : 2,
+                                                       'creditor_id' : 2,
+                                                       'csrf_token' : token},
+                            upload_files=[('attachment', 'doo.pdf', b'doo')],
+                           )
+
+        # archive the public category
+        self.app.get('/category/archive/1', status=302)
+        # try to edit public the invoice without public category
+        self.app.get('/invoice/edit/1', status=302)
+        # restore the public category
+        self.app.get('/category/restore/1', status=302)
+        # archive the public creditor
+        self.app.get('/creditor/archive/1', status=302)
+        # try to edit the public invoice without the public creditor
+        self.app.get('/invoice/edit/1', status=302)
+
+        # archive the private category
+        self.app.get('/category/archive/2', status=302)
+        # try to edit the private invoice without the private category
+        self.app.get('/invoice/edit/2?private=1', status=302)
+        # restore the private category
+        self.app.get('/category/restore/2', status=302)
+        # archive the private creditor
+        self.app.get('/creditor/archive/2', status=302)
+        # try to edit the private invoice without the private creditor
+        self.app.get('/invoice/edit/2?private=1', status=302)
+        # restore the private creditor
+        self.app.get('/creditor/restore/2', status=302)
+
+        # archive public invoice
+        self.app.get('/invoice/archive/1', status=302)
+        res = self.app.get('/invoices/archived', status=200)
+        self.assertTrue('besttest' in res.body)
+        
+        # restore public invoice
+        self.app.get('/invoice/restore/1', status=302)
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('besttest' in res.body)
+
+        # edit public invoice
+        self.app.get('/category/restore/1', status=302)
+        self.app.get('/creditor/restore/1', status=302)
+        res = self.app.get('/invoice/edit/1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/edit/1', params={'id' : 1,
+                                                      'title' : 'besttest',
+                                                      'amount' : '12345',
+                                                      'category_id' : 1,
+                                                      'creditor_id' : 1,
+                                                      'csrf_token' : token}
+                           )
+        # try to quickpay the invoice
+        self.app.get('/invoice/quickpay/1', status=302)
+
+        # visit the query page
+        res = self.app.get('/invoices/search', status=200)
+        self.assertIn('Search', res.body)
+        # to a testsearch
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.get('/invoices/search', {'submit': True,
+                                                 'csrf_token' : token,
+                                                 'categories' : 1,
+                                                 'fromdate' : '2013-07-07',
+                                                 'todate' : '2013-07-07',
+                                                 'creditors' : 1,
+                                                 'query' : 'test'}
+                          )
+
+        self.app.get('/invoice/edit/100', status=404)
+        self.app.get('/invoice/archive/100', status=404)
+        self.app.get('/invoice/restore/100', status=404)
+        self.app.get('/invoice/quickpay/100', status=404)
+
+        # logout
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit an invoice the user do not have permission to
+        self.app.get('/invoice/edit/2', status=403)
+        self.app.get('/invoice/quickpay/2', status=403)
+        # try to archive an invoice the user do not have permission to
+        self.app.get('/invoice/archive/2', status=403)
+        # try to restore an invoice the user do not have permission to
+        self.app.get('/invoice/restore/2', status=403)
+
+        # logout
+        self.app.get('/logout')
+
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+
+        # set private category shared
+        res = self.app.get('/category/edit/2')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/category/edit/2', {'id' : 2,
+                                                 'title' : 'hestbest',
+                                                 'csrf_token' : token}
+                           )
+
+        # logout
+        self.app.get('/logout')
+
+        # login with the previously created user
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                           )
+
+        # try to edit an invoice the user do not have permission to
+        self.app.get('/invoice/edit/2', status=403)
+        self.app.get('/invoice/quickpay/2', status=403)
+        # try to archive an invoice the user do not have permission to
+        self.app.get('/invoice/archive/2', status=403)
+        # try to restore an invoice the user do not have permission to
+        self.app.get('/invoice/restore/2', status=403)
+
+
+    def test_files(self):
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'user@email.com',
+                                       'password' : '1234567',}
+                           )
+
+        # create a new user
+        res = self.app.get('/user/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/new', {'email' : 'test@email.com',
+                                          'givenname' : 'testy',
+                                          'surname' : 'mctest',
+                                          'password' : '123456',
+                                          'confirm' : '123456',
+                                          'group' : 'admin',
+                                          'csrf_token' : token})
+
+
+        res = self.app.get('/files')
+        self.assertIn('Files', res.body)
+
+        res = self.app.get('/file/new')
+        self.assertIn('New file', res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/file/new',
+                            {'submit' : True,
+                             'csrf_token' : token,
+                             'title' : 'foo',
+                             'private' : 'y',
+                            },
+                            upload_files=[('file', 'foo.pdf', b'foo')],
+                            status=302)
+
+        res = self.app.get('/files')
+        self.assertIn('foo', res.body)
+
+        res = self.app.get('/file/download/1', status=200)
+
+        # create one without a file...
+        res = self.app.get('/file/new')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/file/new',
+                            {'submit' : True,
+                             'csrf_token' : token,
+                             'title' : 'foo',
+                             'private' : 'y',
+                            },
+                            status=302)
+
+        res = self.app.get('/file/download/2', status=404)
+
+
+        # try to get nonexisting file
+        res = self.app.get('/file/download/100', status=404)
+
+        # logout
+        self.app.get('/logout')
+
+        res = self.app.get('/login')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/login', {'submit' : True,
+                                       'csrf_token' : token,
+                                       'email': 'test@email.com',
+                                       'password' : '123456',}
+                            , status=302)
+
+        self.app.get('/file/download/1', status=403)

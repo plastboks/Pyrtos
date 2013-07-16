@@ -1,3 +1,11 @@
+0.0.5
+=====
+  * Invoice
+  * Files
+  * Private creditors
+  * Private categoires
+  * Expenditures
+
 0.0.4
 =====
   * Income
@@ -25,5 +33,4 @@
 
 0.0
 ===
-
   *  Initial version.

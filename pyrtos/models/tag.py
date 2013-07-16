@@ -33,3 +33,7 @@ class Tag(Base):
     def popular(cls):
         return DBSession.query(Tag).get(20)
 
+    @classmethod
+    def by_id(cls, id):
+        return DBSession.query(Tag).filter(Tag.id == id).first()
+

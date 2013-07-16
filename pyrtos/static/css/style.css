@@ -8,6 +8,7 @@
 body {
    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
    font-weight: 300;
+   background: #eaeaea url('../images/bg.png')
 }
 
 a {
@@ -44,7 +45,7 @@ img {
  * wrapper 
  */
 #wrapper {
-  width: 950px;
+  width: 960px;
   margin: 0 auto;
   margin-top: 30px;
   position: relative;
@@ -87,24 +88,51 @@ img {
  * sidebar
  */
 .sidebar {
-  width: 130px;
+  width: 150px;
   float: left;
   padding: 10px;
-  background: none repeat scroll 0 0 #F7F7F7;
-  border: 1px solid #E8E8E8;
-
+  background: none repeat scroll 0 0 #D6DBE0;
+  border: 1px solid #ADB8C2;
+  -webkit-box-shadow: 1px 1px 5px 1px #dcdcdc;
+  box-shadow: 1px 1px 5px 1px #dcdcdc;
 }
 
 .sidebar ul {
   list-style: none;
-  margin-left: 0;
-  padding: 0;
+  margin-left: 0px;
+  padding: 1px 0px;
 }
 
 .sidebar li {
   margin: 10px 5px;
   padding-left: 20px;
-  background: url('/static/icons/bullet_white.png') left center no-repeat;
+  background: url('/static/icons/bullet_blue.png') left center no-repeat;
+}
+
+.sidebar li.group {
+  background: url('/static/icons/bullet_green.png') left center no-repeat;
+}
+
+.sidebar li.user {
+  background: url('/static/icons/bullet_red.png') left center no-repeat;
+}
+
+.sidebar li a{
+  color: #30363D;
+}
+
+.sidebar .unpaids {
+  font-size: 0.5em;
+  padding: 4px 6px;
+  border-radius: 50%;
+}
+
+.sidebar .private {
+  background: orange;
+}
+
+.sidebar .shared {
+  background: salmon;
 }
 
 
@@ -147,14 +175,16 @@ img {
  * content 
  */
 #content {
-  width: 765px;
+  width: 755px;
   float: left;
   min-height: 200px;
   background: none repeat scroll 0 0 #F7F7F7;
-  border: 1px solid #E8E8E8;
+  border: 1px solid lightgray;
   margin-left: 10px;
   padding: 10px;
   position: relative;
+  -webkit-box-shadow: 1px 1px 5px 1px #dcdcdc;
+  box-shadow: 1px 1px 5px 1px #dcdcdc;
 }
 
 #content .toolbar {
@@ -197,8 +227,17 @@ img {
 }
 
 #content h2 {
-  margin: 5px 0px 0px 0px;
-  border-bottom: 1px solid #E8E8E8;
+  clear: both;
+  margin: 20px 0px 10px 0px;
+  font-size: 1.0em;
+}
+
+#content .changestate {
+  font-size: 0.8em;
+  padding: 3px;
+  margin: 10px 0px;
+  border: 1px solid lightgray;
+  background: aliceblue;
 }
 
 #content form p {
@@ -229,6 +268,22 @@ img {
 #content form label {
   color: grey;
   margin-bottom: 5px;
+}
+
+#content form ul {
+  list-style: none;
+  margin: 0px 20px;
+  padding: 0px;
+}
+
+#content form li {
+  display: inline;
+  padding: 10px 15px 10px 0px;
+}
+
+#content form ul#files li {
+  display: block;
+  padding: 2px;
 }
 
 #content span {
@@ -272,6 +327,17 @@ img {
   height: 25px;
 }
 
+#content table tbody tr.archived {
+  color: gray;
+  font-style: italic !important;
+}
+
+#content table tbody tr.onhold {
+  background: #FF99FF !important;
+  color: #4C004C;
+  font-style: italic !important;
+}
+
 #content tbody tr:nth-child(2n+2) {
   border: 1px solid lavender;
   background: ghostwhite;
@@ -292,12 +358,64 @@ img {
   width: 100px;
 }
 
+#content tbody td.actions a{
+  margin: 0px 8px;
+}
+
 #content tbody .income {
   background: #F0F5B8;
 }
 
 #content table .operations {
   width: 60px;
+}
+
+#content table.expenditures td:nth-child(1) {
+  width: 300px;
+}
+
+#content table.invoices td:nth-child(1) {
+  width: 200px;
+}
+
+#content table.unpaid tbody tr {
+  background: #E0FFFF;
+}
+
+#content table.unpaid tbody tr.d10,
+#content table.unpaid tbody tr.d9 {
+  background: #CCFFE6;
+}
+
+#content table.unpaid tbody tr.d8,
+#content table.unpaid tbody tr.d7 {
+  background: #E6FFE6;
+}
+
+#content table.unpaid tbody tr.d6,
+#content table.unpaid tbody tr.d5 {
+  background: #E6FFCC;
+}
+
+#content table.unpaid tbody tr.d4,
+#content table.unpaid tbody tr.d3 {
+  background: #FFFFCC;
+}
+
+#content table.unpaid tbody tr.d2 {
+  background: #FFEB99;
+}
+
+#content table.unpaid tbody tr.d1 {
+  background: #FFE6B2;
+}
+
+#content table.unpaid tbody tr.dless {
+  background: #FFCC99;
+}
+
+#content table.unpaid tbody tr.expired {
+  background: #FF9980;
 }
 
 #content table .edit {
@@ -310,10 +428,36 @@ img {
   margin-right: 5px;
 }
 
+#content .nextprev {
+ clear: both;
+ padding-bottom: 20px;
+ font-size: 0.7em;
+}
+
+#content .nextprev .prev a{
+  background: url('/static/icons/control_rewind.png') left center no-repeat;
+  padding-left: 20px;
+  margin-left: 20px;
+  float: left;
+}
+
+#content .nextprev .next a{
+  background: url('/static/icons/control_fastforward.png') right center no-repeat;
+  padding-right: 20px;
+  margin-right: 20px;
+  float: right;
+}
+
 #content .tablesum {
   margin-right: 40px;
   font-weight: bold;
   text-align: right;
+}
+
+#content table .totalrow {
+  background: none !important;  
+  border: none !important;
+  font-weight: bold;
 }
 
 #content .error {
