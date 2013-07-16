@@ -20,6 +20,7 @@ from wtforms.ext.sqlalchemy.fields import (
 
 from pyrtos.models import User
 
+
 class MultiCheckboxField(QuerySelectMultipleField):
     """
     A multiple-select, except displays a list of checkboxes.
@@ -29,6 +30,7 @@ class MultiCheckboxField(QuerySelectMultipleField):
     """
     widget = widgets.ListWidget(prefix_label=False)
     option_widget = widgets.CheckboxInput()
+
 
 class InvoiceCreateForm(BaseForm):
     title = TextField('Invoice Title',
@@ -41,16 +43,18 @@ class InvoiceCreateForm(BaseForm):
                      format='%Y-%m-%d')
     attachment = FileField('Attachment')
     category_id = QuerySelectField('Category',
-                                    get_label='title')
+                                   get_label='title')
     creditor_id = QuerySelectField('Creditor',
-                                    get_label='title')
+                                   get_label='title')
     on_hold = BooleanField('On hold')
+
 
 class InvoiceEditForm(InvoiceCreateForm):
     id = HiddenField()
     files = MultiCheckboxField('Files',
                                [validators.optional()],
                                get_label='title')
+
 
 class InvoiceSearchForm(BaseForm):
     query = TextField('Search',
@@ -59,10 +63,10 @@ class InvoiceSearchForm(BaseForm):
     categories = MultiCheckboxField('Categories',
                                     get_label='title')
     creditors = MultiCheckboxField('Creditors',
-                                    get_label='title')
+                                   get_label='title')
     fromdate = DateField('From date',
-                     [validators.optional()],
-                     format='%Y-%m-%d')
+                         [validators.optional()],
+                         format='%Y-%m-%d')
     todate = DateField('To date',
-                     [validators.optional()],
-                     format='%Y-%m-%d')
+                       [validators.optional()],
+                       format='%Y-%m-%d')

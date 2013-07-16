@@ -1,4 +1,6 @@
-import os, hashlib, shutil
+import os
+import hashlib
+import shutil
 import mimetypes
 
 from pyrtos.models.meta import (
@@ -32,6 +34,7 @@ from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import time_ago_in_words
 
+
 class File(Base):
     __tablename__ = 'files'
     id = Column(Integer, primary_key=True)
@@ -46,7 +49,6 @@ class File(Base):
 
     user = relationship('User', backref='files')
 
-
     @classmethod
     def all_active(cls, request):
         id = authenticated_userid(request)
@@ -54,7 +56,6 @@ class File(Base):
                         .filter(File.archived == False)\
                         .filter(not_(and_(File.private == True,
                                           File.user_id != id)))
-
 
     @classmethod
     def all_archived(cls, request):
@@ -64,11 +65,9 @@ class File(Base):
                         .filter(not_(and_(File.private == True,
                                           File.user_id != id)))
 
-
     @classmethod
     def by_id(cls, id):
         return DBSession.query(File).filter(File.id == id).first()
-
 
     @classmethod
     def page(cls, request, page, archived=False):
@@ -83,20 +82,16 @@ class File(Base):
                     url=page_url,
                     items_per_page=IPP)
 
-
     def make_filename(self, filename):
         tmp_fileparts = os.path.splitext(filename)
         final_filename = hashlib.sha1(tmp_fileparts[0])\
-                         .hexdigest()+tmp_fileparts[1]
+                                .hexdigest()+tmp_fileparts[1]
         return final_filename
-
 
     def guess_mime(self, filename):
         return mimetypes.guess_type(filename)[0]
-
 
     def write_file(self, input_file):
         file_path = os.path.join('pyrtos/uploads', self.filename)
         with open(file_path, 'wb') as output_file:
             shutil.copyfileobj(input_file, output_file)
-

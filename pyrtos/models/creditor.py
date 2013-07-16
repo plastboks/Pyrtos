@@ -28,7 +28,6 @@ from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import time_ago_in_words
 
 
-
 class Creditor(Base):
     __tablename__ = 'creditors'
     id = Column(Integer, primary_key=True)
@@ -46,12 +45,13 @@ class Creditor(Base):
         return DBSession.query(Creditor)\
                         .filter(and_(Creditor.archived == False,
                                      Creditor.private == False)).first()
+
     @classmethod
     def first_private(cls, request):
         id = authenticated_userid(request)
         return DBSession.query(Creditor)\
-                        .filter(and_(Creditor.archived == False,\
-                                     Creditor.private == True,\
+                        .filter(and_(Creditor.archived == False,
+                                     Creditor.private == True,
                                      Creditor.user_id == id)).first()
 
     @classmethod
@@ -62,6 +62,7 @@ class Creditor(Base):
                         .filter(Creditor.archived == False)\
                         .filter(not_(and_(Creditor.private == True,
                                           Creditor.user_id != id)))
+
     @classmethod
     def all_shared(cls):
         return DBSession.query(Creditor)\
@@ -80,8 +81,8 @@ class Creditor(Base):
     def all_private(cls, request):
         id = authenticated_userid(request)
         return DBSession.query(Creditor)\
-                        .filter(and_(Creditor.user_id == True,\
-                                     Creditor.private == True,\
+                        .filter(and_(Creditor.user_id == True,
+                                     Creditor.private == True,
                                      Creditor.archived == False))
 
     @classmethod
@@ -96,8 +97,7 @@ class Creditor(Base):
                     page,
                     url=page_url,
                     items_per_page=IPP)
-    
+
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Creditor).filter(Creditor.id == id).first()
-

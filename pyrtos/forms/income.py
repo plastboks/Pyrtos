@@ -21,7 +21,8 @@ class IncomeCreateForm(BaseForm):
                       filters=[strip_filter])
     amount = FloatField('Income Amount')
     user_id = QuerySelectField('User',
-                                get_label='email')
+                               get_label='email')
+
 
 class IncomeEditForm(IncomeCreateForm):
     id = HiddenField()
