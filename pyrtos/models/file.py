@@ -46,6 +46,7 @@ class File(Base):
 
     user = relationship('User', backref='files')
 
+
     @classmethod
     def all_active(cls, request):
         id = authenticated_userid(request)
@@ -53,6 +54,7 @@ class File(Base):
                         .filter(File.archived == False)\
                         .filter(not_(and_(File.private == True,
                                           File.user_id != id)))
+
 
     @classmethod
     def all_archived(cls, request):
@@ -62,9 +64,11 @@ class File(Base):
                         .filter(not_(and_(File.private == True,
                                           File.user_id != id)))
 
+
     @classmethod
     def by_id(cls, id):
         return DBSession.query(File).filter(File.id == id).first()
+
 
     @classmethod
     def page(cls, request, page, archived=False):
@@ -89,9 +93,10 @@ class File(Base):
 
     def guess_mime(self, filename):
         return mimetypes.guess_type(filename)[0]
-        
+
 
     def write_file(self, input_file):
         file_path = os.path.join('pyrtos/uploads', self.filename)
         with open(file_path, 'wb') as output_file:
             shutil.copyfileobj(input_file, output_file)
+
