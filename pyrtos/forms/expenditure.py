@@ -21,7 +21,8 @@ class ExpenditureCreateForm(BaseForm):
                       filters=[strip_filter])
     amount = FloatField('Expenditure Amount')
     category_id = QuerySelectField('Category',
-                                    get_label='title')
+                                   get_label='title')
+
 
 class ExpenditureEditForm(ExpenditureCreateForm):
     id = HiddenField()
