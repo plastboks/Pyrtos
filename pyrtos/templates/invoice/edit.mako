@@ -88,6 +88,14 @@
     ${form.creditor_id}
   </p>
 
+  %for error in form.on_hold.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.on_hold.label}</label>
+    ${form.on_hold}
+  </p>
+
   <p>
     <input type="submit" value="Submit" />
   </p>

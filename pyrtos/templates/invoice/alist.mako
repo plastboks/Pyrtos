@@ -17,7 +17,7 @@
         </thead>
         <tbody>
           %for item in invoices[0]:
-            <tr>
+            <tr class="${'onhold' if item.on_hold else ''}">
               <td>${item.title}</td>
               <td>${item.amount}</td>
               <td>${item.due.date()}</td>
@@ -102,7 +102,7 @@
         </thead>
         <tbody>
           %for item in invoices[0]:
-            <tr class='${item.css_class_for_time_distance()}'>
+            <tr class="${item.css_class_for_time_distance()} ${'onhold' if item.on_hold else ''}">
               <td>${item.title}</td>
               <td>${item.amount}</td>
               <td>
