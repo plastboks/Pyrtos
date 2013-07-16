@@ -45,6 +45,7 @@ class FileViews(object):
         return {'paginator': files,
                 'title' : 'Files',}
 
+
     @view_config(route_name='files_archived',
                  renderer='pyrtos:templates/file/list.mako',
                  permission='view')
@@ -54,6 +55,7 @@ class FileViews(object):
         return {'paginator': files,
                 'title' : 'Archived files',
                 'archived' : True,}
+
 
     @view_config(route_name='file_new',
                  renderer='pyrtos:templates/file/edit.mako',
@@ -68,18 +70,9 @@ class FileViews(object):
             
             upload = self.request.POST.get('file')
             try:
-                input_file = upload.file
-
-                tmp_fileparts = os.path.splitext(upload.filename)
-            
-                final_filename = hashlib.sha1(tmp_fileparts[0])\
-                                 .hexdigest()+tmp_fileparts[1]
-
-                file_path = os.path.join('pyrtos/uploads', final_filename)
-                with open(file_path, 'wb') as output_file:
-                    shutil.copyfileobj(input_file, output_file)
-
-                f.filename = final_filename
+                f.filename = f.make_filename(upload.filename)
+                f.filemime = f.guess_mime(upload.filename)
+                f.write_file(upload.file)
             except Exception:
                 self.request.session.flash('File %s created but no file added' %\
                                                 (f.title), 'status')
@@ -92,6 +85,7 @@ class FileViews(object):
         return {'title': 'New file',
                 'form': form,
                 'action': 'file_new'}
+
 
     @view_config(route_name='file_download',
                   permission='view')
@@ -108,7 +102,7 @@ class FileViews(object):
           response = FileResponse(
               'pyrtos/uploads/'+f.filename,
               request=self.request,
-              content_type='application/pdf'
+              content_type=f.filemime
           )
           return response
         return HTTPNotFound()

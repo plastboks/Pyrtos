@@ -1,3 +1,6 @@
+import os, hashlib, shutil
+import mimetypes
+
 from pyrtos.models.meta import (
     DBSession,
     Base,
@@ -35,6 +38,7 @@ class File(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     title = Column(String(255), nullable=False)
     filename = Column(String(255), unique=True)
+    filemime = Column(String(32))
     private = Column(Boolean, default=False)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
@@ -75,3 +79,19 @@ class File(Base):
                     url=page_url,
                     items_per_page=IPP)
 
+
+    def make_filename(self, filename):
+        tmp_fileparts = os.path.splitext(filename)
+        final_filename = hashlib.sha1(tmp_fileparts[0])\
+                         .hexdigest()+tmp_fileparts[1]
+        return final_filename
+
+
+    def guess_mime(self, filename):
+        return mimetypes.guess_type(filename)[0]
+        
+
+    def write_file(self, input_file):
+        file_path = os.path.join('pyrtos/uploads', self.filename)
+        with open(file_path, 'wb') as output_file:
+            shutil.copyfileobj(input_file, output_file)
