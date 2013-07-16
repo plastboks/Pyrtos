@@ -59,7 +59,7 @@ class Income(Base):
                     page,
                     url=page_url,
                     items_per_page=IPP)
-    
+
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Income).filter(Income.id == id).first()
@@ -68,4 +68,3 @@ class Income(Base):
     def amount_sum(cls):
         return DBSession.query(func.sum(Income.amount).label('a_sum'))\
                         .filter(Income.archived == False).first()
-

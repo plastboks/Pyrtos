@@ -29,7 +29,7 @@ from sqlalchemy import (
     and_,
     not_,
     extract,
-    )
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -38,14 +38,15 @@ from pyramid.security import authenticated_userid
 from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import (
-  distance_of_time_in_words,
-  time_ago_in_words,
+    distance_of_time_in_words,
+    time_ago_in_words,
 )
 
 association_table = Table('invoice_files', Base.metadata,
     Column('left_id', Integer, ForeignKey('invoices.id')),
     Column('right_id', Integer, ForeignKey('files.id'))
 )
+
 
 class Invoice(Base):
     __tablename__ = 'invoices'
@@ -66,9 +67,8 @@ class Invoice(Base):
     category = relationship('Category', backref='invoices')
     creditor = relationship('Creditor', backref='invoices')
     files = relationship('File',
-                    secondary=association_table,
-                    backref='invoices')
-
+                         secondary=association_table,
+                         backref='invoices')
 
     @classmethod
     def all_archived(cls, id):
@@ -77,7 +77,6 @@ class Invoice(Base):
                         .filter(Invoice.archived == True)\
                         .filter(not_(and_(Category.private == True,
                                           Category.user_id != id)))
-
 
     @classmethod
     def all_queryed(cls,
@@ -91,7 +90,7 @@ class Invoice(Base):
         base = DBSession.query(Invoice)
         if total_only:
             base = DBSession.query(func.sum(Invoice.amount).label('a_sum'))\
-            
+
         base = base.join(Invoice.category)\
                    .join(Invoice.creditor)\
                    .filter(not_(and_(Category.private == True,
@@ -112,7 +111,6 @@ class Invoice(Base):
 
         return base
 
-
     @classmethod
     def with_category_paid(cls, cid, year, month, total_only=False):
         base = DBSession.query(Invoice)
@@ -123,11 +121,10 @@ class Invoice(Base):
         base = base.filter(and_(Invoice.category_id == cid,
                                 Invoice.archived == False,
                                 Invoice.paid != None))\
-                    .filter(extract('year', Invoice.due) == year)\
-                    .filter(extract('month', Invoice.due) == month)\
-                    .all()
+                   .filter(extract('year', Invoice.due) == year)\
+                   .filter(extract('month', Invoice.due) == month)\
+                   .all()
         return base
-
 
     @classmethod
     def with_category_all_unpaid(cls, cid, total_only=False):
@@ -138,11 +135,9 @@ class Invoice(Base):
 
         base = base.filter(and_(Invoice.category_id == cid,
                                 Invoice.archived == False,
-                                Invoice.paid == None,
-                          ))\
+                                Invoice.paid == None))\
                    .all()
         return base
-
 
     @classmethod
     def page(cls, request, page, archived=False):
@@ -153,7 +148,6 @@ class Invoice(Base):
                         page,
                         url=page_url,
                         items_per_page=IPP)
-
 
     @classmethod
     def searchpage(cls,
@@ -178,27 +172,24 @@ class Invoice(Base):
                     url=page_url,
                     items_per_page=IPP)
 
-
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Invoice).filter(Invoice.id == id).first()
 
-
     def time_to_expires_in_words(self):
-      distance =  distance_of_time_in_words(from_time=self.due,
-                                            to_time=datetime.utcnow(),
-                                            round=True,
-                                            granularity='day')
-      if datetime.utcnow() > self.due:
-          return 'Expired by: '+distance
-      return 'In: '+distance
-
+        distance = distance_of_time_in_words(from_time=self.due,
+                                             to_time=datetime.utcnow(),
+                                             round=True,
+                                             granularity='day')
+        if datetime.utcnow() > self.due:
+            return 'Expired by: '+distance
+        return 'In: '+distance
 
     def css_class_for_time_distance(self):
-      distance =  distance_of_time_in_words(from_time=self.due,
-                                            to_time=datetime.utcnow(),
-                                            round=True,
-                                            granularity='day')
-      if datetime.utcnow() > self.due:
-          return 'expired'
-      return 'd'+distance.split(' ')[0]
+        distance = distance_of_time_in_words(from_time=self.due,
+                                             to_time=datetime.utcnow(),
+                                             round=True,
+                                             granularity='day')
+        if datetime.utcnow() > self.due:
+            return 'expired'
+        return 'd'+distance.split(' ')[0]

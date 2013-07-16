@@ -28,6 +28,7 @@ from webhelpers.date import time_ago_in_words
 
 from pyramid.security import authenticated_userid
 
+
 class Category(Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True)
@@ -45,12 +46,13 @@ class Category(Base):
         return DBSession.query(Category)\
                         .filter(and_(Category.archived == False,
                                      Category.private == False)).first()
+
     @classmethod
     def first_private(cls, request):
         id = authenticated_userid(request)
         return DBSession.query(Category)\
-                        .filter(and_(Category.archived == False,\
-                                     Category.private == True,\
+                        .filter(and_(Category.archived == False,
+                                     Category.private == True,
                                      Category.user_id == id)).first()
 
     @classmethod
@@ -61,6 +63,7 @@ class Category(Base):
                         .filter(Category.archived == False)\
                         .filter(not_(and_(Category.private == True,
                                           Category.user_id != id)))
+
     @classmethod
     def all_shared(cls):
         return DBSession.query(Category)\
@@ -80,8 +83,8 @@ class Category(Base):
         if not id:
             id = authenticated_userid(request)
         return DBSession.query(Category)\
-                        .filter(and_(Category.user_id == id,\
-                                     Category.private == True,\
+                        .filter(and_(Category.user_id == id,
+                                     Category.private == True,
                                      Category.archived == False))
 
     @classmethod
@@ -89,15 +92,14 @@ class Category(Base):
         page_url = PageURL_WebOb(request)
         if archived:
             return Page(Category.all_archived(request),
-                        page, 
+                        page,
                         url=page_url,
                         items_per_page=IPP)
         return Page(Category.all_active(request),
                     page,
                     url=page_url,
                     items_per_page=IPP)
-    
+
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Category).filter(Category.id == id).first()
-

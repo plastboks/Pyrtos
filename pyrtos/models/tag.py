@@ -36,4 +36,3 @@ class Tag(Base):
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Tag).filter(Tag.id == id).first()
-

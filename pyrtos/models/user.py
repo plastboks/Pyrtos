@@ -26,6 +26,7 @@ from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import time_ago_in_words
 
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -37,9 +38,8 @@ class User(Base):
     archived = Column(Boolean, default=False)
     blocked = Column(Boolean, default=False)
     last_logged = Column(DateTime, default=datetime.utcnow)
-   
-    pm = BCRYPTPasswordManager()
 
+    pm = BCRYPTPasswordManager()
     groups = ['admin', 'editor', 'viewer']
 
     @classmethod
@@ -66,15 +66,14 @@ class User(Base):
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-          return Page(User.all_archived(),
-                      page,
-                      url=page_url,
-                      items_per_page=IPP)
+            return Page(User.all_archived(),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
         return Page(User.all_active(),
                     page,
                     url=page_url,
                     items_per_page=IPP)
-    
+
     def verify_password(self, password):
         return self.pm.check(self.password, password)
-    
