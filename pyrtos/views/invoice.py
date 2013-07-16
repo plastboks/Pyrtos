@@ -65,20 +65,6 @@ class InvoiceViews(object):
         self.request.session.flash(private_unpaid_invoices,
                                    'private_unpaid_invoices')
 
-    def file_save(self, fileobj):
-        input_file = fileobj.file
-        tmp_fileparts = os.path.splitext(fileobj.filename)
-    
-        final_filename = hashlib.sha1(tmp_fileparts[0])\
-                         .hexdigest()+tmp_fileparts[1]
-
-        file_path = os.path.join('pyrtos/uploads', final_filename)
-        with open(file_path, 'wb') as output_file:
-            shutil.copyfileobj(input_file, output_file)
-        
-        return final_filename
-
-
 
     def month_switcher(self, year, month, next=False):
         if next:
@@ -219,9 +205,9 @@ class InvoiceViews(object):
 
             upload = self.request.POST.get('attachment')
             try:
-                attachment = self.file_save(upload)
                 f = File()
-                f.filename = attachment
+                f.make_filename(upload.filename)
+                f.write_file(upload.file)
                 f.title = 'Invoice.'+\
                           form.title.data+'.'+\
                           form.category_id.data.title+'.'+\

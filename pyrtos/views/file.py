@@ -68,18 +68,8 @@ class FileViews(object):
             
             upload = self.request.POST.get('file')
             try:
-                input_file = upload.file
-
-                tmp_fileparts = os.path.splitext(upload.filename)
-            
-                final_filename = hashlib.sha1(tmp_fileparts[0])\
-                                 .hexdigest()+tmp_fileparts[1]
-
-                file_path = os.path.join('pyrtos/uploads', final_filename)
-                with open(file_path, 'wb') as output_file:
-                    shutil.copyfileobj(input_file, output_file)
-
-                f.filename = final_filename
+                f.make_filename(upload.filename)
+                f.write_file(upload.file)
             except Exception:
                 self.request.session.flash('File %s created but no file added' %\
                                                 (f.title), 'status')

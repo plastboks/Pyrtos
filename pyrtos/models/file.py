@@ -1,3 +1,5 @@
+import os, hashlib, shutil
+
 from pyrtos.models.meta import (
     DBSession,
     Base,
@@ -75,3 +77,16 @@ class File(Base):
                     url=page_url,
                     items_per_page=IPP)
 
+
+    def make_filename(self, filename):
+        tmp_fileparts = os.path.splitext(filename)
+        final_filename = hashlib.sha1(tmp_fileparts[0])\
+                         .hexdigest()+tmp_fileparts[1]
+
+        self.filename = final_filename
+        
+
+    def write_file(self, input_file):
+        file_path = os.path.join('pyrtos/uploads', self.filename)
+        with open(file_path, 'wb') as output_file:
+            shutil.copyfileobj(input_file, output_file)
