@@ -20,35 +20,33 @@ from pyrtos.forms import (
     IncomeEditForm,
 )
 
+
 class IncomeViews(object):
 
-    def __init__(self,request):
+    def __init__(self, request):
         self.request = request
-
 
     @view_config(route_name='incomes',
                  renderer='pyrtos:templates/income/list.mako',
                  permission='view')
     def incomes(self):
-        page = int (self.request.params.get('page', 1))
+        page = int(self.request.params.get('page', 1))
         incomes = Income.page(self.request, page)
         amount_sum = Income.amount_sum()
         return {'paginator': incomes,
-                'title' : 'Monthly incomes',
-                'amount_sum' : amount_sum,
-                'archived' : False,}
-
+                'title': 'Monthly incomes',
+                'amount_sum': amount_sum,
+                'archived': False}
 
     @view_config(route_name='incomes_archived',
                  renderer='pyrtos:templates/income/list.mako',
                  permission='view')
     def incomes_archived(self):
-        page = int (self.request.params.get('page', 1))
+        page = int(self.request.params.get('page', 1))
         incomes = Income.page(self.request, page, archived=True)
         return {'paginator': incomes,
-                'title' : 'Archived incomes',
-                'archived' : True,}
-
+                'title': 'Archived incomes',
+                'archived': True}
 
     @view_config(route_name='income_new',
                  renderer='pyrtos:templates/income/edit.mako',
@@ -63,13 +61,12 @@ class IncomeViews(object):
             form.populate_obj(i)
             i.user_id = form.user_id.data.id
             DBSession.add(i)
-            self.request.session.flash('Income %s created' %\
-                                            (i.title), 'success')
+            self.request.session.flash('Income %s created' %
+                                       (i.title), 'success')
             return HTTPFound(location=self.request.route_url('incomes'))
         return {'title': 'New income',
                 'form': form,
                 'action': 'income_new'}
-
 
     @view_config(route_name='income_edit',
                  renderer='pyrtos:templates/income/edit.mako',
@@ -88,15 +85,14 @@ class IncomeViews(object):
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(i)
             i.user_id = form.user_id.data.id
-            self.request.session.flash('Income %s updated' %\
-                                            (i.title), 'status')
+            self.request.session.flash('Income %s updated' %
+                                       (i.title), 'status')
             return HTTPFound(location=self.request.route_url('incomes'))
         form.user_id.data = i.user
-        return {'title' : 'Edit income',
-                'form' : form,
-                'id' : id,
-                'action' : 'income_edit'}
-
+        return {'title': 'Edit income',
+                'form': form,
+                'id': id,
+                'action': 'income_edit'}
 
     @view_config(route_name='income_archive',
                  renderer='string',
@@ -110,10 +106,9 @@ class IncomeViews(object):
 
         c.archived = True
         DBSession.add(c)
-        self.request.session.flash('Income %s archived' %\
-                                        (c.title), 'status')
+        self.request.session.flash('Income %s archived' %
+                                   (c.title), 'status')
         return HTTPFound(location=self.request.route_url('incomes'))
-
 
     @view_config(route_name='income_restore',
                  renderer='string',
@@ -127,7 +122,6 @@ class IncomeViews(object):
 
         c.archived = False
         DBSession.add(c)
-        self.request.session.flash('Income %s restored' %\
-                                        (c.title), 'status')
+        self.request.session.flash('Income %s restored' %
+                                   (c.title), 'status')
         return HTTPFound(location=self.request.route_url('incomes_archived'))
-
