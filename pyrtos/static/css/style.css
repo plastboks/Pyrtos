@@ -327,8 +327,14 @@ img {
   height: 25px;
 }
 
-#content table tbody .archived {
+#content table tbody tr.archived {
   color: gray;
+  font-style: italic !important;
+}
+
+#content table tbody tr.onhold {
+  background: #FF99FF !important;
+  color: #4C004C;
   font-style: italic !important;
 }
 

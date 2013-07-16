@@ -57,6 +57,7 @@ class Invoice(Base):
     amount = Column(Float(16), nullable=False)
     due = Column(DateTime, nullable=False)
     paid = Column(DateTime, default=None)
+    on_hold = Column(Boolean, default=False)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)

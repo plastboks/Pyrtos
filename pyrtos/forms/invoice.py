@@ -11,6 +11,7 @@ from wtforms import (
     PasswordField,
     SelectMultipleField,
     FileField,
+    BooleanField,
 )
 from wtforms.ext.sqlalchemy.fields import (
     QuerySelectField,
@@ -43,6 +44,7 @@ class InvoiceCreateForm(BaseForm):
                                     get_label='title')
     creditor_id = QuerySelectField('Creditor',
                                     get_label='title')
+    on_hold = BooleanField('On hold')
 
 class InvoiceEditForm(InvoiceCreateForm):
     id = HiddenField()

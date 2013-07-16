@@ -61,7 +61,7 @@
       </thead>
       <tbody>
         %for item in paginator.items:
-          <tr class="${'archived' if item.archived else 'active'}">
+          <tr class="${'archived' if item.archived else 'active'} ${'onhold' if item.on_hold else ''}">
             <td>${item.title}</td>
             <td>${item.amount}</td>
             <td>${item.due.date()}</td>
