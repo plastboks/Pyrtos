@@ -12,7 +12,6 @@ from pyramid.security import (
     authenticated_userid
 )
 
-
 from pyramid.view import (
     view_config,
 )
@@ -25,35 +24,33 @@ from pyrtos.forms import (
     UserEditForm,
 )
 
+
 class UserViews(object):
 
-    def __init__(self,request):
+    def __init__(self, request):
         self.request = request
-
 
     @view_config(route_name='users',
                  renderer='pyrtos:templates/user/list.mako',
                  permission='view')
     def users(self):
-        page = int (self.request.params.get('page', 1))
+        page = int(self.request.params.get('page', 1))
         users = User.page(self.request, page)
         return {'paginator': users,
-                'title' : 'Users',
-                'archived' : False,
-                'myid' : authenticated_userid(self.request)}
-
+                'title': 'Users',
+                'archived': False,
+                'myid': authenticated_userid(self.request)}
 
     @view_config(route_name='users_archived',
                  renderer='pyrtos:templates/user/list.mako',
                  permission='view')
     def users_archived(self):
-        page = int (self.request.params.get('page', 1))
+        page = int(self.request.params.get('page', 1))
         users = User.page(self.request, page, archived=True)
         return {'paginator': users,
-                'title' : 'Archived users',
-                'archived' : True,
-                'myid' : authenticated_userid(self.request)}
-
+                'title': 'Archived users',
+                'archived': True,
+                'myid': authenticated_userid(self.request)}
 
     @view_config(route_name='user_new',
                  renderer='pyrtos:templates/user/edit.mako',
@@ -67,13 +64,12 @@ class UserViews(object):
             form.populate_obj(u)
             u.password = u.pm.encode(form.password.data)
             DBSession.add(u)
-            self.request.session.flash('User %s created' %\
-                                           (u.email), 'success')
+            self.request.session.flash('User %s created' %
+                                       (u.email), 'success')
             return HTTPFound(location=self.request.route_url('users'))
         return {'title': 'New user',
                 'form': form,
-                'action': 'user_new',}
-
+                'action': 'user_new'}
 
     @view_config(route_name='user_edit',
                  renderer='pyrtos:templates/user/edit.mako',
@@ -97,16 +93,15 @@ class UserViews(object):
             if u.password:
                 u.password = u.pm.encode(form.password.data)
             else:
-               del u.password
-            self.request.session.flash('User %s updated' %\
-                                          (u.email), 'status')
+                del u.password
+            self.request.session.flash('User %s updated' %
+                                       (u.email), 'status')
             return HTTPFound(location=self.request.route_url('users'))
-        return {'title' : 'Edit user',
-                'form' : form,
-                'id' : id,
-                'myid' : a,
-                'action' : 'user_edit'}
-
+        return {'title': 'Edit user',
+                'form': form,
+                'id': id,
+                'myid': a,
+                'action': 'user_edit'}
 
     @view_config(route_name='user_archive',
                  renderer='string',
@@ -124,10 +119,9 @@ class UserViews(object):
 
         u.archived = True
         DBSession.add(u)
-        self.request.session.flash('User %s archived' %\
-                                      (u.email), 'status')
+        self.request.session.flash('User %s archived' %
+                                   (u.email), 'status')
         return HTTPFound(location=self.request.route_url('users'))
-
 
     @view_config(route_name='user_restore',
                  renderer='string',
@@ -141,7 +135,6 @@ class UserViews(object):
 
         u.archived = False
         DBSession.add(u)
-        self.request.session.flash('User %s restored' %\
-                                      (u.email), 'status')
+        self.request.session.flash('User %s restored' %
+                                   (u.email), 'status')
         return HTTPFound(location=self.request.route_url('users_archived'))
-
