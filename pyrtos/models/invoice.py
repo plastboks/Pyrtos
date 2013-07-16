@@ -69,6 +69,7 @@ class Invoice(Base):
                     secondary=association_table,
                     backref='invoices')
 
+
     @classmethod
     def all_archived(cls, id):
         return DBSession.query(Invoice)\
@@ -152,7 +153,8 @@ class Invoice(Base):
                         page,
                         url=page_url,
                         items_per_page=IPP)
-    
+
+
     @classmethod
     def searchpage(cls,
                    request,

@@ -44,7 +44,7 @@ class InvoiceViews(object):
     def __init__(self,request):
         self.request = request
 
-    
+
     def update_flash(self): 
         shared_unpaid_invoices = 0;
         shared_categories = Category.all_active(self.request).all()
@@ -93,7 +93,6 @@ class InvoiceViews(object):
                                             datetime.now().strftime('%m')))
 
         categories = Category.all_active(self.request).all()
-
         for c in categories:
             paid_invoices = Invoice.with_category_paid(c.id,
                                                        year,
@@ -201,7 +200,6 @@ class InvoiceViews(object):
             form.creditor_id.query = Creditor.all_shared()
 
         if self.request.method == 'POST' and form.validate():
-
             i = Invoice()
             form.populate_obj(i)
             i.user_id = authenticated_userid(self.request)
@@ -262,7 +260,7 @@ class InvoiceViews(object):
 
         form = InvoiceEditForm(self.request.POST, i, 
                                csrf_context=self.request.session)
-        
+
         if not i.files:
             del form.files
         else:
@@ -380,7 +378,7 @@ class InvoiceViews(object):
         self.request.session.flash('Invoice %s archived' % (i.title), 'status')
         return HTTPFound(location=self.request.route_url('invoices'))
 
-  
+
     @view_config(route_name='invoice_restore',
                  renderer='string',
                  permission='restore')

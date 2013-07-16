@@ -91,13 +91,13 @@ class FileViews(object):
                   permission='view')
     def file_download(self):
         id = int(self.request.matchdict.get('id'))
-        
+
         f = File.by_id(id)
         if not f:
             return HTTPNotFound()
         if f.private and f.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
-        
+
         if f.filename:
           response = FileResponse(
               'pyrtos/uploads/'+f.filename,
@@ -106,3 +106,4 @@ class FileViews(object):
           )
           return response
         return HTTPNotFound()
+
