@@ -25,7 +25,7 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    
+
     authenPol = AuthTktAuthenticationPolicy('somesecret',
                                             callback=groupfinder,
                                             hashalg='sha512')
@@ -38,10 +38,9 @@ def main(global_config, **settings):
                           root_factory='pyrtos.security.EntryFactory',
                           session_factory=sess_factory,)
 
-
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_request_method(can_i, 'can_i')
-  
+
     # index
     config.add_route('index', '/')
 
@@ -56,7 +55,7 @@ def main(global_config, **settings):
     config.add_route('category_edit', '/category/edit/{id}')
     config.add_route('category_archive', '/category/archive/{id}')
     config.add_route('category_restore', '/category/restore/{id}')
-    
+
     # tag
     config.add_route('tags', '/tags')
 
@@ -108,7 +107,6 @@ def main(global_config, **settings):
     config.add_route('files_archived', '/files/archived')
     config.add_route('file_new', '/file/new')
     config.add_route('file_download', '/file/download/{id}')
-    
+
     config.scan()
     return config.make_wsgi_app()
-
