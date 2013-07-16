@@ -46,15 +46,16 @@ class InvoiceCreateForm(BaseForm):
 
 class InvoiceEditForm(InvoiceCreateForm):
     id = HiddenField()
+    files = MultiCheckboxField('Files',
+                               [validators.optional()],
+                               get_label='title')
 
 class InvoiceSearchForm(BaseForm):
     query = TextField('Search',
                       [validators.Length(max=255)],
                       filters=[strip_filter])
-
     categories = MultiCheckboxField('Categories',
                                     get_label='title')
-
     creditors = MultiCheckboxField('Creditors',
                                     get_label='title')
     fromdate = DateField('From date',

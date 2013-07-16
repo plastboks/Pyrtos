@@ -1145,8 +1145,8 @@ class TestViews(IntegrationTestBase):
                             upload_files=[('attachment', 'foo.pdf', b'foo')],
                             status=302)
 
-#        res = self.app.get('/invoices', status=200)
-#        self.assertTrue('testbest' in res.body)
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('testbest' in res.body)
         
         # edit public invoice
         res = self.app.get('/invoice/edit/1')
@@ -1156,9 +1156,11 @@ class TestViews(IntegrationTestBase):
                                                       'title' : 'besttest',
                                                       'amount' : '12345',
                                                       'paid' : '2013-07-07',
+                                                      'files-0' : 1,
                                                       'category_id' : 1,
                                                       'creditor_id' : 1,
-                                                      'csrf_token' : token}
+                                                      'csrf_token' : token},
+                            upload_files=[('attachment', 'boo.pdf', b'boo')],
                            )
         res = self.app.get('/invoices', status=200)
         self.assertTrue('besttest' in res.body)
@@ -1198,8 +1200,8 @@ class TestViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/invoice/new?private=1', {'title' : 'testbest',
                                                        'amount' : '12345',
-                                                       'category_id' : 2,
                                                        'due' : '2013-07-07',
+                                                       'category_id' : 2,
                                                        'creditor_id' : 2,
                                                        'csrf_token' : token}
                            )
@@ -1215,7 +1217,8 @@ class TestViews(IntegrationTestBase):
                                                                  'amount' : '12345',
                                                                  'category_id' : 2,
                                                                  'creditor_id' : 2,
-                                                                 'csrf_token' : token}
+                                                                 'csrf_token' : token},
+                            upload_files=[('attachment', 'coo.pdf', b'coo')],
                            )
         res = self.app.get('/invoices?private=1', status=200)
         self.assertTrue('testhest' in res.body)
@@ -1223,6 +1226,18 @@ class TestViews(IntegrationTestBase):
         res = self.app.get('/invoice/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
         res = self.app.get('/invoice/edit/100', status=404)
+
+        # new priv invoice
+        res = self.app.get('/invoice/new?private=1')
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/invoice/new?private=1', {'title' : 'testpriv',
+                                                       'amount' : '12345',
+                                                       'due' : '2013-07-07',
+                                                       'category_id' : 2,
+                                                       'creditor_id' : 2,
+                                                       'csrf_token' : token},
+                            upload_files=[('attachment', 'doo.pdf', b'doo')],
+                           )
 
         # archive the public category
         self.app.get('/category/archive/1', status=302)

@@ -41,6 +41,18 @@
     <label>${form.amount.label}</label><br />
     ${form.amount}
   </p>
+  
+  %if action == 'invoice_edit':
+    %if invoice.files:
+      %for error in form.files.errors:
+        <p class=error>${error}</p>
+      %endfor
+      <p>
+        <label>${form.files.label}</label><br />
+        ${form.files}
+      </p>
+    %endif
+  %endif
 
   %for error in form.attachment.errors:
     <p class=error>${error}</p>

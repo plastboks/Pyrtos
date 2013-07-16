@@ -1,4 +1,5 @@
 from datetime import datetime
+import random, string
 import os, hashlib, shutil
 
 from slugify import slugify
@@ -64,6 +65,10 @@ class InvoiceViews(object):
         self.request.session.pop_flash('private_unpaid_invoices')
         self.request.session.flash(private_unpaid_invoices,
                                    'private_unpaid_invoices')
+
+
+    def randomstr(self, length):
+       return ''.join(random.choice(string.lowercase) for i in range(length))
 
 
     def month_switcher(self, year, month, next=False):
@@ -211,9 +216,12 @@ class InvoiceViews(object):
                 f.write_file(upload.file)
                 f.title = 'Invoice.'+\
                           form.title.data+'.'+\
+                          self.randomstr(6)+'.'+\
                           form.category_id.data.title+'.'+\
                           form.creditor_id.data.title+'.'+\
                           str(i.due)
+                if private:
+                    f.private = True
                 f.user_id = authenticated_userid(self.request)
                 DBSession.add(f)
                 i.files = [f]
@@ -232,7 +240,8 @@ class InvoiceViews(object):
         return {'title': 'New private invoice' if private else 'New invoice',
                 'form': form,
                 'action': 'invoice_new',
-                'private' : private}
+                'private' : private,
+                'invoice' : False}
 
 
     @view_config(route_name='invoice_edit',
@@ -253,6 +262,11 @@ class InvoiceViews(object):
 
         form = InvoiceEditForm(self.request.POST, i, 
                                csrf_context=self.request.session)
+        
+        if not i.files:
+            del form.files
+        else:
+            form.files.query = i.files
 
         private = self.request.params.get('private')
         if private:
@@ -278,6 +292,31 @@ class InvoiceViews(object):
             form.populate_obj(i)
             i.category_id = form.category_id.data.id
             i.creditor_id = form.creditor_id.data.id
+
+            if form.files:
+                i.files = form.files.data
+
+            upload = self.request.POST.get('attachment')
+            try:
+                f = File()
+                f.filename = f.make_filename(upload.filename)
+                f.filemime = f.guess_mime(upload.filename)
+                f.write_file(upload.file)
+                f.title = 'Invoice.'+\
+                          form.title.data+'.'+\
+                          self.randomstr(6)+'.'+\
+                          form.category_id.data.title+'.'+\
+                          form.creditor_id.data.title+'.'+\
+                          str(i.due)
+                if private:
+                    f.private = True
+                f.user_id = authenticated_userid(self.request)
+                DBSession.add(f)
+                i.files.append(f)
+            except Exception:
+                self.request.session.flash('No file added.',\
+                                           'status')
+
             self.request.session.flash('Invoice %s updated' %\
                                           (i.title), 'status')
             self.update_flash()
@@ -288,11 +327,13 @@ class InvoiceViews(object):
 
         form.category_id.data = i.category
         form.creditor_id.data = i.creditor
+
         return {'title' : 'Edit private invoice' if private else 'Edit invoice',
                 'form' : form,
                 'id' : id,
                 'action' : 'invoice_edit',
-                'private' : private}
+                'private' : private,
+                'invoice' : i}
 
 
     @view_config(route_name='invoice_quickpay',

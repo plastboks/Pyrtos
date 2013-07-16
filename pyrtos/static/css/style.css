@@ -281,6 +281,10 @@ img {
   padding: 10px 15px 10px 0px;
 }
 
+#content form ul#files li {
+  display: block;
+  padding: 2px;
+}
 
 #content span {
   color: grey;
