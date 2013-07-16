@@ -68,7 +68,8 @@ class FileViews(object):
             
             upload = self.request.POST.get('file')
             try:
-                f.make_filename(upload.filename)
+                f.filename = f.make_filename(upload.filename)
+                f.filemime = f.guess_mime(upload.filename)
                 f.write_file(upload.file)
             except Exception:
                 self.request.session.flash('File %s created but no file added' %\

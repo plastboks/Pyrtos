@@ -206,7 +206,8 @@ class InvoiceViews(object):
             upload = self.request.POST.get('attachment')
             try:
                 f = File()
-                f.make_filename(upload.filename)
+                f.filename = f.make_filename(upload.filename)
+                f.filemime = f.guess_mime(upload.filename)
                 f.write_file(upload.file)
                 f.title = 'Invoice.'+\
                           form.title.data+'.'+\
