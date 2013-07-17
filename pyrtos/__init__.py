@@ -9,7 +9,6 @@ from pyramid.authorization import (
 from pyramid.session import (
     UnencryptedCookieSessionFactoryConfig,
 )
-
 from pyrtos.security import (
     EntryFactory,
     groupfinder,
@@ -22,6 +21,10 @@ from pyrtos.models.meta import (
 
 
 def main(global_config, **settings):
+    """
+    Pyrtos base script. This is where everything is called.
+    Below are some basic configuration settings.
+    """
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
@@ -41,14 +44,14 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_request_method(can_i, 'can_i')
 
-    # index
+    """ Index route """
     config.add_route('index', '/')
 
-    # auth
+    """ Auth routes """
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
 
-    # category
+    """ Category routes """
     config.add_route('categories', '/categories')
     config.add_route('categories_archived', '/categories/archived')
     config.add_route('category_new', '/category/new')
@@ -56,10 +59,10 @@ def main(global_config, **settings):
     config.add_route('category_archive', '/category/archive/{id}')
     config.add_route('category_restore', '/category/restore/{id}')
 
-    # tag
+    """ Tag routes """
     config.add_route('tags', '/tags')
 
-    # user
+    """ User routes """
     config.add_route('users', '/users')
     config.add_route('users_archived', '/users/archived')
     config.add_route('user_new', '/user/new')
@@ -67,7 +70,7 @@ def main(global_config, **settings):
     config.add_route('user_archive', '/user/archive/{id}')
     config.add_route('user_restore', '/user/restore/{id}')
 
-    # creditor
+    """ Creditor routes """
     config.add_route('creditors', '/creditors')
     config.add_route('creditors_archived', '/creditors/archived')
     config.add_route('creditor_new', '/creditor/new')
@@ -75,7 +78,7 @@ def main(global_config, **settings):
     config.add_route('creditor_archive', '/creditor/archive/{id}')
     config.add_route('creditor_restore', '/creditor/restore/{id}')
 
-    # income
+    """ Income routes """
     config.add_route('incomes', '/incomes')
     config.add_route('incomes_archived', '/incomes/archived')
     config.add_route('income_new', '/income/new')
@@ -83,7 +86,7 @@ def main(global_config, **settings):
     config.add_route('income_archive', '/income/archive/{id}')
     config.add_route('income_restore', '/income/restore/{id}')
 
-    # expenditure
+    """ Expenditure routes """
     config.add_route('expenditures', '/expenditures')
     config.add_route('expenditures_private', '/expenditures/private')
     config.add_route('expenditures_archived', '/expenditures/archived')
@@ -92,7 +95,7 @@ def main(global_config, **settings):
     config.add_route('expenditure_archive', '/expenditure/archive/{id}')
     config.add_route('expenditure_restore', '/expenditure/restore/{id}')
 
-    # invoice
+    """ Invoice routes """
     config.add_route('invoices', '/invoices')
     config.add_route('invoices_archived', '/invoices/archived')
     config.add_route('invoices_search', '/invoices/search')
@@ -102,7 +105,7 @@ def main(global_config, **settings):
     config.add_route('invoice_archive', '/invoice/archive/{id}')
     config.add_route('invoice_restore', '/invoice/restore/{id}')
 
-    # file
+    """ File routes """
     config.add_route('files', '/files')
     config.add_route('files_archived', '/files/archived')
     config.add_route('file_new', '/file/new')
