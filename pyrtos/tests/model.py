@@ -5,15 +5,6 @@ from datetime import (
 )
 
 from cryptacular.bcrypt import BCRYPTPasswordManager as BPM
-
-from pyrtos.models import (
-    User,
-    Category,
-    Creditor,
-    Income,
-    Expenditure,
-)
-
 from pyrtos.tests import BaseTestCase
 
 
