@@ -22,6 +22,7 @@ from pyrtos.views import (
     FileViews,
 )
 
+
 class BasicViewsTests(BaseTestCase):
 
     def test_index(self):
@@ -61,10 +62,11 @@ class CategoryViewsTests(BaseTestCase):
     def test_category_create(self):
         request = testing.DummyRequest()
         request.POST = multidict.MultiDict()
-        request.matchdict = {'name' : 'test'}
+        request.matchdict = {'name': 'test'}
         c = CategoryViews(request)
         response = c.category_create()
         self.assertEqual(response['title'], 'New category')
+
 
 class UserViewsTests(BaseTestCase):
 
@@ -154,7 +156,7 @@ class ExpenditureViewsTests(BaseTestCase):
         e = ExpenditureViews(request)
         response = e.expenditures_archived()
         self.assertEqual(response['title'], 'Archived expenditures')
-    
+
 
 class InvoiceViewsTests(BaseTestCase):
 

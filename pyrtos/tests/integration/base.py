@@ -13,21 +13,20 @@ def _initTestingDB(makeuser=False):
     Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
     if makeuser:
-      m = BPM()
-      hashed = m.encode(u'1234567')
-      with transaction.manager:
-          user = User(
-                          email=u'user@email.com',
-                          password=hashed,
-                          group='admin',
-                      )
-          DBSession.add(user)
+        m = BPM()
+        hashed = m.encode(u'1234567')
+        with transaction.manager:
+            user = User(email=u'user@email.com',
+                        password=hashed,
+                        group='admin',
+                        )
+            DBSession.add(user)
     return DBSession
 
 
 class IntegrationTestBase(BaseTestCase):
     @classmethod
     def setUpClass(cls):
-        settings = {'sqlalchemy.url' : 'sqlite://'}
+        settings = {'sqlalchemy.url': 'sqlite://'}
         cls.app = main({}, **settings)
         super(IntegrationTestBase, cls).setUpClass()

@@ -18,18 +18,16 @@ class UserModelTests(BaseTestCase):
         m = BPM()
         hashed = m.encode(password)
         if id:
-          return self._getTargetClass()(id=id,
-                                        email=email,
-                                        password=hashed,
-                                        group=group)
-        return self._getTargetClass()(
-                                      email=email,
+            return self._getTargetClass()(id=id,
+                                          email=email,
+                                          password=hashed,
+                                          group=group)
+        return self._getTargetClass()(email=email,
                                       password=hashed,
                                       group=group)
 
     def test_constructor(self):
-        instance = self._makeOne(
-                                 email='user1@email.com',
+        instance = self._makeOne(email='user1@email.com',
                                  password='1234',
                                  group='admin',
                                  )
@@ -37,10 +35,10 @@ class UserModelTests(BaseTestCase):
         self.assertTrue(instance.verify_password('1234'))
 
     def test_by_email(self):
-        instance = self._makeOne(
-                                 email='user2@email.com',
+        instance = self._makeOne(email='user2@email.com',
                                  password='1234',
-                                 group='admin')
+                                 group='admin'
+                                 )
         self.session.add(instance)
         q = self._getTargetClass().by_email('user2@email.com')
         self.assertEqual(q.email, 'user2@email.com')
@@ -49,7 +47,8 @@ class UserModelTests(BaseTestCase):
         instance = self._makeOne(id=1000,
                                  email='user3@email.com',
                                  password='1234',
-                                 group='admin')
+                                 group='admin'
+                                 )
         self.session.add(instance)
         q = self._getTargetClass().by_id(instance.id)
         self.assertEqual(q.email, 'user3@email.com')
@@ -113,10 +112,11 @@ class IncomeModelTests(BaseTestCase):
         return Income
 
     def _makeOne(self, id, title, amount):
-        return self._getTargetClass()(id=id,\
-                                      title=title,\
-                                      user_id=1,\
-                                      amount=amount)
+        return self._getTargetClass()(id=id,
+                                      title=title,
+                                      user_id=1,
+                                      amount=amount
+                                      )
 
     def test_constructor(self):
         instance = self._makeOne(100, 'Test', 1234)
@@ -134,11 +134,12 @@ class ExpenditureModelTests(BaseTestCase):
         return Expenditure
 
     def _makeOne(self, id, title, amount):
-        return self._getTargetClass()(id=id,\
-                                      title=title,\
-                                      amount=amount,\
-                                      category_id=1,\
-                                      user_id=1)
+        return self._getTargetClass()(id=id,
+                                      title=title,
+                                      amount=amount,
+                                      category_id=1,
+                                      user_id=1
+                                      )
 
     def test_constructor(self):
         instance = self._makeOne(100, 'Test', 1234)
@@ -150,19 +151,20 @@ class ExpenditureModelTests(BaseTestCase):
 
 
 class InvoiceModelTests(BaseTestCase):
-    
+
     def _getTargetClass(self):
         from pyrtos.models import Invoice
         return Invoice
 
     def _makeOne(self, id, title, amount):
-        return self._getTargetClass()(id=id,\
-                                      title=title,\
-                                      amount=amount,\
-                                      due=datetime.utcnow(),\
-                                      category_id=1,\
-                                      creditor_id=1,\
-                                      user_id=1)
+        return self._getTargetClass()(id=id,
+                                      title=title,
+                                      amount=amount,
+                                      due=datetime.utcnow(),
+                                      category_id=1,
+                                      creditor_id=1,
+                                      user_id=1
+                                      )
 
     def test_constructor(self):
         instance = self._makeOne(1, 'Test', 1234)
@@ -171,7 +173,7 @@ class InvoiceModelTests(BaseTestCase):
         qi = self._getTargetClass().by_id(1)
         self.assertEqual(qi.title, 'Test')
         self.assertEqual(qi.amount, 1234)
-        
+
         css_time = instance.css_class_for_time_distance()
         self.assertEqual(css_time, 'expired')
 
@@ -181,13 +183,13 @@ class InvoiceModelTests(BaseTestCase):
         instance.due = datetime.utcnow()+timedelta(days=10)
         css_time = instance.css_class_for_time_distance()
         self.assertEqual(css_time, 'd10')
-        
+
         time_to = instance.time_to_expires_in_words()
         self.assertIn('10 days', time_to)
 
 
 class FileModelTests(BaseTestCase):
-    
+
     def _getTargetClass(self):
         from pyrtos.models import File
         return File

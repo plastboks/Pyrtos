@@ -16,32 +16,36 @@ class IntegrationIncomeViews(IntegrationTestBase):
     def test_incomes(self):
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/login', {'submit' : True,
-                                       'csrf_token' : token,
+        res = self.app.post('/login', {'submit': True,
+                                       'csrf_token': token,
                                        'email': 'user@email.com',
-                                       'password' : '1234567',}
-                           )
+                                       'password': '1234567',
+                                       }
+                            )
+
         res = self.app.get('/incomes')
         self.assertTrue(res.status_int, 200)
 
         res = self.app.get('/income/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/income/new', {'title' : 'testbest',
-                                            'amount' : '12345',
-                                            'user_id' : 1,
-                                            'csrf_token' : token}
-                           )
+        res = self.app.post('/income/new', {'title': 'testbest',
+                                            'amount': '12345',
+                                            'user_id': 1,
+                                            'csrf_token': token,
+                                            }
+                            )
         res = self.app.get('/incomes', status=200)
         self.assertTrue('testbest' in res.body)
 
         res = self.app.get('/income/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/income/edit/1', params={'id' : 1,
-                                                      'title' : 'besttest',
-                                                      'amount' : '12345',
-                                                      'user_id' : 1,
-                                                      'csrf_token' : token}
-                           )
+        res = self.app.post('/income/edit/1', params={'id': 1,
+                                                      'title': 'besttest',
+                                                      'amount': '12345',
+                                                      'user_id': 1,
+                                                      'csrf_token': token,
+                                                      }
+                            )
         res = self.app.get('/incomes', status=200)
         self.assertTrue('besttest' in res.body)
 

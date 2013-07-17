@@ -2,6 +2,7 @@ from webtest import TestApp
 from pyrtos.tests.integration import IntegrationTestBase
 from pyrtos.tests.integration import _initTestingDB
 
+
 class IntegrationExpenditureViews(IntegrationTestBase):
 
     def setUp(self):
@@ -15,22 +16,22 @@ class IntegrationExpenditureViews(IntegrationTestBase):
     def test_expenditures(self):
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/login', {'submit' : True,
-                                       'csrf_token' : token,
+        res = self.app.post('/login', {'submit': True,
+                                       'csrf_token': token,
                                        'email': 'user@email.com',
-                                       'password' : '1234567',}
-                           )
+                                       'password': '1234567'}
+                            )
 
         # create a new user
         res = self.app.get('/user/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/user/new', {'email' : 'test@email.com',
-                                          'givenname' : 'testy',
-                                          'surname' : 'mctest',
-                                          'password' : '123456',
-                                          'confirm' : '123456',
-                                          'group' : 'admin',
-                                          'csrf_token' : token})
+        res = self.app.post('/user/new', {'email': 'test@email.com',
+                                          'givenname': 'testy',
+                                          'surname': 'mctest',
+                                          'password': '123456',
+                                          'confirm': '123456',
+                                          'group': 'admin',
+                                          'csrf_token': token})
 
         res = self.app.get('/expenditures')
         self.assertTrue(res.status_int, 200)
@@ -44,61 +45,64 @@ class IntegrationExpenditureViews(IntegrationTestBase):
         # new pub category
         res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/category/new', {'title' : 'testbest',
-                                              'csrf_token' : token}
-                           )
+        res = self.app.post('/category/new', {'title': 'testbest',
+                                              'csrf_token': token}
+                            )
 
         # new priv category
         res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/category/new', {'title' : 'hestbest',
-                                              'private' : 'y',
-                                              'csrf_token' : token}
-                           )
-        
+        res = self.app.post('/category/new', {'title': 'hestbest',
+                                              'private': 'y',
+                                              'csrf_token': token}
+                            )
+
         # new pub expenditure
         res = self.app.get('/expenditure/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/expenditure/new', {'title' : 'testbest',
-                                                 'amount' : '12345',
-                                                 'category_id' : 1,
-                                                 'csrf_token' : token}
-                           )
+        res = self.app.post('/expenditure/new', {'title': 'testbest',
+                                                 'amount': '12345',
+                                                 'category_id': 1,
+                                                 'csrf_token': token}
+                            )
         res = self.app.get('/expenditures', status=200)
         self.assertTrue('testbest' in res.body)
 
         # new priv expenditure
         res = self.app.get('/expenditure/new?private=1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/expenditure/new?private=1', {'title' : 'testbest',
-                                                           'amount' : '12345',
-                                                           'category_id' : 2,
-                                                           'csrf_token' : token}
-                                     )
+        res = self.app.post('/expenditure/new?private=1',
+                            {'title': 'testbest',
+                             'amount': '12345',
+                             'category_id': 2,
+                             'csrf_token': token}
+                            )
         res = self.app.get('/expenditures?private=1', status=200)
         self.assertTrue('testbest' in res.body)
 
         # edit public expenditure
         res = self.app.get('/expenditure/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/expenditure/edit/1', params={'id' : 1,
-                                                      'title' : 'besttest',
-                                                      'amount' : '12345',
-                                                      'category_id' : 1,
-                                                      'csrf_token' : token}
-                           )
+        res = self.app.post('/expenditure/edit/1',
+                            params={'id': 1,
+                                    'title': 'besttest',
+                                    'amount': '12345',
+                                    'category_id': 1,
+                                    'csrf_token': token}
+                            )
         res = self.app.get('/expenditures', status=200)
         self.assertTrue('besttest' in res.body)
-        
+
         # edit priv expenditure
         res = self.app.get('/expenditure/edit/2?private=1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/expenditure/edit/2?private=1', params={'id' : 2,
-                                                                     'title' : 'testhest',
-                                                                     'amount' : '12345',
-                                                                     'category_id' : 2,
-                                                                     'csrf_token' : token}
-                           )
+        res = self.app.post('/expenditure/edit/2?private=1',
+                            params={'id': 2,
+                                    'title': 'testhest',
+                                    'amount': '12345',
+                                    'category_id': 2,
+                                    'csrf_token': token}
+                            )
         res = self.app.get('/expenditures?private=1', status=200)
         self.assertTrue('testhest' in res.body)
 
@@ -128,17 +132,17 @@ class IntegrationExpenditureViews(IntegrationTestBase):
         self.app.get('/expenditure/archive/100', status=404)
         self.app.get('/expenditure/restore/100', status=404)
 
-        # logout 
+        # logout
         self.app.get('/logout')
 
         # login with the previously created user
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/login', {'submit' : True,
-                                       'csrf_token' : token,
+        res = self.app.post('/login', {'submit': True,
+                                       'csrf_token': token,
                                        'email': 'test@email.com',
-                                       'password' : '123456',}
-                           )
+                                       'password': '123456'}
+                            )
 
         # try to edit an expenditure the user do not have permission to
         self.app.get('/expenditure/edit/2', status=403)
