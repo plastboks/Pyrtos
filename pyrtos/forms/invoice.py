@@ -33,6 +33,18 @@ class MultiCheckboxField(QuerySelectMultipleField):
 
 
 class InvoiceCreateForm(BaseForm):
+    """
+    Class constants representing form fields.
+
+    title -- category tilte.
+    amount -- expenditure amount, as float.
+    due -- datefiled for invoice duedate.
+    paid -- datefield for invoice paiddate.
+    attachment -- filefield.
+    category_id -- foreginkey. populated in view file
+    creditor_id -- foreginkey. populated in view file
+    on_hold -- booleanfield.
+    """
     title = TextField('Invoice Title',
                       [validators.Length(min=2, max=255)],
                       filters=[strip_filter])
@@ -50,6 +62,12 @@ class InvoiceCreateForm(BaseForm):
 
 
 class InvoiceEditForm(InvoiceCreateForm):
+    """
+    Class constants representing form fields.
+
+    id -- category id, used in edit forms.
+    files -- foreignkey. populated in view files.
+    """
     id = HiddenField()
     files = MultiCheckboxField('Files',
                                [validators.optional()],
@@ -57,6 +75,15 @@ class InvoiceEditForm(InvoiceCreateForm):
 
 
 class InvoiceSearchForm(BaseForm):
+    """
+    Class constants representing form fields.
+
+    query -- textfield, search query string.
+    categories -- all categoires. populated in view file.
+    creditors -- all creditors. populated in view file.
+    fromdate -- datefield.
+    todate -- datefiled.
+    """
     query = TextField('Search',
                       [validators.Length(max=255)],
                       filters=[strip_filter])

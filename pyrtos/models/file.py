@@ -36,6 +36,19 @@ from webhelpers.date import time_ago_in_words
 
 
 class File(Base):
+    """
+    Class constants representing database table and its columns.
+
+    id -- integer, primary key
+    user_id -- integer, foreginkey. required.
+    title -- string, 255 characters.
+    filename -- string, 255 characters.
+    filemime -- string, 32 characters.
+    private -- boolean, default false.
+    archived -- boolean, default false.
+    created -- datetime.
+    updated -- datetime.
+    """
     __tablename__ = 'files'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -47,8 +60,13 @@ class File(Base):
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
+    """ Constant used for getting this class foregin objects"""
     user = relationship('User', backref='files')
 
+    """ Get all rows except what the user cannot access.
+
+    request -- request object.
+    """
     @classmethod
     def all_active(cls, request):
         id = authenticated_userid(request)
@@ -57,6 +75,10 @@ class File(Base):
                         .filter(not_(and_(File.private == True,
                                           File.user_id != id)))
 
+    """ Get all rows that has been marked as archived.
+
+    request -- request object.
+    """
     @classmethod
     def all_archived(cls, request):
         id = authenticated_userid(request)
@@ -65,10 +87,12 @@ class File(Base):
                         .filter(not_(and_(File.private == True,
                                           File.user_id != id)))
 
-    @classmethod
-    def by_id(cls, id):
-        return DBSession.query(File).filter(File.id == id).first()
+    """ Page method used for lists with pagination.
 
+    request -- request object.
+    page -- integer.
+    archived -- boolean.
+    """
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
@@ -82,15 +106,35 @@ class File(Base):
                     url=page_url,
                     items_per_page=IPP)
 
+    """ Get one record based on id.
+
+    id -- integer.
+    """
+    @classmethod
+    def by_id(cls, id):
+        return DBSession.query(File).filter(File.id == id).first()
+
+    """ Method used for creating uniform filenames.
+
+    filename -- string.
+    """
     def make_filename(self, filename):
         tmp_fileparts = os.path.splitext(filename)
         final_filename = hashlib.sha1(tmp_fileparts[0])\
                                 .hexdigest()+tmp_fileparts[1]
         return final_filename
 
+    """ Method for guessing mimetype, based on inputfilename.
+
+    filename -- string.
+    """
     def guess_mime(self, filename):
         return mimetypes.guess_type(filename)[0]
 
+    """ Method for writing file to filesystem.
+
+    input_file -- fileobject from post request.
+    """
     def write_file(self, input_file):
         file_path = os.path.join('pyrtos/uploads', self.filename)
         with open(file_path, 'wb') as output_file:

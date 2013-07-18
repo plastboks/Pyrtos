@@ -10,6 +10,12 @@ from wtforms import (
 
 
 class CategoryCreateForm(BaseForm):
+    """
+    Class constants representing form fields.
+
+    title -- category tilte
+    private -- category boolean field
+    """
     title = TextField('Category Title',
                       [validators.Length(min=3, max=255)],
                       filters=[strip_filter])
@@ -17,4 +23,9 @@ class CategoryCreateForm(BaseForm):
 
 
 class CategoryEditForm(CategoryCreateForm):
+    """
+    Class constants representing form fields.
+
+    id -- category id, used in edit forms.
+    """
     id = HiddenField()
