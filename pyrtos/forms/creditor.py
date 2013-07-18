@@ -10,6 +10,12 @@ from wtforms import (
 
 
 class CreditorCreateForm(BaseForm):
+    """
+    Class constants representing form fields.
+
+    title -- category tilte
+    private -- category boolean field
+    """
     title = TextField('Creditor Title',
                       [validators.Length(min=3, max=255)],
                       filters=[strip_filter])
@@ -17,4 +23,9 @@ class CreditorCreateForm(BaseForm):
 
 
 class CreditorEditForm(CreditorCreateForm):
+    """
+    Class constants representing form fields.
+
+    id -- category id, used in edit forms.
+    """
     id = HiddenField()

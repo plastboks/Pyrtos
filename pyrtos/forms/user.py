@@ -13,6 +13,17 @@ from pyrtos.models import User
 
 
 class UserCreateForm(BaseForm):
+    """
+    Class constants representing form fields.
+
+    email -- textfield. username.
+    givenname -- textfield. firstname, givenname.
+    surname -- textfield. lastname, surname.
+    password -- password textfield.
+    confirm -- password textfield, second confirmation.
+    group -- selector. usergroup from User class.
+    blocked -- booelan. block user from site.
+    """
     email = TextField('Email',
                       [validators.Length(max=255),
                        validators.Email(message='Not an valid email address')],
@@ -37,6 +48,12 @@ class UserCreateForm(BaseForm):
 
 
 class UserEditForm(UserCreateForm):
+    """
+    Class constants representing form fields.
+
+    password -- password textfield. password is optional in edit form.
+    id -- hidden id field.
+    """
     password = PasswordField('Password',
                              [validators.Optional(),
                               validators.Length(min=6, max=128),

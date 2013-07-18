@@ -8,6 +8,12 @@ from wtforms import (
 
 
 class LoginForm(BaseForm):
+    """
+    Class constants representing form fields.
+
+    email -- textfield. username.
+    password -- textfield. password.
+    """
     email = TextField('Email',
                       [validators.Length(min=4, max=255),
                        validators.Email(message='Not an valid email address')],
