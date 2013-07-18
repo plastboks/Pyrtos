@@ -29,6 +29,17 @@ from webhelpers.date import time_ago_in_words
 
 
 class Creditor(Base):
+    """
+    Class constants representing database table and its columns.
+
+    id -- integer, primary key
+    user_id -- integer, foreginkey. required.
+    title -- string, 255 characters.
+    private -- boolean, default false.
+    archived -- boolean, default false.
+    created -- datetime.
+    updated -- datetime.
+    """
     __tablename__ = 'creditors'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -38,14 +49,17 @@ class Creditor(Base):
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
+    """ Constant used for getting this class foregin objects"""
     user = relationship('User', backref='creditors')
 
+    """ Get first row in table. Used for existence check"""
     @classmethod
     def first_active(cls):
         return DBSession.query(Creditor)\
                         .filter(and_(Creditor.archived == False,
                                      Creditor.private == False)).first()
 
+    """ Get first row in table. Used for existence check"""
     @classmethod
     def first_private(cls, request):
         id = authenticated_userid(request)
@@ -54,6 +68,7 @@ class Creditor(Base):
                                      Creditor.private == True,
                                      Creditor.user_id == id)).first()
 
+    """ Get all rows except what the user cannot access"""
     @classmethod
     def all_active(cls, request, id=False):
         if not id:
@@ -63,12 +78,14 @@ class Creditor(Base):
                         .filter(not_(and_(Creditor.private == True,
                                           Creditor.user_id != id)))
 
+    """ Get all rows that has no special arguments"""
     @classmethod
     def all_shared(cls):
         return DBSession.query(Creditor)\
                         .filter(Creditor.archived == False)\
                         .filter(Creditor.private == False)
 
+    """ Get all rows that has been marked as archived"""
     @classmethod
     def all_archived(cls, request):
         id = authenticated_userid(request)
@@ -77,6 +94,7 @@ class Creditor(Base):
                         .filter(not_(and_(Creditor.private == True,
                                           Creditor.user_id != id)))
 
+    """ Get all rows that has been marked as private"""
     @classmethod
     def all_private(cls, request):
         id = authenticated_userid(request)
@@ -85,6 +103,7 @@ class Creditor(Base):
                                      Creditor.private == True,
                                      Creditor.archived == False))
 
+    """ Page method used for lists with pagination"""
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
@@ -98,6 +117,7 @@ class Creditor(Base):
                     url=page_url,
                     items_per_page=IPP)
 
+    """ Get one record based on id"""
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Creditor).filter(Creditor.id == id).first()

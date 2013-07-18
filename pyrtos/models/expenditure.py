@@ -28,6 +28,18 @@ from webhelpers.date import time_ago_in_words
 
 
 class Expenditure(Base):
+    """
+    Class constants representing database table and its columns.
+
+    id -- integer, primary key
+    user_id -- integer, foreginkey. required.
+    category_id -- integer, foreginkey. required.
+    title -- string, 255 characters.
+    amount -- float, 16 characters.
+    archived -- boolean, default false.
+    created -- datetime.
+    updated -- datetime.
+    """
     __tablename__ = 'expenditures'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -38,14 +50,18 @@ class Expenditure(Base):
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
+    """ Constant used for getting this class foregin objects"""
     user = relationship('User', backref='expenditures')
+    """ Constant used for getting this class foregin objects"""
     category = relationship('Category', backref='expenditures')
 
+    """ Get all rows that has been marked as archived"""
     @classmethod
     def all_archived(cls):
         return DBSession.query(Expenditure)\
                         .filter(Expenditure.archived == True)
 
+    """ Get all rows with a certain category"""
     @classmethod
     def with_category(cls, id, total_only=False):
         if total_only:
@@ -58,6 +74,7 @@ class Expenditure(Base):
                         .filter(and_(Expenditure.category_id == id,
                                      Expenditure.archived == False)).all()
 
+    """ Page method used for lists with pagination"""
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
@@ -67,6 +84,7 @@ class Expenditure(Base):
                         url=page_url,
                         items_per_page=IPP)
 
+    """ Get one record based on id"""
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Expenditure)\
