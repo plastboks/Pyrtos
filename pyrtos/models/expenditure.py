@@ -61,7 +61,11 @@ class Expenditure(Base):
         return DBSession.query(Expenditure)\
                         .filter(Expenditure.archived == True)
 
-    """ Get all rows with a certain category"""
+    """ Get all rows with a certain category.
+
+    id -- int, category id.
+    total_only -- boolean.
+    """
     @classmethod
     def with_category(cls, id, total_only=False):
         if total_only:
@@ -74,7 +78,12 @@ class Expenditure(Base):
                         .filter(and_(Expenditure.category_id == id,
                                      Expenditure.archived == False)).all()
 
-    """ Page method used for lists with pagination"""
+    """ Page method used for lists with pagination.
+
+    request -- request object.
+    page -- int.
+    archived -- boolean.
+    """
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
@@ -84,7 +93,10 @@ class Expenditure(Base):
                         url=page_url,
                         items_per_page=IPP)
 
-    """ Get one record based on id"""
+    """ Get one record based on id.
+
+    id -- int, expenditure id.
+    """
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Expenditure)\

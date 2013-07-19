@@ -59,7 +59,10 @@ class Creditor(Base):
                         .filter(and_(Creditor.archived == False,
                                      Creditor.private == False)).first()
 
-    """ Get first row in table. Used for existence check"""
+    """ Get first row in table. Used for existence check.
+
+    request -- request object.
+    """
     @classmethod
     def first_private(cls, request):
         id = authenticated_userid(request)
@@ -68,7 +71,11 @@ class Creditor(Base):
                                      Creditor.private == True,
                                      Creditor.user_id == id)).first()
 
-    """ Get all rows except what the user cannot access"""
+    """ Get all rows except what the user cannot access.
+
+    request -- request object.
+    id -- int, user id if request object is incomplete.
+    """
     @classmethod
     def all_active(cls, request, id=False):
         if not id:
@@ -85,7 +92,10 @@ class Creditor(Base):
                         .filter(Creditor.archived == False)\
                         .filter(Creditor.private == False)
 
-    """ Get all rows that has been marked as archived"""
+    """ Get all rows that has been marked as archived.
+
+    request -- request object.
+    """
     @classmethod
     def all_archived(cls, request):
         id = authenticated_userid(request)
@@ -94,7 +104,10 @@ class Creditor(Base):
                         .filter(not_(and_(Creditor.private == True,
                                           Creditor.user_id != id)))
 
-    """ Get all rows that has been marked as private"""
+    """ Get all rows that has been marked as private.
+
+    request -- request object.
+    """
     @classmethod
     def all_private(cls, request):
         id = authenticated_userid(request)
@@ -103,7 +116,12 @@ class Creditor(Base):
                                      Creditor.private == True,
                                      Creditor.archived == False))
 
-    """ Page method used for lists with pagination"""
+    """ Page method used for lists with pagination.
+
+    request -- request object.
+    page -- int, page id.
+    archived -- boolean.
+    """
     @classmethod
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
@@ -117,7 +135,10 @@ class Creditor(Base):
                     url=page_url,
                     items_per_page=IPP)
 
-    """ Get one record based on id"""
+    """ Get one record based on id.
+
+    id -- int, creditor id.
+    """
     @classmethod
     def by_id(cls, id):
         return DBSession.query(Creditor).filter(Creditor.id == id).first()
