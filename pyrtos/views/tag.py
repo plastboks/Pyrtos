@@ -16,17 +16,18 @@ from pyrtos.models import (
     Tag,
 )
 
+
 class TagViews(object):
 
-    def __init__(self,request):
+    def __init__(self, request):
         self.request = request
-
 
     @view_config(route_name='tags',
                  renderer='pyrtos:templates/tag/list.mako',
                  permission='view')
     def tags(self):
+        """ Return list of tags. Unused for now. """
+
         tags = Tag.popular()
         return {'tags': tags,
-                'title' : 'Tags',}
-
+                'title': 'Tags'}

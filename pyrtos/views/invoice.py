@@ -1,7 +1,10 @@
-from datetime import datetime
-import random, string
-import os, hashlib, shutil
+import random
+import string
+import os
+import hashlib
+import shutil
 
+from datetime import datetime
 from slugify import slugify
 from pyramid.response import Response
 from sqlalchemy.exc import DBAPIError
@@ -30,8 +33,10 @@ from pyrtos.forms import (
     InvoiceSearchForm,
 )
 
+
 class InvoiceViews(object):
 
+    """ Some commonly used strings. """
     missing_priv_cat = 'You must create at least one private category\
                        before you can create private invoices'
     missing_priv_cred = 'You must create at least one private creditor\
@@ -41,12 +46,16 @@ class InvoiceViews(object):
     missing_shared_cred = 'You must create at least one creditor\
                            before you can create invoices'
 
-    def __init__(self,request):
+    def __init__(self, request):
         self.request = request
 
+    def update_flash(self):
+        """ Since so many methods in this class did the exact same thing,
+        a function was created. This updated the session invoice counter,
+        used in many places (eg. sidebar).
+        """
 
-    def update_flash(self): 
-        shared_unpaid_invoices = 0;
+        shared_unpaid_invoices = 0
         shared_categories = Category.all_active(self.request).all()
         for c in shared_categories:
             unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
@@ -56,7 +65,7 @@ class InvoiceViews(object):
         self.request.session.flash(shared_unpaid_invoices,
                                    'shared_unpaid_invoices')
 
-        private_unpaid_invoices = 0;
+        private_unpaid_invoices = 0
         private_categories = Category.all_private(self.request).all()
         for c in private_categories:
             unpaid_invoices = Invoice.with_category_all_unpaid(c.id)
@@ -66,12 +75,25 @@ class InvoiceViews(object):
         self.request.session.flash(private_unpaid_invoices,
                                    'private_unpaid_invoices')
 
-
     def randomstr(self, length):
-       return ''.join(random.choice(string.lowercase) for i in range(length))
+        """ Random string generator. This function was created for sprinkling
+        the file titles created by the edit and create invoice methods.
+        Returns a string with the specified length.
 
+        length -- int, string length.
+        """
+
+        return ''.join(random.choice(string.lowercase) for i in range(length))
 
     def month_switcher(self, year, month, next=False):
+        """ A simple method for getting the next month,
+        based on input year and month. Returns a list with ['year', 'month'].
+
+        year -- int, four digit year.
+        month -- int, month.
+        next -- boolean, used for determing forward or backward result.
+        """
+
         if next:
             if month >= 12:
                 return [year+1, 1]
@@ -80,11 +102,13 @@ class InvoiceViews(object):
             return [year-1, 12]
         return [year, month-1]
 
-
     @view_config(route_name='invoices',
                  renderer='pyrtos:templates/invoice/alist.mako',
                  permission='view')
     def invoices(self):
+        """ Get a paginated list of active invoices for current
+        or given month."""
+
         paid_result = {}
         unpaid_result = {}
         year = int(self.request.params.get('year',
@@ -110,77 +134,83 @@ class InvoiceViews(object):
                 unpaid_result[c.title] = [unpaid_invoices, total]
 
         return {'paiditems': paid_result,
-                'unpaiditems' : unpaid_result,
-                'title' : 'Invoices',
-                'month' : month,
-                'year' : year,
-                'nextmonth' : self.month_switcher(year, month, next=True),
-                'prevmonth' : self.month_switcher(year, month)}
-
+                'unpaiditems': unpaid_result,
+                'title': 'Invoices',
+                'month': month,
+                'year': year,
+                'nextmonth': self.month_switcher(year, month, next=True),
+                'prevmonth': self.month_switcher(year, month)}
 
     @view_config(route_name='invoices_search',
                  renderer='pyrtos:templates/invoice/list.mako',
                  permission='view')
     def invoices_search(self):
-       page = int(self.request.params.get('page', 1)) 
-       form = InvoiceSearchForm(self.request.GET,
-                                csrf_context=self.request.session)
-       form.categories.query = Category.all_active(self.request)
-       form.creditors.query = Creditor.all_active(self.request)
-       if self.request.method == 'GET' and form.validate():
-           q = form.query.data
-           categories = form.categories.data
-           creditors = form.creditors.data
-           fromdate = form.fromdate.data
-           todate = form.todate.data
-           invoices = Invoice.searchpage(self.request,
-                                         page,
-                                         qry=q,
-                                         categories=categories,
-                                         creditors=creditors,
-                                         fromdate=fromdate,
-                                         todate=todate,
-                                         )
-           total = Invoice.searchpage(self.request,
-                                         page,
-                                         qry=q,
-                                         categories=categories,
-                                         creditors=creditors,
-                                         fromdate=fromdate,
-                                         todate=todate,
-                                         total_only=True,
-                                         )
-       else:
-           invoices = Invoice.searchpage(self.request, page)
-           total = Invoice.searchpage(self.request, page, total_only=True)
-       return {'paginator': invoices,
-               'form' : form,
-               'title' : 'Search',
-               'searchpage' : True,
-               'total' : total}
+        """ Get a list of invoices based on search arguments. """
 
+        page = int(self.request.params.get('page', 1))
+        form = InvoiceSearchForm(self.request.GET,
+                                 csrf_context=self.request.session)
+        form.categories.query = Category.all_active(self.request)
+        form.creditors.query = Creditor.all_active(self.request)
+        if self.request.method == 'GET' and form.validate():
+            q = form.query.data
+            categories = form.categories.data
+            creditors = form.creditors.data
+            fromdate = form.fromdate.data
+            todate = form.todate.data
+            invoices = Invoice.searchpage(self.request,
+                                          page,
+                                          qry=q,
+                                          categories=categories,
+                                          creditors=creditors,
+                                          fromdate=fromdate,
+                                          todate=todate,
+                                          )
+            total = Invoice.searchpage(self.request,
+                                       page,
+                                       qry=q,
+                                       categories=categories,
+                                       creditors=creditors,
+                                       fromdate=fromdate,
+                                       todate=todate,
+                                       total_only=True,
+                                       )
+        else:
+            invoices = Invoice.searchpage(self.request, page)
+            total = Invoice.searchpage(self.request, page, total_only=True)
+        return {'paginator': invoices,
+                'form': form,
+                'title': 'Search',
+                'searchpage': True,
+                'total': total}
 
     @view_config(route_name='invoices_archived',
                  renderer='pyrtos:templates/invoice/list.mako',
                  permission='view')
     def invoices_archived(self):
+        """ Get a paginated list of archived invoices. """
+
         page = int(self.request.params.get('page', 1))
         invoices = Invoice.page(self.request, page, archived=True)
         return {'paginator': invoices,
-                'title' : 'Archived invoices',
-                'searchpage' : False,
-                'total' : False,}
-
+                'title': 'Archived invoices',
+                'searchpage': False,
+                'total': False}
 
     @view_config(route_name='invoice_new',
                  renderer='pyrtos:templates/invoice/edit.mako',
                  permission='create')
     def invoice_create(self):
+        """ New invoice view. This method handles both post,
+        and get requests.
+        """
+
         form = InvoiceCreateForm(self.request.POST,
                                  csrf_context=self.request.session)
 
         private = self.request.params.get('private')
         if private:
+            """ Check if the necessary object exists. """
             if not Category.first_private(self.request):
                 self.request.session.flash(self.missing_priv_cat)
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -190,6 +220,7 @@ class InvoiceViews(object):
             form.category_id.query = Category.all_private(self.request)
             form.creditor_id.query = Creditor.all_private(self.request)
         else:
+            """ Check if the necessary object exists. """
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -206,17 +237,18 @@ class InvoiceViews(object):
             i.category_id = form.category_id.data.id
             i.creditor_id = form.creditor_id.data.id
 
+            """ If file, make file object and save/create file. """
             upload = self.request.POST.get('attachment')
             try:
                 f = File()
                 f.filename = f.make_filename(upload.filename)
                 f.filemime = f.guess_mime(upload.filename)
                 f.write_file(upload.file)
-                f.title = 'Invoice.'+\
-                          form.title.data+'.'+\
-                          self.randomstr(6)+'.'+\
-                          form.category_id.data.title+'.'+\
-                          form.creditor_id.data.title+'.'+\
+                f.title = 'Invoice.' +\
+                          form.title.data + '.' +\
+                          self.randomstr(6) + '.' +\
+                          form.category_id.data.title + '.' +\
+                          form.creditor_id.data.title + '.' +\
                           str(i.due)
                 if private:
                     f.private = True
@@ -224,41 +256,47 @@ class InvoiceViews(object):
                 DBSession.add(f)
                 i.files = [f]
             except Exception:
-                self.request.session.flash('No file added.',\
+                self.request.session.flash('No file added.',
                                            'status')
 
             DBSession.add(i)
-            self.request.session.flash('Invoice %s created' %\
-                                          (i.title), 'success')
+            self.request.session.flash('Invoice %s created' %
+                                       (i.title), 'success')
             self.update_flash()
             if private:
-                return HTTPFound(location=self.request.route_url('invoices',
-                                                                 _query={'private' : 1}))
+                return HTTPFound(location=
+                                 self.request
+                                     .route_url('invoices',
+                                                _query={'private': 1}))
             return HTTPFound(location=self.request.route_url('invoices'))
         return {'title': 'New private invoice' if private else 'New invoice',
                 'form': form,
                 'action': 'invoice_new',
-                'private' : private,
-                'invoice' : False}
-
+                'private': private,
+                'invoice': False}
 
     @view_config(route_name='invoice_edit',
                  renderer='pyrtos:templates/invoice/edit.mako',
                  permission='edit')
     def invoice_edit(self):
+        """ Edit invoice view. This method handles both post,
+        and get requests. """
+
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
-        if i.category.private\
-            and i.category.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.category.private
+           and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
-        if i.creditor.private\
-            and i.creditor.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.creditor.private
+           and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
 
-        form = InvoiceEditForm(self.request.POST, i, 
+        form = InvoiceEditForm(self.request.POST, i,
                                csrf_context=self.request.session)
 
         if not i.files:
@@ -268,6 +306,7 @@ class InvoiceViews(object):
 
         private = self.request.params.get('private')
         if private:
+            """ Check if the necessary object exists. """
             if not Category.first_private(self.request):
                 self.request.session.flash(self.missing_priv_cat, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -277,6 +316,7 @@ class InvoiceViews(object):
             form.category_id.query = Category.all_private(self.request)
             form.creditor_id.query = Creditor.all_private(self.request)
         else:
+            """ Check if the necessary object exists. """
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -294,17 +334,18 @@ class InvoiceViews(object):
             if form.files:
                 i.files = form.files.data
 
+            """ If file, make file object and save/create file. """
             upload = self.request.POST.get('attachment')
             try:
                 f = File()
                 f.filename = f.make_filename(upload.filename)
                 f.filemime = f.guess_mime(upload.filename)
                 f.write_file(upload.file)
-                f.title = 'Invoice.'+\
-                          form.title.data+'.'+\
-                          self.randomstr(6)+'.'+\
-                          form.category_id.data.title+'.'+\
-                          form.creditor_id.data.title+'.'+\
+                f.title = 'Invoice.' +\
+                          form.title.data + '.' +\
+                          self.randomstr(6) + '.' +\
+                          form.category_id.data.title + '.' +\
+                          form.creditor_id.data.title + '.' +\
                           str(i.due)
                 if private:
                     f.private = True
@@ -312,65 +353,73 @@ class InvoiceViews(object):
                 DBSession.add(f)
                 i.files.append(f)
             except Exception:
-                self.request.session.flash('No file added.',\
+                self.request.session.flash('No file added.',
                                            'status')
 
-            self.request.session.flash('Invoice %s updated' %\
-                                          (i.title), 'status')
+            self.request.session.flash('Invoice %s updated' %
+                                       (i.title), 'status')
             self.update_flash()
             if private:
-                return HTTPFound(location=self.request.route_url('invoices', 
-                                                                 _query={'private' : 1}))
+                return HTTPFound(location=
+                                 self.request
+                                     .route_url('invoices',
+                                                _query={'private': 1}))
             return HTTPFound(location=self.request.route_url('invoices'))
 
         form.category_id.data = i.category
         form.creditor_id.data = i.creditor
-
-        return {'title' : 'Edit private invoice' if private else 'Edit invoice',
-                'form' : form,
-                'id' : id,
-                'action' : 'invoice_edit',
-                'private' : private,
-                'invoice' : i}
-
+        return {'title': 'Edit private invoice' if private else 'Edit invoice',
+                'form': form,
+                'id': id,
+                'action': 'invoice_edit',
+                'private': private,
+                'invoice': i}
 
     @view_config(route_name='invoice_quickpay',
                  renderer='string',
                  permission='edit')
     def invoice_quickpay(self):
+        """ Quickpay method for making the 'just pay this invoice',
+        often used function easier. """
+
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
-        if i.category.private\
-            and i.category.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.category.private
+           and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
-        if i.creditor.private\
-            and i.creditor.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.creditor.private
+           and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
 
         i.paid = datetime.now()
-        self.request.session.flash('Invoice %s is now paid' %\
-                                        (i.title), 'success')
+        self.request.session.flash('Invoice %s is now paid' %
+                                   (i.title), 'success')
         self.update_flash()
         return HTTPFound(location=self.request.route_url('invoices'))
-
 
     @view_config(route_name='invoice_archive',
                  renderer='string',
                  permission='archive')
     def invoice_archive(self):
+        """ Archive invoice, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
-        if i.category.private\
-            and i.category.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.category.private
+           and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
-        if i.creditor.private\
-            and i.creditor.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.creditor.private
+           and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
 
         i.archived = True
@@ -378,25 +427,26 @@ class InvoiceViews(object):
         self.request.session.flash('Invoice %s archived' % (i.title), 'status')
         return HTTPFound(location=self.request.route_url('invoices'))
 
-
     @view_config(route_name='invoice_restore',
                  renderer='string',
                  permission='restore')
     def invoice_restore(self):
+        """ Restore invoice, returns redirect. """
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
-        if i.category.private\
-            and i.category.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.category.private
+           and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
-        if i.creditor.private\
-            and i.creditor.user_id is not authenticated_userid(self.request):
+        """ Authorization check. """
+        if (i.creditor.private
+           and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
 
         i.archived = False
         DBSession.add(i)
         self.request.session.flash('Invoice %s restored' % (i.title), 'status')
         return HTTPFound(location=self.request.route_url('invoices_archived'))
-

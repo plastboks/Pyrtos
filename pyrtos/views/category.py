@@ -25,37 +25,42 @@ from pyrtos.forms import (
     CategoryEditForm,
 )
 
+
 class CategoryViews(object):
 
-    def __init__(self,request):
+    def __init__(self, request):
         self.request = request
-
 
     @view_config(route_name='categories',
                  renderer='pyrtos:templates/category/list.mako',
                  permission='view')
     def categories(self):
-        page = int (self.request.params.get('page', 1))
+        """ Get a paginated list of active categories. """
+
+        page = int(self.request.params.get('page', 1))
         categories = Category.page(self.request, page)
         return {'paginator': categories,
-                'title' : 'Categories',
-                'archived' : False}
+                'title': 'Categories',
+                'archived': False}
 
     @view_config(route_name='categories_archived',
                  renderer='pyrtos:templates/category/list.mako',
                  permission='view')
     def categories_archived(self):
-        page = int (self.request.params.get('page', 1))
+        """ Get a paginated list of archived categories. """
+
+        page = int(self.request.params.get('page', 1))
         categories = Category.page(self.request, page, archived=True)
         return {'paginator': categories,
-                'title' : 'Archived categories',
-                'archived' : True,}
-
+                'title': 'Archived categories',
+                'archived': True}
 
     @view_config(route_name='category_new',
                  renderer='pyrtos:templates/category/edit.mako',
                  permission='create')
     def category_create(self):
+        """ New category view. """
+
         form = CategoryCreateForm(self.request.POST,
                                   csrf_context=self.request.session)
 
@@ -64,23 +69,26 @@ class CategoryViews(object):
             form.populate_obj(c)
             c.user_id = authenticated_userid(self.request)
             DBSession.add(c)
-            self.request.session.flash('Category %s created' %\
-                                            (c.title), 'success')
+            self.request.session.flash('Category %s created' %
+                                       (c.title), 'success')
             return HTTPFound(location=self.request.route_url('categories'))
         return {'title': 'New category',
                 'form': form,
                 'action': 'category_new'}
 
-
     @view_config(route_name='category_edit',
                  renderer='pyrtos:templates/category/edit.mako',
                  permission='edit')
     def category_edit(self):
+        """ Edit category view. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
@@ -89,49 +97,55 @@ class CategoryViews(object):
 
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(c)
-            self.request.session.flash('Category %s updated' %\
-                                            (c.title), 'status')
+            self.request.session.flash('Category %s updated' %
+                                       (c.title), 'status')
             return HTTPFound(location=self.request.route_url('categories'))
-        return {'title' : 'Edit category',
-                'form' : form,
-                'id' : id,
-                'action' : 'category_edit'}
-
+        return {'title': 'Edit category',
+                'form': form,
+                'id': id,
+                'action': 'category_edit'}
 
     @view_config(route_name='category_archive',
                  renderer='string',
                  permission='archive')
     def category_archive(self):
+        """ Archive category, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
         c.archived = True
         DBSession.add(c)
-        self.request.session.flash('Category %s archived' %\
-                                        (c.title), 'status')
+        self.request.session.flash('Category %s archived' %
+                                   (c.title), 'status')
         return HTTPFound(location=self.request.route_url('categories'))
-
 
     @view_config(route_name='category_restore',
                  renderer='string',
                  permission='restore')
     def category_restore(self):
+        """ Restore category, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
         c.archived = False
         DBSession.add(c)
-        self.request.session.flash('Category %s restored' %\
-                                        (c.title), 'status')
-        return HTTPFound(location=self.request.route_url('categories_archived'))
-
+        self.request.session.flash('Category %s restored' %
+                                   (c.title), 'status')
+        return HTTPFound(location=self.request
+                                      .route_url('categories_archived'))

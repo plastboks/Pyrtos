@@ -19,25 +19,26 @@ from pyramid.view import (
 
 
 class MainViews(object):
-    
-    def __init__(self,request):
-        self.request = request
 
+    def __init__(self, request):
+        self.request = request
 
     @view_config(route_name='index',
                  renderer='pyrtos:templates/index.mako',
                  permission='view')
     def index(self):
-        return {'title': 'Dashboard'}
+        """ Dashboard method. Unused for now. """
 
+        return {'title': 'Dashboard'}
 
     @forbidden_view_config(renderer='string')
     def forbidden(self):
+        """ Forbidden view. """
         return HTTPFound(self.request.route_url('login'))
-
 
     @notfound_view_config(renderer='pyrtos:templates/notfound.mako')
     def notfound(self):
+        """ Not found view. """
         return {'title': '404 - Page not found',
-                'message' : '"%s" is not the page you are looking for!' %\
-                                                          self.request.path}
+                'message': '"%s" is not the page you are looking for!' %
+                           self.request.path}
