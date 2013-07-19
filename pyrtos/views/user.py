@@ -34,6 +34,8 @@ class UserViews(object):
                  renderer='pyrtos:templates/user/list.mako',
                  permission='view')
     def users(self):
+        """ Get a paginated list of active users. """
+
         page = int(self.request.params.get('page', 1))
         users = User.page(self.request, page)
         return {'paginator': users,
@@ -45,6 +47,8 @@ class UserViews(object):
                  renderer='pyrtos:templates/user/list.mako',
                  permission='view')
     def users_archived(self):
+        """ Get a paginated list of archived users. """
+
         page = int(self.request.params.get('page', 1))
         users = User.page(self.request, page, archived=True)
         return {'paginator': users,
@@ -56,6 +60,10 @@ class UserViews(object):
                  renderer='pyrtos:templates/user/edit.mako',
                  permission='create')
     def user_create(self):
+        """ New user view. Method handles both post and get
+        requests.
+        """
+
         form = UserCreateForm(self.request.POST,
                               csrf_context=self.request.session)
 
@@ -75,9 +83,14 @@ class UserViews(object):
                  renderer='pyrtos:templates/user/edit.mako',
                  permission='edit')
     def user_edit(self):
-        a = authenticated_userid(self.request)
+        """ Edit user view. Method handles both post and get
+        requests.
+        """
 
+        a = authenticated_userid(self.request)
         id = int(self.request.matchdict.get('id'))
+
+        """ User one (1) is a bit special..."""
         if id is 1 and a is not 1:
             return HTTPNotFound()
 
@@ -107,9 +120,12 @@ class UserViews(object):
                  renderer='string',
                  permission='archive')
     def user_archive(self):
-        a = authenticated_userid(self.request)
+        """ Archive user, returns redirect. """
 
+        a = authenticated_userid(self.request)
         id = int(self.request.matchdict.get('id'))
+
+        """ User one (1) is a bit special..."""
         if id is 1:
             return HTTPNotFound()
 
@@ -127,6 +143,8 @@ class UserViews(object):
                  renderer='string',
                  permission='restore')
     def user_restore(self):
+        """ Restore user, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         u = User.by_id(id)

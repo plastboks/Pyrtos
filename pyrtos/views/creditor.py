@@ -32,6 +32,8 @@ class CreditorViews(object):
                  renderer='pyrtos:templates/creditor/list.mako',
                  permission='view')
     def creditors(self):
+        """ Returns a paginated list of active creditors. """
+
         page = int(self.request.params.get('page', 1))
         creditors = Creditor.page(self.request, page)
         return {'paginator': creditors,
@@ -42,6 +44,8 @@ class CreditorViews(object):
                  renderer='pyrtos:templates/creditor/list.mako',
                  permission='view')
     def creditors_archived(self):
+        """ Returns a paginated list of archived creditors. """
+
         page = int(self.request.params.get('page', 1))
         creditors = Creditor.page(self.request, page, archived=True)
         return {'paginator': creditors,
@@ -52,6 +56,8 @@ class CreditorViews(object):
                  renderer='pyrtos:templates/creditor/edit.mako',
                  permission='create')
     def creditor_create(self):
+        """ New creditors. Method for both post and get request."""
+
         form = CreditorCreateForm(self.request.POST,
                                   csrf_context=self.request.session)
 
@@ -71,11 +77,14 @@ class CreditorViews(object):
                  renderer='pyrtos:templates/creditor/edit.mako',
                  permission='edit')
     def creditor_edit(self):
+        """ Edit creditor. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Creditor.by_id(id)
         if not c:
             return HTTPNotFound()
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
@@ -96,11 +105,14 @@ class CreditorViews(object):
                  renderer='string',
                  permission='archive')
     def creditor_archive(self):
+        """ Archive creditors, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Creditor.by_id(id)
         if not c:
             return HTTPNotFound()
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
@@ -114,11 +126,14 @@ class CreditorViews(object):
                  renderer='string',
                  permission='restore')
     def creditor_restore(self):
+        """ Restore creditor, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Creditor.by_id(id)
         if not c:
             return HTTPNotFound()
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 

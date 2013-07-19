@@ -30,6 +30,8 @@ class IncomeViews(object):
                  renderer='pyrtos:templates/income/list.mako',
                  permission='view')
     def incomes(self):
+        """ Get a paginated list of active incomes. """
+
         page = int(self.request.params.get('page', 1))
         incomes = Income.page(self.request, page)
         amount_sum = Income.amount_sum()
@@ -42,6 +44,8 @@ class IncomeViews(object):
                  renderer='pyrtos:templates/income/list.mako',
                  permission='view')
     def incomes_archived(self):
+        """ Get a paginated list of archived incomes. """
+
         page = int(self.request.params.get('page', 1))
         incomes = Income.page(self.request, page, archived=True)
         return {'paginator': incomes,
@@ -52,6 +56,8 @@ class IncomeViews(object):
                  renderer='pyrtos:templates/income/edit.mako',
                  permission='create')
     def income_create(self):
+        """ New income. This method handles both post and get requests. """
+
         form = IncomeCreateForm(self.request.POST,
                                 csrf_context=self.request.session)
         form.user_id.query = User.all_users()
@@ -72,8 +78,12 @@ class IncomeViews(object):
                  renderer='pyrtos:templates/income/edit.mako',
                  permission='edit')
     def income_edit(self):
+        """ Edit income. This method handles both post and get requests. """
+
         id = int(self.request.matchdict.get('id'))
 
+        """ Every user can edit every income object.
+        So no authorization needed. """
         i = Income.by_id(id)
         if not i:
             return HTTPNotFound()
@@ -98,8 +108,12 @@ class IncomeViews(object):
                  renderer='string',
                  permission='archive')
     def income_archive(self):
+        """ Archive income, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
+        """ Every user can edit every income object.
+        So no authorization needed. """
         c = Income.by_id(id)
         if not c:
             return HTTPNotFound()
@@ -114,8 +128,12 @@ class IncomeViews(object):
                  renderer='string',
                  permission='restore')
     def income_restore(self):
+        """ Restores income, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
+        """ Every user can edit every income object.
+        So no authorization needed. """
         c = Income.by_id(id)
         if not c:
             return HTTPNotFound()

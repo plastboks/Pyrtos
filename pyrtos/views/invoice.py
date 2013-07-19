@@ -36,6 +36,7 @@ from pyrtos.forms import (
 
 class InvoiceViews(object):
 
+    """ Some commonly used strings. """
     missing_priv_cat = 'You must create at least one private category\
                        before you can create private invoices'
     missing_priv_cred = 'You must create at least one private creditor\
@@ -49,6 +50,11 @@ class InvoiceViews(object):
         self.request = request
 
     def update_flash(self):
+        """ Since so many methods in this class did the exact same thing,
+        a function was created. This updated the session invoice counter,
+        used in many places (eg. sidebar).
+        """
+
         shared_unpaid_invoices = 0
         shared_categories = Category.all_active(self.request).all()
         for c in shared_categories:
@@ -70,9 +76,24 @@ class InvoiceViews(object):
                                    'private_unpaid_invoices')
 
     def randomstr(self, length):
+        """ Random string generator. This function was created for sprinkling
+        the file titles created by the edit and create invoice methods.
+        Returns a string with the specified length.
+
+        length -- int, string length.
+        """
+
         return ''.join(random.choice(string.lowercase) for i in range(length))
 
     def month_switcher(self, year, month, next=False):
+        """ A simple method for getting the next month,
+        based on input year and month. Returns a list with ['year', 'month'].
+
+        year -- int, four digit year.
+        month -- int, month.
+        next -- boolean, used for determing forward or backward result.
+        """
+
         if next:
             if month >= 12:
                 return [year+1, 1]
@@ -85,6 +106,9 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/alist.mako',
                  permission='view')
     def invoices(self):
+        """ Get a paginated list of active invoices for current
+        or given month."""
+
         paid_result = {}
         unpaid_result = {}
         year = int(self.request.params.get('year',
@@ -121,6 +145,8 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/list.mako',
                  permission='view')
     def invoices_search(self):
+        """ Get a list of invoices based on search arguments. """
+
         page = int(self.request.params.get('page', 1))
         form = InvoiceSearchForm(self.request.GET,
                                  csrf_context=self.request.session)
@@ -162,6 +188,8 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/list.mako',
                  permission='view')
     def invoices_archived(self):
+        """ Get a paginated list of archived invoices. """
+
         page = int(self.request.params.get('page', 1))
         invoices = Invoice.page(self.request, page, archived=True)
         return {'paginator': invoices,
@@ -173,11 +201,16 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/edit.mako',
                  permission='create')
     def invoice_create(self):
+        """ New invoice view. This method handles both post,
+        and get requests.
+        """
+
         form = InvoiceCreateForm(self.request.POST,
                                  csrf_context=self.request.session)
 
         private = self.request.params.get('private')
         if private:
+            """ Check if the necessary object exists. """
             if not Category.first_private(self.request):
                 self.request.session.flash(self.missing_priv_cat)
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -187,6 +220,7 @@ class InvoiceViews(object):
             form.category_id.query = Category.all_private(self.request)
             form.creditor_id.query = Creditor.all_private(self.request)
         else:
+            """ Check if the necessary object exists. """
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -203,6 +237,7 @@ class InvoiceViews(object):
             i.category_id = form.category_id.data.id
             i.creditor_id = form.creditor_id.data.id
 
+            """ If file, make file object and save/create file. """
             upload = self.request.POST.get('attachment')
             try:
                 f = File()
@@ -244,14 +279,19 @@ class InvoiceViews(object):
                  renderer='pyrtos:templates/invoice/edit.mako',
                  permission='edit')
     def invoice_edit(self):
+        """ Edit invoice view. This method handles both post,
+        and get requests. """
+
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
+        """ Authorization check. """
         if (i.category.private
            and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
+        """ Authorization check. """
         if (i.creditor.private
            and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
@@ -266,6 +306,7 @@ class InvoiceViews(object):
 
         private = self.request.params.get('private')
         if private:
+            """ Check if the necessary object exists. """
             if not Category.first_private(self.request):
                 self.request.session.flash(self.missing_priv_cat, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -275,6 +316,7 @@ class InvoiceViews(object):
             form.category_id.query = Category.all_private(self.request)
             form.creditor_id.query = Creditor.all_private(self.request)
         else:
+            """ Check if the necessary object exists. """
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request.route_url('invoices'))
@@ -292,6 +334,7 @@ class InvoiceViews(object):
             if form.files:
                 i.files = form.files.data
 
+            """ If file, make file object and save/create file. """
             upload = self.request.POST.get('attachment')
             try:
                 f = File()
@@ -325,7 +368,6 @@ class InvoiceViews(object):
 
         form.category_id.data = i.category
         form.creditor_id.data = i.creditor
-
         return {'title': 'Edit private invoice' if private else 'Edit invoice',
                 'form': form,
                 'id': id,
@@ -337,14 +379,19 @@ class InvoiceViews(object):
                  renderer='string',
                  permission='edit')
     def invoice_quickpay(self):
+        """ Quickpay method for making the 'just pay this invoice',
+        often used function easier. """
+
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
+        """ Authorization check. """
         if (i.category.private
            and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
+        """ Authorization check. """
         if (i.creditor.private
            and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
@@ -359,14 +406,18 @@ class InvoiceViews(object):
                  renderer='string',
                  permission='archive')
     def invoice_archive(self):
+        """ Archive invoice, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
+        """ Authorization check. """
         if (i.category.private
            and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
+        """ Authorization check. """
         if (i.creditor.private
            and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
@@ -380,14 +431,17 @@ class InvoiceViews(object):
                  renderer='string',
                  permission='restore')
     def invoice_restore(self):
+        """ Restore invoice, returns redirect. """
         id = int(self.request.matchdict.get('id'))
         i = Invoice.by_id(id)
 
         if not i:
             return HTTPNotFound()
+        """ Authorization check. """
         if (i.category.private
            and i.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
+        """ Authorization check. """
         if (i.creditor.private
            and i.creditor.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()

@@ -32,7 +32,9 @@ from StringIO import StringIO
 
 
 class BaseTestCase(unittest.TestCase):
-
+    """ Base class used for all unittests. This sets up the.
+    database and so forth.
+    """
     @classmethod
     def setUpClass(cls):
         cls.engine = create_engine('sqlite://')

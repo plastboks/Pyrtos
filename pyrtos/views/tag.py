@@ -26,6 +26,8 @@ class TagViews(object):
                  renderer='pyrtos:templates/tag/list.mako',
                  permission='view')
     def tags(self):
+        """ Return list of tags. Unused for now. """
+
         tags = Tag.popular()
         return {'tags': tags,
                 'title': 'Tags'}

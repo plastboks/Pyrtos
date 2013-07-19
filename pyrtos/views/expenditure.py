@@ -27,6 +27,7 @@ from pyrtos.forms import (
 
 class ExpenditureViews(object):
 
+    """ Some commonly used strings. """
     missing_priv_cat = 'You must create at least one private category\
                         before you can create private expenditures'
     missing_shared_cat = 'You must create at least one category\
@@ -39,6 +40,9 @@ class ExpenditureViews(object):
                  renderer='pyrtos:templates/expenditure/alist.mako',
                  permission='view')
     def expenditures(self):
+        """ Return a paginated list of active expenditures.
+        Handles both private and shared expenditures. """
+
         result = {}
 
         private = self.request.params.get('private')
@@ -61,6 +65,8 @@ class ExpenditureViews(object):
                  renderer='pyrtos:templates/expenditure/list.mako',
                  permission='view')
     def expenditures_archived(self):
+        """ Returns a paginated list of archived expenditures."""
+
         page = int(self.request.params.get('page', 1))
         expenditures = Expenditure.page(self.request, page, archived=True)
         return {'paginator': expenditures,
@@ -71,17 +77,21 @@ class ExpenditureViews(object):
                  renderer='pyrtos:templates/expenditure/edit.mako',
                  permission='create')
     def expenditure_create(self):
+        """ New expenditure. Method for both post and get request. """
+
         form = ExpenditureCreateForm(self.request.POST,
                                      csrf_context=self.request.session)
 
         private = self.request.params.get('private')
         if private:
+            """ Check if there exists any private categories. """
             if not Category.first_private(self.request):
                 self.request.session.flash(self.missing_priv_cat, 'error')
                 return HTTPFound(location=self.request
                                               .route_url('expenditures'))
             form.category_id.query = Category.all_private(self.request)
         else:
+            """ Check if there exists any categories. """
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request
@@ -96,6 +106,7 @@ class ExpenditureViews(object):
             DBSession.add(e)
             self.request.session.flash('Expenditure %s created' %
                                        (e.title), 'success')
+            """ A bit ugly, but redirect the user based on private or not. """
             if private:
                 return HTTPFound(location=
                                  self.request
@@ -112,11 +123,15 @@ class ExpenditureViews(object):
                  renderer='pyrtos:templates/expenditure/edit.mako',
                  permission='edit')
     def expenditure_edit(self):
+        """ Edit expenditure. Method for both post and get request. """
+
         id = int(self.request.matchdict.get('id'))
 
         e = Expenditure.by_id(id)
         if not e:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if (e.category.private
            and e.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
@@ -126,12 +141,14 @@ class ExpenditureViews(object):
 
         private = self.request.params.get('private')
         if private:
+            """ Check if there exists any categories. """
             if not Category.first_private(self.request):
                 self.request.session.flash(self.missing_priv_cat, 'error')
                 return HTTPFound(location=self.request
                                               .route_url('expenditures'))
             form.category_id.query = Category.all_private(self.request)
         else:
+            """ Check if there exists any categories. """
             if not Category.first_active():
                 self.request.session.flash(self.missing_shared_cat, 'error')
                 return HTTPFound(location=self.request
@@ -143,6 +160,7 @@ class ExpenditureViews(object):
             e.category_id = form.category_id.data.id
             self.request.session.flash('Expenditure %s updated' %
                                        (e.title), 'status')
+            """ A bit ugly, but redirect the user based on private or not. """
             if private:
                 return HTTPFound(location=
                                  self.request
@@ -162,14 +180,19 @@ class ExpenditureViews(object):
                  renderer='string',
                  permission='archive')
     def expenditure_archive(self):
+        """ Archive expenditure, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         e = Expenditure.by_id(id)
         if not e:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if (e.category.private
            and e.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
+
         e.archived = True
         DBSession.add(e)
         self.request.session.flash('Expenditure %s archived' %
@@ -180,14 +203,19 @@ class ExpenditureViews(object):
                  renderer='string',
                  permission='restore')
     def expenditure_restore(self):
+        """ Restore expenditure, return redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         e = Expenditure.by_id(id)
         if not e:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if (e.category.private
            and e.category.user_id is not authenticated_userid(self.request)):
             return HTTPForbidden()
+
         e.archived = False
         DBSession.add(e)
         self.request.session.flash('Expenditure %s restored' %

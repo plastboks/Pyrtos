@@ -41,6 +41,8 @@ class FileViews(object):
                  renderer='pyrtos:templates/file/list.mako',
                  permission='view')
     def files(self):
+        """ Get a paginated result of active files. """
+
         page = int(self.request.params.get('page', 1))
         files = File.page(self.request, page)
         return {'paginator': files,
@@ -50,6 +52,8 @@ class FileViews(object):
                  renderer='pyrtos:templates/file/list.mako',
                  permission='view')
     def files_archived(self):
+        """ Get a paginated result of archived files. """
+
         page = int(self.request.params.get('page', 1))
         files = File.page(self.request, page, archived=True)
         return {'paginator': files,
@@ -60,6 +64,8 @@ class FileViews(object):
                  renderer='pyrtos:templates/file/edit.mako',
                  permission='create')
     def file_create(self):
+        """ New file view. Method for both post and get requests. """
+
         form = FileCreateForm(self.request.POST,
                               csrf_context=self.request.session)
 
@@ -67,6 +73,7 @@ class FileViews(object):
             f = File()
             form.populate_obj(f)
 
+            """ If file. Yes this method works without a file. """
             upload = self.request.POST.get('file')
             try:
                 f.filename = f.make_filename(upload.filename)
@@ -89,12 +96,16 @@ class FileViews(object):
     @view_config(route_name='file_download',
                  permission='view')
     def file_download(self):
+        """ Download file method. This is needed because the file lay outside
+        the webservers reach."""
+
         id = int(self.request.matchdict.get('id'))
 
         f = File.by_id(id)
         if not f:
             return HTTPNotFound()
         if f.private and f.user_id is not authenticated_userid(self.request):
+            """ Authorization check. """
             return HTTPForbidden()
 
         if f.filename:

@@ -35,6 +35,8 @@ class CategoryViews(object):
                  renderer='pyrtos:templates/category/list.mako',
                  permission='view')
     def categories(self):
+        """ Get a paginated list of active categories. """
+
         page = int(self.request.params.get('page', 1))
         categories = Category.page(self.request, page)
         return {'paginator': categories,
@@ -45,6 +47,8 @@ class CategoryViews(object):
                  renderer='pyrtos:templates/category/list.mako',
                  permission='view')
     def categories_archived(self):
+        """ Get a paginated list of archived categories. """
+
         page = int(self.request.params.get('page', 1))
         categories = Category.page(self.request, page, archived=True)
         return {'paginator': categories,
@@ -55,6 +59,8 @@ class CategoryViews(object):
                  renderer='pyrtos:templates/category/edit.mako',
                  permission='create')
     def category_create(self):
+        """ New category view. """
+
         form = CategoryCreateForm(self.request.POST,
                                   csrf_context=self.request.session)
 
@@ -74,11 +80,15 @@ class CategoryViews(object):
                  renderer='pyrtos:templates/category/edit.mako',
                  permission='edit')
     def category_edit(self):
+        """ Edit category view. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
@@ -99,11 +109,15 @@ class CategoryViews(object):
                  renderer='string',
                  permission='archive')
     def category_archive(self):
+        """ Archive category, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
@@ -117,11 +131,15 @@ class CategoryViews(object):
                  renderer='string',
                  permission='restore')
     def category_restore(self):
+        """ Restore category, returns redirect. """
+
         id = int(self.request.matchdict.get('id'))
 
         c = Category.by_id(id)
         if not c:
             return HTTPNotFound()
+
+        """ Authorization check. """
         if c.private and c.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 

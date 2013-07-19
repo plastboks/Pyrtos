@@ -27,14 +27,18 @@ class MainViews(object):
                  renderer='pyrtos:templates/index.mako',
                  permission='view')
     def index(self):
+        """ Dashboard method. Unused for now. """
+
         return {'title': 'Dashboard'}
 
     @forbidden_view_config(renderer='string')
     def forbidden(self):
+        """ Forbidden view. """
         return HTTPFound(self.request.route_url('login'))
 
     @notfound_view_config(renderer='pyrtos:templates/notfound.mako')
     def notfound(self):
+        """ Not found view. """
         return {'title': '404 - Page not found',
                 'message': '"%s" is not the page you are looking for!' %
                            self.request.path}

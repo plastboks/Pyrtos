@@ -31,6 +31,10 @@ class AuthViews(object):
     @view_config(route_name='login',
                  renderer='pyrtos:templates/login.mako')
     def login(self):
+        """ Login view, used for both get and post method.
+        This view also checks and authenicated the user by request.
+        """
+
         form = LoginForm(self.request.POST,
                          csrf_context=self.request.session)
 
@@ -84,6 +88,10 @@ class AuthViews(object):
     @view_config(route_name='logout',
                  renderer='string')
     def logout(self):
+        """ Logout method, deleting session headers
+        and redirecting user.
+        """
+
         self.request.session.pop_flash('shared_unpaid_invoices')
         self.request.session.pop_flash('private_unpaid_invoices')
         headers = forget(self.request)
