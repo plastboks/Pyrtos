@@ -1,3 +1,9 @@
+0.0.6
+=====
+  * PEP8ify code
+  * Comment code (all except tests)
+  * Clean up and fragmented tests
+
 0.0.5
 =====
   * Invoice
