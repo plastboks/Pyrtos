@@ -10,6 +10,7 @@ Description
 ===========
 Features include:
   * Global categories for use trough the application.
+  * Global creditors of invoices an such.
   * Register all expected montly and yearly expenditures.
   * Upload and register all uses and invoices.
   * All entries have tags in addition to one category.
@@ -19,27 +20,29 @@ Features include:
   * Upload and keep track of reciepts and documents.
   * +++
 
-
 Installation
 ============
   * create a virtualenv (eg: `virtualenv2 venv`). Use Python2.X
   * activate virtualenv `. venv/bin/activate`
   * clone this repo into venv directory (eg: venv/Pyrtos)
   * run `pip install -e .` inside Pyrtos directory
-  * run `initialize_pyrtos_db development.ini`
+  * run `initialize_pyrtos_db .ini`
   * run `pserve development.ini`
 
 Alembic
 =======
-Alembic upgrades and migrations is done by:
+To create an alembic migrations do;
   * edit pyramarks/models.py accordingly
   * run `alembic revision --autogenerate -m "migration comment"`
   * run `alembic upgrade head`
 
 Upgrading
 =========
-While the project is in the initial state, there will be no fancy upgrading. Until then, upgrades will be done by:
-  * run `pip install -e .`
+While the project is still under development, alembic migrations will not be used to any extent.
+Upgrading is done by nuking the database and reconstruction it with `initialize_pyrtos_db .ini`,
+this can be as frequent as from one commit to another.
+
+When the project has come out of main development, alembic migrations is done by:
   * run `alembic upgrade head`
 
 Testing
