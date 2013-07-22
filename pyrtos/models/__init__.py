@@ -8,3 +8,4 @@ from pyrtos.models.creditor import Creditor
 from pyrtos.models.expenditure import Expenditure
 from pyrtos.models.invoice import Invoice
 from pyrtos.models.file import File
+from pyrtos.models.notification import Notification

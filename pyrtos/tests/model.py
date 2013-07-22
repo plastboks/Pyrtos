@@ -207,3 +207,26 @@ class FileModelTests(BaseTestCase):
         qi = self._getTargetClass().by_id(1)
         self.assertEqual(qi.title, 'test')
         self.assertEqual(qi.filename, 'test.jpg')
+
+
+class NotificationModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Notification
+        return Notification
+
+    def _makeOne(self, id, hour, minute):
+        return self._getTargetClass()(id=id,
+                                      hour=hour,
+                                      minute=minute,
+                                      user_id=1,
+                                      method=1,
+                                     )
+
+    def test_constructur(self):
+        instance = self._makeOne(1, 10, 0)
+        self.session.add(instance)
+
+        qn = self._getTargetClass().by_id(1)
+        self.assertEqual(qn.hour, 10)
+        self.assertEqual(qn.minute, 0)
