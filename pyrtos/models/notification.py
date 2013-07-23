@@ -12,6 +12,10 @@ from sqlalchemy import (
     ForeignKey,
 )
 
+from webhelpers.text import urlify
+from webhelpers.paginate import PageURL_WebOb, Page
+from webhelpers.date import time_ago_in_words
+from pyramid.security import authenticated_userid
 
 class Notification(Base):
     """
@@ -43,3 +47,27 @@ class Notification(Base):
         return DBSession.query(Notification)\
                         .filter(Notification.id == id)\
                         .first()
+
+    """ Method for getting notifications for user.
+
+    request -- request object.
+    """
+    @classmethod
+    def my(cls, request):
+        id = authenticated_userid(request)
+        return DBSession.query(Notification)\
+                        .filter(Notification.user_id == id)\
+
+    """ Page method used for lists with pagination.
+
+    request -- request object.
+    page -- int, page int.
+    """
+    @classmethod
+    def page(cls, request, page):
+        page_url = PageURL_WebOb(request)
+        return Page(Notification.my(request),
+                    page,
+                    url=page_url,
+                    items_per_page=IPP)
+

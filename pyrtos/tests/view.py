@@ -20,6 +20,7 @@ from pyrtos.views import (
     ExpenditureViews,
     InvoiceViews,
     FileViews,
+    NotificationViews,
 )
 
 
@@ -208,3 +209,11 @@ class FileViewsTests(BaseTestCase):
         f = FileViews(request)
         r = f.files_archived()
         self.assertEqual(r['title'], 'Archived files')
+
+class NotificationViewsTest(BaseTestCase):
+
+    def test_notification(self):
+        request = testing.DummyRequest()
+        n = NotificationViews(request)
+        r = n.notifications()
+        self.assertEqual(r['title'], 'My notifications')
