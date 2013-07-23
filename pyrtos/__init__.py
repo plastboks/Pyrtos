@@ -110,6 +110,9 @@ def main(global_config, **settings):
     config.add_route('files_archived', '/files/archived')
     config.add_route('file_new', '/file/new')
     config.add_route('file_download', '/file/download/{id}')
+    
+    """ Nofitications """
+    config.add_route('notifications', '/notifications')
 
     config.scan()
     return config.make_wsgi_app()
