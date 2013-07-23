@@ -210,6 +210,7 @@ class FileViewsTests(BaseTestCase):
         r = f.files_archived()
         self.assertEqual(r['title'], 'Archived files')
 
+
 class NotificationViewsTest(BaseTestCase):
 
     def test_notification(self):

@@ -17,6 +17,7 @@ from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import time_ago_in_words
 from pyramid.security import authenticated_userid
 
+
 class Notification(Base):
     """
     Class constants representing database table and its columns.
@@ -32,7 +33,7 @@ class Notification(Base):
     __tablename__ = 'notifications'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    method = Column(Integer) #will be foreign key or something...
+    method = Column(Integer)  # will be foreign key or something...
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
     created = Column(DateTime, default=datetime.utcnow)
@@ -70,4 +71,3 @@ class Notification(Base):
                     page,
                     url=page_url,
                     items_per_page=IPP)
-

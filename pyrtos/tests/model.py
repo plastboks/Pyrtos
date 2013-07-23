@@ -221,7 +221,7 @@ class NotificationModelTests(BaseTestCase):
                                       minute=minute,
                                       user_id=1,
                                       method=1,
-                                     )
+                                      )
 
     def test_constructur(self):
         instance = self._makeOne(1, 10, 0)
