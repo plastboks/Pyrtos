@@ -4,12 +4,18 @@
   <div class='tablelist'>
     <table id='notifications'>
       <thead>
-        <th>Title</th>
+        <th>Weekday</th>
+        <th>Hour</th>
+        <th>Minute</th>
+        <th>Action</th>
       </thead>
       <tbody>
         %for item in paginator.items:
           <tr>
-            <td>${item.title}</td>
+            <td>${item.weekday}</td>
+            <td>${item.hour}</td>
+            <td>${item.minute}</td>
+            <td></td>
           </tr>
         %endfor
       </tbody>

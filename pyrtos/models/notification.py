@@ -34,6 +34,7 @@ class Notification(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     method = Column(Integer)  # will be foreign key or something...
+    weekday = Column(Integer)
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
     created = Column(DateTime, default=datetime.utcnow)
