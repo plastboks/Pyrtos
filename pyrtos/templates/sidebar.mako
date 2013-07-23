@@ -20,5 +20,6 @@
 </ul>
 <ul>
   <li class='user'><a href="${request.route_url('users')}">Users</a></li>
+  <li class='user'><a href="${request.route_url('notifications')}">Notifications</a></li>
   <li class='user'><a href="${request.route_url('logout')}">Logout</a></li>
 </ul>
