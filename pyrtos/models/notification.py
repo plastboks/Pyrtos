@@ -16,6 +16,7 @@ from webhelpers.text import urlify
 from webhelpers.paginate import PageURL_WebOb, Page
 from webhelpers.date import time_ago_in_words
 from pyramid.security import authenticated_userid
+from sqlalchemy.orm import relationship
 
 
 class Notification(Base):
@@ -33,12 +34,19 @@ class Notification(Base):
     __tablename__ = 'notifications'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    weekfilter_id = Column(Integer,
+                           ForeignKey('weekfilters.id'),
+                           nullable=False,
+                           )
     method = Column(Integer)  # will be foreign key or something...
     weekday = Column(Integer)
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
+
+    """ Constants for relationships. """
+    weekfilter = relationship('WeekFilter', backref='notification')
 
     """ Method for getting one notification by ID.
 
