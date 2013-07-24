@@ -9,3 +9,4 @@ from pyrtos.models.expenditure import Expenditure
 from pyrtos.models.invoice import Invoice
 from pyrtos.models.file import File
 from pyrtos.models.notification import Notification
+from pyrtos.models.weekfilter import WeekFilter
