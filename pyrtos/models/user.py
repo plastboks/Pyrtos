@@ -54,8 +54,10 @@ class User(Base):
 
     """ Class constant used for accessing Bcrypt password manager. """
     pm = BCRYPTPasswordManager()
+
     """ Some usergroups. This is supposed to be improved sometime
-    in the future. """
+    in the future.
+    """
     groups = ['admin', 'editor', 'viewer']
 
     """ Method for returning a user based on id.

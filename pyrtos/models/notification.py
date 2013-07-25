@@ -48,6 +48,10 @@ class Notification(Base):
     """ Constants for relationships. """
     weekfilter = relationship('WeekFilter', backref='notification')
 
+    """ Some nice lists."""
+    hour = range(0, 24)
+    minute = range(0, 60, 15)
+
     """ Method for getting one notification by ID.
 
     id -- int, notification id.
