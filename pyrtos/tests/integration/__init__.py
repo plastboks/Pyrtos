@@ -24,3 +24,6 @@ from pyrtos.tests.integration.user import (
     IntegrationUserViews,
     IntegrationUserNotFoundViews,
 )
+from pyrtos.tests.integration.notification import (
+    IntegrationNotificationViews
+)
