@@ -52,6 +52,7 @@ class NotificationViews(object):
         if self.request.method == 'POST' and form.validate():
             n = Notification()
             form.populate_obj(n)
+            n.user_id = authenticated_userid(self.request)
             DBSession.add(n)
             self.request.session.flash('Notification %s created',
                                        'success')
