@@ -5,6 +5,22 @@
     ${form.id()}
   %endif
 
+  %for error in form.title.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.title.label}: </label>
+    ${form.title}
+  </p>
+
+  %for error in form.weekfilter.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.weekfilter.label}: </label>
+    ${form.weekfilter}
+  </p>
+
   %for error in form.hour.errors:
     <p class=error>${error}</p>
   %endfor

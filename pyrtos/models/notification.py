@@ -10,6 +10,8 @@ from sqlalchemy import (
     Integer,
     DateTime,
     ForeignKey,
+    String,
+    Boolean,
 )
 
 from webhelpers.text import urlify
@@ -38,10 +40,12 @@ class Notification(Base):
                            ForeignKey('weekfilters.id'),
                            nullable=False,
                            )
+    title = Column(String(255), nullable=False)
     method = Column(Integer)  # will be foreign key or something...
     weekday = Column(Integer)
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
+    archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
@@ -51,15 +55,24 @@ class Notification(Base):
     """ Some nice lists."""
     hour = range(0, 24)
     minute = range(0, 60, 15)
+    days = [('monday', 'Monday'),
+            ('tuesday', 'Tuesday'),
+            ('wednesday', 'Wednesday'),
+            ('thursday', 'Thursday'),
+            ('friday', 'Friday'),
+            ('saturday', 'Saturday'),
+            ('sunday', 'Sunday'),
+            ]
 
     """ Method for getting one notification by ID.
 
     id -- int, notification id.
     """
     @classmethod
-    def by_id(cls, id):
+    def by_id(cls, uid, nid):
         return DBSession.query(Notification)\
-                        .filter(Notification.id == id)\
+                        .filter(Notification.id == nid)\
+                        .filter(Notification.user_id == uid)\
                         .first()
 
     """ Method for getting notifications for user.

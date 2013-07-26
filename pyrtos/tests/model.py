@@ -215,8 +215,9 @@ class NotificationModelTests(BaseTestCase):
         from pyrtos.models import Notification
         return Notification
 
-    def _makeOne(self, id, hour, minute):
+    def _makeOne(self, id, title, hour, minute):
         return self._getTargetClass()(id=id,
+                                      title=title,
                                       hour=hour,
                                       minute=minute,
                                       weekfilter_id=1,
@@ -225,9 +226,9 @@ class NotificationModelTests(BaseTestCase):
                                       )
 
     def test_constructur(self):
-        instance = self._makeOne(1, 10, 0)
+        instance = self._makeOne(1, 'test', 10, 0)
         self.session.add(instance)
 
-        qn = self._getTargetClass().by_id(1)
+        qn = self._getTargetClass().by_id(1, 1)
         self.assertEqual(qn.hour, 10)
         self.assertEqual(qn.minute, 0)
