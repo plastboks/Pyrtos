@@ -45,6 +45,7 @@ class Notification(Base):
     weekday = Column(Integer)
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
+    days_in_advance = Column(Integer, default=0)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
@@ -63,6 +64,7 @@ class Notification(Base):
             ('saturday', 'Saturday'),
             ('sunday', 'Sunday'),
             ]
+    days_advance = range(0, 5)
 
     """ Method for getting one notification by ID.
 

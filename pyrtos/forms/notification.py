@@ -46,6 +46,9 @@ class NotificationCreateForm(BaseForm):
     minute = SelectField('Minute',
                          choices=[(n, "%02d" % n)
                                   for n in Notification.minute])
+    days_in_advance = SelectField('Days in advance',
+                                  choices=[(n, "%d" % n)
+                                  for n in Notification.days_advance])
 
 
 class NotificationEditForm(NotificationCreateForm):
