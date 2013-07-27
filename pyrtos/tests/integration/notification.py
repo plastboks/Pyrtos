@@ -40,30 +40,49 @@ class IntegrationNotificationViews(IntegrationTestBase):
 
         res = self.app.get('/notification/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/notification/new', {'title': 'testbest',
-                                                  'hour': 2,
-                                                  'minute': 30,
-                                                  'days_in_advance': 3,
-                                                  'weekfilter': ['monday',
-                                                                 'tuesday',
-                                                                 'friday',
-                                                                 'sunday',
-                                                                 ],
-                                                  'csrf_token': token}
+        res = self.app.post('/notification/new',
+                            {'title': 'testbest',
+                             'hour': 2,
+                             'minute': 30,
+                             'days_in_advance': 3,
+                             'weekfilter': ['monday',
+                                            'tuesday',
+                                            'wednesday',
+                                            'thursday',
+                                            'friday',
+                                            'saturday',
+                                            'sunday',
+                                            ],
+                             'csrf_token': token,
+                             },
+                            status=302,
                             )
         res = self.app.get('/notifications', status=200)
         self.assertTrue('testbest' in res.body)
 
-        """
         res = self.app.get('/notification/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/notification/edit/1', params={'id': 1,
-                                                        'title': 'besttest',
-                                                        'csrf_token': token}
+        res = self.app.post('/notification/edit/1',
+                            params={'id': 1,
+                                    'title': 'besttest',
+                                    'hour': 2,
+                                    'minute': 30,
+                                    'days_in_advance': 3,
+                                    'weekfilter': ['monday',
+                                                   'tuesday',
+                                                   'wednesday',
+                                                   'thursday',
+                                                   'friday',
+                                                   'saturday',
+                                                   'sunday',
+                                                   ],
+                                    'csrf_token': token,
+                                    }
                             )
         res = self.app.get('/notifications', status=200)
         self.assertTrue('besttest' in res.body)
 
+        """
         res = self.app.get('/notification/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
 
@@ -82,8 +101,9 @@ class IntegrationNotificationViews(IntegrationTestBase):
         self.app.get('/notification/restore/1', status=302)
         res = self.app.get('/notifications', status=200)
         self.assertTrue('besttest' in res.body)
-
+        """
         self.app.get('/notification/edit/100', status=404)
+        """
         self.app.get('/notification/archive/100', status=404)
         self.app.get('/notification/restore/100', status=404)
 
