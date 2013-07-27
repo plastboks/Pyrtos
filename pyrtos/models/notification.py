@@ -41,8 +41,7 @@ class Notification(Base):
                            nullable=False,
                            )
     title = Column(String(255), nullable=False)
-    method = Column(Integer)  # will be foreign key or something...
-    weekday = Column(Integer)
+    method = Column(Integer, default=0)
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
     days_in_advance = Column(Integer, default=0)
@@ -54,17 +53,17 @@ class Notification(Base):
     weekfilter = relationship('WeekFilter', backref='notification')
 
     """ Some nice lists."""
-    hour = range(0, 24)
-    minute = range(0, 60, 15)
-    days = [('monday', 'Monday'),
-            ('tuesday', 'Tuesday'),
-            ('wednesday', 'Wednesday'),
-            ('thursday', 'Thursday'),
-            ('friday', 'Friday'),
-            ('saturday', 'Saturday'),
-            ('sunday', 'Sunday'),
-            ]
-    days_advance = range(0, 5)
+    hour_list = range(0, 24)
+    minute_list = range(0, 60, 15)
+    days_list = [('monday', 'Monday'),
+                 ('tuesday', 'Tuesday'),
+                 ('wednesday', 'Wednesday'),
+                 ('thursday', 'Thursday'),
+                 ('friday', 'Friday'),
+                 ('saturday', 'Saturday'),
+                 ('sunday', 'Sunday'),
+                 ]
+    days_advance_list = range(0, 5)
 
     """ Method for getting one notification by ID.
 
@@ -85,6 +84,7 @@ class Notification(Base):
     def my(cls, request):
         id = authenticated_userid(request)
         return DBSession.query(Notification)\
+                        .join(Notification.weekfilter)\
                         .filter(Notification.user_id == id)\
 
     """ Page method used for lists with pagination.

@@ -14,6 +14,7 @@ from pyramid.view import (
 from pyrtos.models.meta import DBSession
 from pyrtos.models import (
     Notification,
+    WeekFilter,
 )
 from pyrtos.forms import (
     NotificationCreateForm,
@@ -48,16 +49,22 @@ class NotificationViews(object):
         form = NotificationCreateForm(self.request.POST,
                                       csrf_context=self.request.session)
 
-        """
         if self.request.method == 'POST' and form.validate():
+            w = WeekFilter()
+            for day in form.weekfilter.data:
+                setattr(w, day, True)
+            DBSession.add(w)
             n = Notification()
+            del form.weekfilter
             form.populate_obj(n)
             n.user_id = authenticated_userid(self.request)
+            n.weekfilter_id = w.id
             DBSession.add(n)
-            self.request.session.flash('Notification %s created',
+            self.request.session.flash('Notification %s created' %
+                                       n.title,
                                        'success')
             return HTTPFound(location=self.request.route_url('notifications'))
-        """
+
         return {'title': 'New notification',
                 'form': form,
                 'action': 'notification_new'}
