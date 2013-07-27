@@ -338,6 +338,20 @@ img {
   font-style: italic !important;
 }
 
+#content table tbody td.notification span.True {
+  background: url('/static/icons/accept.png') left center no-repeat;
+}
+
+#content table tbody td.notification span.False {
+  background: url('/static/icons/delete.png') left center no-repeat;
+}
+
+#content table tbody td.notification span {
+  height: 16px;
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+}
+
 #content tbody tr:nth-child(2n+2) {
   border: 1px solid lavender;
   background: ghostwhite;

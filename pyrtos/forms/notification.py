@@ -38,17 +38,21 @@ class NotificationCreateForm(BaseForm):
                       filters=[strip_filter])
     weekfilter = MultiCheckboxField('Days',
                                     coerce=unicode,
-                                    choices=Notification.days,
+                                    choices=Notification.days_list,
                                     )
     hour = SelectField('Hour',
+                       coerce=int,
                        choices=[(n, "%02d" % n)
-                                for n in Notification.hour])
+                                for n in Notification.hour_list])
     minute = SelectField('Minute',
+                         coerce=int,
                          choices=[(n, "%02d" % n)
-                                  for n in Notification.minute])
+                                  for n in Notification.minute_list])
     days_in_advance = SelectField('Days in advance',
+                                  coerce=int,
                                   choices=[(n, "%d" % n)
-                                  for n in Notification.days_advance])
+                                           for n in
+                                           Notification.days_advance_list])
 
 
 class NotificationEditForm(NotificationCreateForm):
