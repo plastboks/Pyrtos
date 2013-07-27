@@ -215,6 +215,14 @@ class NotificationModelTests(BaseTestCase):
         from pyrtos.models import Notification
         return Notification
 
+    def _getWeekFilterClass(self):
+        from pyrtos.models import WeekFilter
+        return WeekFilter
+
+    def _makeWeekFilter(self):
+        return self._getWeekFilterClass()(id=1,
+                                          monday=True)
+
     def _makeOne(self, id, title, hour, minute):
         return self._getTargetClass()(id=id,
                                       title=title,
@@ -226,7 +234,9 @@ class NotificationModelTests(BaseTestCase):
                                       )
 
     def test_constructur(self):
+        weekfilter = self._makeWeekFilter()
         instance = self._makeOne(1, 'test', 10, 0)
+        self.session.add(weekfilter)
         self.session.add(instance)
 
         qn = self._getTargetClass().by_id(1, 1)

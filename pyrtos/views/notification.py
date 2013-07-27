@@ -68,3 +68,61 @@ class NotificationViews(object):
         return {'title': 'New notification',
                 'form': form,
                 'action': 'notification_new'}
+
+    @view_config(route_name='notification_edit',
+                 renderer='pyrtos:templates/notification/edit.mako',
+                 permission='edit')
+    def notification_edit(self):
+        """ Edit notification view. This method handles both post,
+        and get requests. """
+
+        uid = authenticated_userid(self.request)
+        nid = int(self.request.matchdict.get('id'))
+        n = Notification.by_id(uid, nid)
+
+        if not n:
+            return HTTPNotFound()
+
+        form = NotificationEditForm(self.request.POST, n,
+                                    csrf_context=self.request.session)
+        active_days = []
+        """ This is retarted, and should be improved """
+        if n.weekfilter.monday:
+            active_days.append('monday')
+        if n.weekfilter.tuesday:
+            active_days.append('tuesday')
+        if n.weekfilter.wednesday:
+            active_days.append('wednesday')
+        if n.weekfilter.thursday:
+            active_days.append('thursday')
+        if n.weekfilter.friday:
+            active_days.append('friday')
+        if n.weekfilter.saturday:
+            active_days.append('saturday')
+        if n.weekfilter.sunday:
+            active_days.append('sunday')
+
+        if self.request.method == 'POST' and form.validate():
+            """ Sigh... """
+            w = WeekFilter.by_id(n.weekfilter.id)
+            w.monday = False
+            w.tuesday = False
+            w.wednesday = False
+            w.thursday = False
+            w.friday = False
+            w.saturday = False
+            w.sunday = False
+            for day in form.weekfilter.data:
+                setattr(w, day, True)
+            DBSession.add(w)
+            del form.weekfilter
+            form.populate_obj(n)
+            self.request.session.flash('Notification %s updated' %
+                                       (n.title), 'status')
+            return HTTPFound(location=self.request.route_url('notifications'))
+
+        form.weekfilter.data = active_days
+        return {'title': 'Edit notification',
+                'id': nid,
+                'form': form,
+                'action': 'notification_edit'}

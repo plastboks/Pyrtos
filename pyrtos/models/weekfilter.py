@@ -43,3 +43,11 @@ class WeekFilter(Base):
     sunday = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
+
+    """ Get one record based on id.
+
+    id -- integer.
+    """
+    @classmethod
+    def by_id(cls, id):
+        return DBSession.query(WeekFilter).filter(WeekFilter.id == id).first()

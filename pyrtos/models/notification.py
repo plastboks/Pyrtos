@@ -50,7 +50,9 @@ class Notification(Base):
     updated = Column(DateTime, default=datetime.utcnow)
 
     """ Constants for relationships. """
-    weekfilter = relationship('WeekFilter', backref='notification')
+    weekfilter = relationship('WeekFilter',
+                              backref='notification',
+                              lazy='joined')
 
     """ Some nice lists."""
     hour_list = range(0, 24)
@@ -72,6 +74,7 @@ class Notification(Base):
     @classmethod
     def by_id(cls, uid, nid):
         return DBSession.query(Notification)\
+                        .join(Notification.weekfilter)\
                         .filter(Notification.id == nid)\
                         .filter(Notification.user_id == uid)\
                         .first()

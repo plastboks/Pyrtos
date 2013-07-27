@@ -45,7 +45,11 @@
             <td class="notification day">
               <span class="${item.weekfilter.sunday}"><span>
             </td>
-            <td></td>
+            <td class="action">
+              <a href="${request.route_url('notification_edit', id=item.id)}">
+                <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
+              </a>
+            </td>
           </tr>
         %endfor
       </tbody>
