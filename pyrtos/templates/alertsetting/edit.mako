@@ -1,7 +1,7 @@
-<%inherit file="pyrtos:templates/notification/base.mako" />
+<%inherit file="pyrtos:templates/alertsetting/base.mako" />
 <form action="${request.route_url(action, id=id)}" method="POST">
   ${form.csrf_token}
-  %if action == 'notification_edit':
+  %if action == 'alertsetting_edit':
     ${form.id()}
   %endif
 

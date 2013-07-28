@@ -21,7 +21,7 @@ from pyramid.security import authenticated_userid
 from sqlalchemy.orm import relationship
 
 
-class Notification(Base):
+class AlertSetting(Base):
     """
     Class constants representing database table and its columns.
 
@@ -33,7 +33,7 @@ class Notification(Base):
     created -- datetime.
     updated -- datetime.
     """
-    __tablename__ = 'notifications'
+    __tablename__ = 'alertsettings'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     weekfilter_id = Column(Integer,
@@ -52,7 +52,7 @@ class Notification(Base):
 
     """ Constants for relationships. """
     weekfilter = relationship('WeekFilter',
-                              backref='notification',
+                              backref='alertsetting',
                               lazy='joined')
 
     """ Some nice lists."""
@@ -68,19 +68,19 @@ class Notification(Base):
                  ]
     days_advance_list = range(0, 5)
 
-    """ Method for getting one notification by ID.
+    """ Method for getting one alertsetting by ID.
 
-    id -- int, notification id.
+    id -- int, alertsetting id.
     """
     @classmethod
     def by_id(cls, uid, nid):
-        return DBSession.query(Notification)\
-                        .join(Notification.weekfilter)\
-                        .filter(Notification.id == nid)\
-                        .filter(Notification.user_id == uid)\
+        return DBSession.query(AlertSetting)\
+                        .join(AlertSetting.weekfilter)\
+                        .filter(AlertSetting.id == nid)\
+                        .filter(AlertSetting.user_id == uid)\
                         .first()
 
-    """ Method for getting notifications for user.
+    """ Method for getting alertsettings for user.
 
     request -- request object.
     archived -- boolean, archived
@@ -89,14 +89,14 @@ class Notification(Base):
     def my(cls, request, archived=False):
         id = authenticated_userid(request)
         if archived:
-            return DBSession.query(Notification)\
-                            .join(Notification.weekfilter)\
-                            .filter(Notification.user_id == id)\
-                            .filter(Notification.archived == True)
-        return DBSession.query(Notification)\
-                        .join(Notification.weekfilter)\
-                        .filter(Notification.user_id == id)\
-                        .filter(Notification.archived == False)
+            return DBSession.query(AlertSetting)\
+                            .join(AlertSetting.weekfilter)\
+                            .filter(AlertSetting.user_id == id)\
+                            .filter(AlertSetting.archived == True)
+        return DBSession.query(AlertSetting)\
+                        .join(AlertSetting.weekfilter)\
+                        .filter(AlertSetting.user_id == id)\
+                        .filter(AlertSetting.archived == False)
 
     """ Page method used for lists with pagination.
 
@@ -108,11 +108,11 @@ class Notification(Base):
     def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
         if archived:
-            return Page(Notification.my(request, archived=True),
+            return Page(AlertSetting.my(request, archived=True),
                         page,
                         url=page_url,
                         items_per_page=IPP)
-        return Page(Notification.my(request),
+        return Page(AlertSetting.my(request),
                     page,
                     url=page_url,
                     items_per_page=IPP)

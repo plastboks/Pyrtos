@@ -1,6 +1,6 @@
 from pyrtos.forms.meta import BaseForm, strip_filter
 
-from pyrtos.models import Notification
+from pyrtos.models import AlertSetting
 
 from wtforms import (
     validators,
@@ -25,7 +25,7 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
 
-class NotificationCreateForm(BaseForm):
+class AlertSettingCreateForm(BaseForm):
     """
     Class constants representing form fields.
 
@@ -38,25 +38,25 @@ class NotificationCreateForm(BaseForm):
                       filters=[strip_filter])
     weekfilter = MultiCheckboxField('Days',
                                     coerce=unicode,
-                                    choices=Notification.days_list,
+                                    choices=AlertSetting.days_list,
                                     )
     hour = SelectField('Hour',
                        coerce=int,
                        choices=[(n, "%02d" % n)
-                                for n in Notification.hour_list])
+                                for n in AlertSetting.hour_list])
     minute = SelectField('Minute',
                          coerce=int,
                          choices=[(n, "%02d" % n)
-                                  for n in Notification.minute_list])
+                                  for n in AlertSetting.minute_list])
     days_in_advance = SelectField('Days in advance',
                                   coerce=int,
                                   choices=[(n, "%d" % n)
                                            for n in
-                                           Notification.days_advance_list])
+                                           AlertSetting.days_advance_list])
     active = BooleanField('Active', default=True)
 
 
-class NotificationEditForm(NotificationCreateForm):
+class AlertSettingEditForm(AlertSettingCreateForm):
     """
     Class constants representing form fields.
 

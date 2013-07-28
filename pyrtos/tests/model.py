@@ -212,8 +212,8 @@ class FileModelTests(BaseTestCase):
 class NotificationModelTests(BaseTestCase):
 
     def _getTargetClass(self):
-        from pyrtos.models import Notification
-        return Notification
+        from pyrtos.models import AlertSetting
+        return AlertSetting
 
     def _getWeekFilterClass(self):
         from pyrtos.models import WeekFilter

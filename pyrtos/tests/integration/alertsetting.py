@@ -3,7 +3,7 @@ from pyrtos.tests.integration import IntegrationTestBase
 from pyrtos.tests.integration import _initTestingDB
 
 
-class IntegrationNotificationViews(IntegrationTestBase):
+class IntegrationAlertSettingViews(IntegrationTestBase):
 
     def setUp(self):
         self.app = TestApp(self.app)
@@ -13,7 +13,7 @@ class IntegrationNotificationViews(IntegrationTestBase):
         del self.app
         self.session.remove()
 
-    def test_notifications(self):
+    def test_alertsettings(self):
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/login', {'submit': True,
@@ -35,12 +35,12 @@ class IntegrationNotificationViews(IntegrationTestBase):
                                           'csrf_token': token})
 
         """
-        res = self.app.get('/notifications')
+        res = self.app.get('/alertsettings')
         self.assertTrue(res.status_int, 200)
 
-        res = self.app.get('/notification/new')
+        res = self.app.get('/alertsetting/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/notification/new',
+        res = self.app.post('/alertsetting/new',
                             {'title': 'testbest',
                              'hour': 2,
                              'minute': 30,
@@ -57,12 +57,12 @@ class IntegrationNotificationViews(IntegrationTestBase):
                              },
                             status=302,
                             )
-        res = self.app.get('/notifications', status=200)
+        res = self.app.get('/alertsettings', status=200)
         self.assertTrue('testbest' in res.body)
 
-        res = self.app.get('/notification/edit/1')
+        res = self.app.get('/alertsetting/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/notification/edit/1',
+        res = self.app.post('/alertsetting/edit/1',
                             params={'id': 1,
                                     'title': 'besttest',
                                     'hour': 2,
@@ -79,32 +79,32 @@ class IntegrationNotificationViews(IntegrationTestBase):
                                     'csrf_token': token,
                                     }
                             )
-        res = self.app.get('/notifications', status=200)
+        res = self.app.get('/alertsettings', status=200)
         self.assertTrue('besttest' in res.body)
 
         """
-        res = self.app.get('/notification/edit/1', status=200)
+        res = self.app.get('/alertsetting/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
 
-        res = self.app.get('/notification/edit/1')
+        res = self.app.get('/alertsetting/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/notification/edit/1', params={'id': 1,
+        res = self.app.post('/alertsetting/edit/1', params={'id': 1,
                                                         'title': 'besttest',
                                                         'private': 'y',
                                                         'csrf_token': token}
                             )
         """
-        self.app.get('/notification/archive/1', status=302)
-        res = self.app.get('/notifications/archived', status=200)
+        self.app.get('/alertsetting/archive/1', status=302)
+        res = self.app.get('/alertsettings/archived', status=200)
         self.assertTrue('besttest' in res.body)
 
-        self.app.get('/notification/restore/1', status=302)
-        res = self.app.get('/notifications', status=200)
+        self.app.get('/alertsetting/restore/1', status=302)
+        res = self.app.get('/alertsettings', status=200)
         self.assertTrue('besttest' in res.body)
 
-        self.app.get('/notification/edit/100', status=404)
-        self.app.get('/notification/archive/100', status=404)
-        self.app.get('/notification/restore/100', status=404)
+        self.app.get('/alertsetting/edit/100', status=404)
+        self.app.get('/alertsetting/archive/100', status=404)
+        self.app.get('/alertsetting/restore/100', status=404)
         """
 
         # logout
@@ -119,10 +119,10 @@ class IntegrationNotificationViews(IntegrationTestBase):
                                        'password': '123456'}
                             )
 
-        # try to edit a notification the user do not have permission to
-        self.app.get('/notification/edit/1', status=403)
-        # try to archive a notification the user do not have permission to
-        self.app.get('/notification/archive/1', status=403)
-        # try to restore a notification the user do not have permission to
-        self.app.get('/notification/restore/1', status=403)
+        # try to edit a alertsetting the user do not have permission to
+        self.app.get('/alertsetting/edit/1', status=403)
+        # try to archive a alertsetting the user do not have permission to
+        self.app.get('/alertsetting/archive/1', status=403)
+        # try to restore a alertsetting the user do not have permission to
+        self.app.get('/alertsetting/restore/1', status=403)
         """

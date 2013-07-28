@@ -111,13 +111,13 @@ def main(global_config, **settings):
     config.add_route('file_new', '/file/new')
     config.add_route('file_download', '/file/download/{id}')
 
-    """ Nofitications """
-    config.add_route('notifications', '/notifications')
-    config.add_route('notifications_archived', '/notifications/archived')
-    config.add_route('notification_new', '/notification/new')
-    config.add_route('notification_edit', '/notification/edit/{id}')
-    config.add_route('notification_archive', '/notification/archive/{id}')
-    config.add_route('notification_restore', '/notification/restore/{id}')
+    """ Alert settings """
+    config.add_route('alertsettings', '/alertsettings')
+    config.add_route('alertsettings_archived', '/alertsettings/archived')
+    config.add_route('alertsetting_new', '/alertsetting/new')
+    config.add_route('alertsetting_edit', '/alertsetting/edit/{id}')
+    config.add_route('alertsetting_archive', '/alertsetting/archive/{id}')
+    config.add_route('alertsetting_restore', '/alertsetting/restore/{id}')
 
     config.scan()
     return config.make_wsgi_app()
