@@ -12,7 +12,10 @@ from pyrtos.models import (
 
 from pyrtos.models.file import File
 
-from datetime import datetime
+from datetime import (
+    datetime,
+    time,
+)
 from sqlalchemy import (
     Column,
     Table,
@@ -244,20 +247,22 @@ class Invoice(Base):
 
     """ Method for templates. Used for strings in templates. """
     def time_to_expires_in_words(self):
-        distance = distance_of_time_in_words(from_time=self.due,
+        due = datetime.combine(self.due, time(12, 0))
+        distance = distance_of_time_in_words(from_time=due,
                                              to_time=datetime.utcnow(),
                                              round=True,
                                              granularity='day')
-        if datetime.utcnow() > self.due:
+        if datetime.utcnow() > due:
             return 'Expired by: '+distance
         return 'In: '+distance
 
     """ Method for templates. Used for setting css classes on objects. """
     def css_class_for_time_distance(self):
-        distance = distance_of_time_in_words(from_time=self.due,
+        due = datetime.combine(self.due, time(12, 0))
+        distance = distance_of_time_in_words(from_time=due,
                                              to_time=datetime.utcnow(),
                                              round=True,
                                              granularity='day')
-        if datetime.utcnow() > self.due:
+        if datetime.utcnow() > due:
             return 'expired'
         return 'd'+distance.split(' ')[0]
