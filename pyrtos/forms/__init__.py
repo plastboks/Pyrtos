@@ -30,7 +30,7 @@ from pyrtos.forms.file import (
     FileCreateForm,
     FileEditForm,
 )
-from pyrtos.forms.notification import (
-    NotificationCreateForm,
-    NotificationEditForm,
+from pyrtos.forms.alertsetting import (
+    AlertSettingCreateForm,
+    AlertSettingEditForm,
 )
