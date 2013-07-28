@@ -7,6 +7,7 @@
       <li><a href="${request.route_url('notification_new')}">New</a></li>
     %endif
     <li><a href="${request.route_url('notifications')}">All</a></li>
+    <li><a href="${request.route_url('notifications_archived')}">Archived</a></li>
   </ul>
 </div>
 

@@ -19,7 +19,7 @@
       </thead>
       <tbody>
         %for item in paginator.items:
-          <tr>
+          <tr class="${'active' if item.active else 'inactive'}">
             <td>${item.title}</td>
             <td>${item.days_in_advance}</td>
             <td>${"%02d" % item.hour}</td>
@@ -49,6 +49,15 @@
               <a href="${request.route_url('notification_edit', id=item.id)}">
                 <img src='${request.static_url("pyrtos:static/icons/page_white_edit.png")}' title='Edit' alt='Edit' />
               </a>
+              %if archived:
+                <a href="${request.route_url('notification_restore', id=item.id)}">
+                  <img src='${request.static_url("pyrtos:static/icons/page_white_restore.png")}' title='Restore' alt='Restore' />
+               </a>
+              %else:
+                <a href="${request.route_url('notification_archive', id=item.id)}">
+                  <img src='${request.static_url("pyrtos:static/icons/page_white_delete.png")}' title='Delete' alt='Delete' />
+                </a>
+              %endif
             </td>
           </tr>
         %endfor

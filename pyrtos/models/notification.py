@@ -45,6 +45,7 @@ class Notification(Base):
     hour = Column(Integer, nullable=False, default=0)
     minute = Column(Integer, nullable=False, default=0)
     days_in_advance = Column(Integer, default=0)
+    active = Column(Boolean, default=True)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
@@ -82,22 +83,35 @@ class Notification(Base):
     """ Method for getting notifications for user.
 
     request -- request object.
+    archived -- boolean, archived
     """
     @classmethod
-    def my(cls, request):
+    def my(cls, request, archived=False):
         id = authenticated_userid(request)
+        if archived:
+            return DBSession.query(Notification)\
+                            .join(Notification.weekfilter)\
+                            .filter(Notification.user_id == id)\
+                            .filter(Notification.archived == True)
         return DBSession.query(Notification)\
                         .join(Notification.weekfilter)\
                         .filter(Notification.user_id == id)\
+                        .filter(Notification.archived == False)
 
     """ Page method used for lists with pagination.
 
     request -- request object.
     page -- int, page int.
+    archived -- boolean, archived
     """
     @classmethod
-    def page(cls, request, page):
+    def page(cls, request, page, archived=False):
         page_url = PageURL_WebOb(request)
+        if archived:
+            return Page(Notification.my(request, archived=True),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
         return Page(Notification.my(request),
                     page,
                     url=page_url,

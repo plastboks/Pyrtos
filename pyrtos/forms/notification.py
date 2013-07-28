@@ -53,6 +53,7 @@ class NotificationCreateForm(BaseForm):
                                   choices=[(n, "%d" % n)
                                            for n in
                                            Notification.days_advance_list])
+    active = BooleanField('Active', default=True)
 
 
 class NotificationEditForm(NotificationCreateForm):

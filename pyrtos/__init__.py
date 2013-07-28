@@ -113,8 +113,11 @@ def main(global_config, **settings):
 
     """ Nofitications """
     config.add_route('notifications', '/notifications')
+    config.add_route('notifications_archived', '/notifications/archived')
     config.add_route('notification_new', '/notification/new')
     config.add_route('notification_edit', '/notification/edit/{id}')
+    config.add_route('notification_archive', '/notification/archive/{id}')
+    config.add_route('notification_restore', '/notification/restore/{id}')
 
     config.scan()
     return config.make_wsgi_app()
