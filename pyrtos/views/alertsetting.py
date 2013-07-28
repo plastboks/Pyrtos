@@ -73,12 +73,12 @@ class AlertSettingViews(object):
             a.user_id = authenticated_userid(self.request)
             a.weekfilter_id = w.id
             DBSession.add(a)
-            self.request.session.flash('AlertSetting %s created' %
+            self.request.session.flash('Alert setting %s created' %
                                        a.title,
                                        'success')
             return HTTPFound(location=self.request.route_url('alertsettings'))
 
-        return {'title': 'New alertsetting',
+        return {'title': 'New alert setting',
                 'form': form,
                 'action': 'alertsetting_new'}
 
@@ -130,12 +130,12 @@ class AlertSettingViews(object):
             DBSession.add(w)
             del form.weekfilter
             form.populate_obj(a)
-            self.request.session.flash('AlertSetting %s updated' %
+            self.request.session.flash('Alert setting %s updated' %
                                        (a.title), 'status')
             return HTTPFound(location=self.request.route_url('alertsettings'))
 
         form.weekfilter.data = active_days
-        return {'title': 'Edit alertsetting',
+        return {'title': 'Edit alert setting',
                 'id': nid,
                 'form': form,
                 'action': 'alertsetting_edit'}
@@ -155,7 +155,7 @@ class AlertSettingViews(object):
 
         a.archived = True
         DBSession.add(a)
-        self.request.session.flash('AlertSetting %s archived' %
+        self.request.session.flash('Alert setting %s archived' %
                                    (a.title), 'status')
         return HTTPFound(location=self.request.route_url('alertsettings'))
 
@@ -174,7 +174,7 @@ class AlertSettingViews(object):
 
         a.archived = False
         DBSession.add(a)
-        self.request.session.flash('AlertSetting %s restored' %
+        self.request.session.flash('Alert setting %s restored' %
                                    (a.title), 'status')
         return HTTPFound(location=self.request
                                       .route_url('alertsettings_archived'))
