@@ -36,7 +36,20 @@ class NotificationViews(object):
         page = int(self.request.params.get('page', 1))
         notifications = Notification.page(self.request, page)
         return {'paginator': notifications,
-                'title': 'My notifications'}
+                'title': 'My notifications',
+                'archived': False}
+
+    @view_config(route_name='notifications_archived',
+                 renderer='pyrtos:templates/notification/list.mako',
+                 permission='view')
+    def notifications_archived(self):
+        """ Return list of archived notificatoins."""
+
+        page = int(self.request.params.get('page', 1))
+        notifications = Notification.page(self.request, page, archived=True)
+        return {'paginator': notifications,
+                'title': 'My archived notifications',
+                'archived': True}
 
     @view_config(route_name='notification_new',
                  renderer='pyrtos:templates/notification/edit.mako',
@@ -126,3 +139,42 @@ class NotificationViews(object):
                 'id': nid,
                 'form': form,
                 'action': 'notification_edit'}
+
+    @view_config(route_name='notification_archive',
+                 renderer='string',
+                 permission='archive')
+    def notification_archive(self):
+        """ Archive notification, returns redirect. """
+
+        uid = authenticated_userid(self.request)
+        nid = int(self.request.matchdict.get('id'))
+
+        n = Notification.by_id(uid, nid)
+        if not n:
+            return HTTPNotFound()
+
+        n.archived = True
+        DBSession.add(n)
+        self.request.session.flash('Notification %s archived' %
+                                   (n.title), 'status')
+        return HTTPFound(location=self.request.route_url('notifications'))
+
+    @view_config(route_name='notification_restore',
+                 renderer='string',
+                 permission='restore')
+    def notification_restore(self):
+        """ Restore notification, returns redirect. """
+
+        uid = authenticated_userid(self.request)
+        nid = int(self.request.matchdict.get('id'))
+
+        n = Notification.by_id(uid, nid)
+        if not n:
+            return HTTPNotFound()
+
+        n.archived = False
+        DBSession.add(n)
+        self.request.session.flash('Notification %s restored' %
+                                   (n.title), 'status')
+        return HTTPFound(location=self.request
+                                      .route_url('notifications_archived'))

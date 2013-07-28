@@ -39,6 +39,14 @@
     ${form.days_in_advance}
   </p>
 
+  %for error in form.active.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.active.label}: </label>
+    ${form.active}
+  </p>
+
   <p>
     <input type="submit" value="Submit" />
   </p>

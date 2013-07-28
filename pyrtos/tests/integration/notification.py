@@ -93,7 +93,7 @@ class IntegrationNotificationViews(IntegrationTestBase):
                                                         'private': 'y',
                                                         'csrf_token': token}
                             )
-
+        """
         self.app.get('/notification/archive/1', status=302)
         res = self.app.get('/notifications/archived', status=200)
         self.assertTrue('besttest' in res.body)
@@ -101,11 +101,11 @@ class IntegrationNotificationViews(IntegrationTestBase):
         self.app.get('/notification/restore/1', status=302)
         res = self.app.get('/notifications', status=200)
         self.assertTrue('besttest' in res.body)
-        """
+
         self.app.get('/notification/edit/100', status=404)
-        """
         self.app.get('/notification/archive/100', status=404)
         self.app.get('/notification/restore/100', status=404)
+        """
 
         # logout
         self.app.get('/logout')
