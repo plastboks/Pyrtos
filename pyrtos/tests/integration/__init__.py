@@ -30,3 +30,6 @@ from pyrtos.tests.integration.alertsetting import (
 from pyrtos.tests.integration.reminder import (
     IntegrationReminderViews,
 )
+from pyrtos.tests.integration.event import (
+    IntegrationEventViews,
+)

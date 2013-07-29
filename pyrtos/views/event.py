@@ -18,23 +18,23 @@ from pyramid.view import (
 )
 from pyrtos.models.meta import DBSession
 from pyrtos.models import (
-    Reminder,
+    Event,
 )
 
 
-class ReminderViews(object):
+class EventViews(object):
 
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='reminders',
-                 renderer='pyrtos:templates/reminder/list.mako',
+    @view_config(route_name='events',
+                 renderer='pyrtos:templates/event/list.mako',
                  permission='view')
-    def reminders(self):
-        """ Get a paginated list of active reminders. """
+    def events(self):
+        """ Get a paginated list of active events. """
 
         page = int(self.request.params.get('page', 1))
-        reminders = Reminder.page(self.request, page)
-        return {'paginator': reminders,
-                'title': 'Reminders',
+        events = Event.page(self.request, page)
+        return {'paginator': events,
+                'title': 'Events',
                 }

@@ -12,3 +12,4 @@ from pyrtos.views.invoice import InvoiceViews
 from pyrtos.views.file import FileViews
 from pyrtos.views.alertsetting import AlertSettingViews
 from pyrtos.views.reminder import ReminderViews
+from pyrtos.views.event import EventViews

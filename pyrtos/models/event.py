@@ -22,26 +22,18 @@ from webhelpers.date import time_ago_in_words
 from pyramid.security import authenticated_userid
 
 
-class Reminder(Base):
+class Event(Base):
     """
     Class constants representing database table and its columns.
 
     id -- integer, primary key
-    name -- string, max 255 characters.
     created -- datetime.
     updated -- datetime.
     """
-    __tablename__ = 'reminders'
+    __tablename__ = 'events'
     id = Column(Integer, primary_key=True)
-    type = Column(Integer, nullable=False)
-    active = Column(Boolean, default=True)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
-
-    """ some lists. """
-    types = ['onetime',
-             'concuring',
-             ]
 
     """ Get all rows except what the user cannot access
 
@@ -50,7 +42,7 @@ class Reminder(Base):
     @classmethod
     def all_active(cls, request):
         """ Dont do anything with the request object for now. """
-        return DBSession.query(Reminder).all()
+        return DBSession.query(Event).all()
 
     """ Page method used for lists with pagination.
 
@@ -60,7 +52,7 @@ class Reminder(Base):
     @classmethod
     def page(cls, request, page):
         page_url = PageURL_WebOb(request)
-        return Page(Reminder.all_active(request),
+        return Page(Event.all_active(request),
                     page,
                     url=page_url,
                     items_per_page=IPP)
@@ -71,4 +63,4 @@ class Reminder(Base):
     """
     @classmethod
     def by_id(cls, id):
-        return DBSession.query(Reminder).filter(Reminder.id == id).first()
+        return DBSession.query(Event).filter(Event.id == id).first()
