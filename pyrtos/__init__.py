@@ -121,6 +121,9 @@ def main(global_config, **settings):
 
     """ Reminders """
     config.add_route('reminders', '/reminders')
-    
+
+    """ Events """
+    config.add_route('events', '/events')
+
     config.scan()
     return config.make_wsgi_app()
