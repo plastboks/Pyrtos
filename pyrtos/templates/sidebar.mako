@@ -11,6 +11,7 @@
         <sup class='unpaids private'>${request.session.peek_flash('private_unpaid_invoices')[0]}</sup>
       %endif
   </li>
+  <li><a href="${request.route_url('reminders')}">Reminders</a></li>
 </ul>
 <ul>
   <li class='group'><a href="${request.route_url('creditors')}">Creditors</a></li>
