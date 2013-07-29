@@ -175,7 +175,7 @@ class InvoiceModelTests(BaseTestCase):
         self.assertEqual(qi.amount, 1234)
 
         css_time = instance.css_class_for_time_distance()
-        self.assertEqual(css_time, 'dless')
+        self.assertEqual(css_time, 'expired')
 
         time_to = instance.time_to_expires_in_words()
         self.assertIn('less', time_to)
