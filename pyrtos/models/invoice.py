@@ -247,22 +247,22 @@ class Invoice(Base):
 
     """ Method for templates. Used for strings in templates. """
     def time_to_expires_in_words(self):
-        due = datetime.combine(self.due, time(0, 0))
-        distance = distance_of_time_in_words(from_time=due,
+        due_combine = datetime.combine(self.due, time(0, 0))
+        distance = distance_of_time_in_words(from_time=due_combine,
                                              to_time=datetime.utcnow(),
                                              round=True,
                                              granularity='day')
-        if datetime.utcnow() > due:
+        if datetime.utcnow() > due_combine:
             return 'Expired by: '+distance
         return 'In: '+distance
 
     """ Method for templates. Used for setting css classes on objects. """
     def css_class_for_time_distance(self):
-        due = datetime.combine(self.due, time(0, 0))
-        distance = distance_of_time_in_words(from_time=due,
+        due_combine = datetime.combine(self.due, time(0, 0))
+        distance = distance_of_time_in_words(from_time=due_combine,
                                              to_time=datetime.utcnow(),
                                              round=True,
                                              granularity='day')
-        if datetime.utcnow() > due:
+        if datetime.utcnow() > due_combine:
             return 'expired'
         return 'd'+distance.split(' ')[0]

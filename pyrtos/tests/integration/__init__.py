@@ -5,6 +5,9 @@ from pyrtos.tests.integration.base import _initTestingDB
 from pyrtos.tests.integration.basic import (
     IntegrationBasicViews,
 )
+from pyrtos.tests.integration.category import (
+    IntegrationCategoryViews,
+)
 from pyrtos.tests.integration.creditor import (
     IntegrationCreditorViews,
 )
