@@ -11,6 +11,9 @@ from pyrtos.tests.integration.creditor import (
 from pyrtos.tests.integration.expenditure import (
     IntegrationExpenditureViews,
 )
+from pyrtos.tests.integration.tag import (
+    IntegrationTagViews,
+)
 from pyrtos.tests.integration.file import (
     IntegrationFileViews,
 )
@@ -29,4 +32,7 @@ from pyrtos.tests.integration.alertsetting import (
 )
 from pyrtos.tests.integration.reminder import (
     IntegrationReminderViews,
+)
+from pyrtos.tests.integration.event import (
+    IntegrationEventViews,
 )

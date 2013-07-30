@@ -243,6 +243,7 @@ class NotificationModelTests(BaseTestCase):
         self.assertEqual(qa.hour, 10)
         self.assertEqual(qa.minute, 0)
 
+
 class ReminderModelTests(BaseTestCase):
 
     def _getTargetClasS(self):
@@ -260,3 +261,21 @@ class ReminderModelTests(BaseTestCase):
 
         qr = self._getTargetClasS().by_id(1)
         self.assertEqual(qr.type, 2)
+
+
+class EventModelTests(BaseTestCase):
+
+    def _getTargetClass(self):
+        from pyrtos.models import Event
+        return Event
+
+    def _makeOne(self, id):
+        return self._getTargetClass()(id=id,
+                                      )
+
+    def test_constructor(self):
+        instance = self._makeOne(1)
+        self.session.add(instance)
+
+        qe = self._getTargetClass().by_id(1)
+        self.assertEqual(qe.id, 1)
