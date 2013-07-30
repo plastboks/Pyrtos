@@ -119,5 +119,11 @@ def main(global_config, **settings):
     config.add_route('alertsetting_archive', '/alertsetting/archive/{id}')
     config.add_route('alertsetting_restore', '/alertsetting/restore/{id}')
 
+    """ Reminders """
+    config.add_route('reminders', '/reminders')
+
+    """ Events """
+    config.add_route('events', '/events')
+
     config.scan()
     return config.make_wsgi_app()

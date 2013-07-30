@@ -10,3 +10,5 @@ from pyrtos.models.invoice import Invoice
 from pyrtos.models.file import File
 from pyrtos.models.alertsetting import AlertSetting
 from pyrtos.models.weekfilter import WeekFilter
+from pyrtos.models.reminder import Reminder
+from pyrtos.models.event import Event

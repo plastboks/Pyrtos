@@ -27,3 +27,9 @@ from pyrtos.tests.integration.user import (
 from pyrtos.tests.integration.alertsetting import (
     IntegrationAlertSettingViews
 )
+from pyrtos.tests.integration.reminder import (
+    IntegrationReminderViews,
+)
+from pyrtos.tests.integration.event import (
+    IntegrationEventViews,
+)

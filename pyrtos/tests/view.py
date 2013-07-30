@@ -21,6 +21,8 @@ from pyrtos.views import (
     InvoiceViews,
     FileViews,
     AlertSettingViews,
+    ReminderViews,
+    EventViews,
 )
 
 
@@ -218,3 +220,21 @@ class AlertSettingViewsTest(BaseTestCase):
         a = AlertSettingViews(request)
         r = a.alertsettings()
         self.assertEqual(r['title'], 'My alert settings')
+
+
+class ReminderViewsTest(BaseTestCase):
+
+    def test_reminder(self):
+        request = testing.DummyRequest()
+        r = ReminderViews(request)
+        response = r.reminders()
+        self.assertEqual(response['title'], 'Reminders')
+
+
+class EventViewsTest(BaseTestCase):
+
+    def test_event(self):
+        request = testing.DummyRequest()
+        e = EventViews(request)
+        r = e.events()
+        self.assertEqual(r['title'], 'Events')
