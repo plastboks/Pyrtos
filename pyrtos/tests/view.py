@@ -238,3 +238,9 @@ class EventViewsTest(BaseTestCase):
         e = EventViews(request)
         r = e.events()
         self.assertEqual(r['title'], 'Events')
+
+    def test_event_archived(self):
+        request = testing.DummyRequest()
+        e = EventViews(request)
+        r = e.events_archived()
+        self.assertEqual(r['title'], 'Archived events')

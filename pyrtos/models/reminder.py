@@ -35,13 +35,14 @@ class Reminder(Base):
     id = Column(Integer, primary_key=True)
     type = Column(Integer, nullable=False)
     active = Column(Boolean, default=True)
+    alert = Column(DateTime)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
     """ some lists. """
-    types = ['onetime',
-             'concuring',
-             ]
+    types = {1: 'onetime',
+             2: 'concuring',
+             }
 
     """ Get all rows except what the user cannot access
 

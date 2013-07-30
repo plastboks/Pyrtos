@@ -124,6 +124,7 @@ def main(global_config, **settings):
 
     """ Events """
     config.add_route('events', '/events')
+    config.add_route('events_archived', '/events/archived')
 
     config.scan()
     return config.make_wsgi_app()
