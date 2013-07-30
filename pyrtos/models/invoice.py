@@ -247,7 +247,7 @@ class Invoice(Base):
 
     """ Method for templates. Used for strings in templates. """
     def time_to_expires_in_words(self):
-        due = datetime.combine(self.due, time(12, 0))
+        due = datetime.combine(self.due, time(0, 0))
         distance = distance_of_time_in_words(from_time=due,
                                              to_time=datetime.utcnow(),
                                              round=True,
@@ -258,7 +258,7 @@ class Invoice(Base):
 
     """ Method for templates. Used for setting css classes on objects. """
     def css_class_for_time_distance(self):
-        due = datetime.combine(self.due, time(12, 0))
+        due = datetime.combine(self.due, time(0, 0))
         distance = distance_of_time_in_words(from_time=due,
                                              to_time=datetime.utcnow(),
                                              round=True,
