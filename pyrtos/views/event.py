@@ -78,6 +78,34 @@ class EventViews(object):
                 'form': form,
                 'action': 'event_new'}
 
+    @view_config(route_name='event_edit',
+                 renderer='pyrtos:templates/event/edit.mako',
+                 permission='edit')
+    def event_edit(self):
+        """ Edit event. """
+
+        id = int(self.request.matchdict.get('id'))
+
+        e = Event.by_id(id)
+        if not e:
+            return HTTPNotFound()
+        """ Authorization check. """
+        if e.private and e.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+
+        form = EventEditForm(self.request.POST, e,
+                                csrf_context=self.request.session)
+
+        if self.request.method == 'POST' and form.validate():
+            form.populate_obj(e)
+            self.request.session.flash('Event %s updated' %
+                                       (e.title), 'status')
+            return HTTPFound(location=self.request.route_url('events'))
+        return {'title': 'Edit event',
+                'form': form,
+                'id': id,
+                'action': 'event_edit'}
+
     @view_config(route_name='event_archive',
                  renderer='string',
                  permission='archive')
