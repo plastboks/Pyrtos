@@ -20,6 +20,10 @@ from pyrtos.models.meta import DBSession
 from pyrtos.models import (
     Event,
 )
+from pyrtos.forms import (
+    EventCreateForm,
+    EventEditForm,
+)
 
 
 class EventViews(object):
@@ -52,3 +56,94 @@ class EventViews(object):
                 'title': 'Archived events',
                 'archived': True,
                 }
+
+    @view_config(route_name='event_new',
+                 renderer='pyrtos:templates/event/edit.mako',
+                 permission='create')
+    def event_create(self):
+        """ New events. Method for both post and get request."""
+
+        form = EventCreateForm(self.request.POST,
+                               csrf_context=self.request.session)
+
+        if self.request.method == 'POST' and form.validate():
+            e = Event()
+            form.populate_obj(e)
+            e.user_id = authenticated_userid(self.request)
+            DBSession.add(e)
+            self.request.session.flash('Event %s created' %
+                                       (e.title), 'success')
+            return HTTPFound(location=self.request.route_url('events'))
+        return {'title': 'New event',
+                'form': form,
+                'action': 'event_new'}
+
+    @view_config(route_name='event_edit',
+                 renderer='pyrtos:templates/event/edit.mako',
+                 permission='edit')
+    def event_edit(self):
+        """ Edit event. """
+
+        id = int(self.request.matchdict.get('id'))
+
+        e = Event.by_id(id)
+        if not e:
+            return HTTPNotFound()
+        """ Authorization check. """
+        if e.private and e.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+
+        form = EventEditForm(self.request.POST, e,
+                                csrf_context=self.request.session)
+
+        if self.request.method == 'POST' and form.validate():
+            form.populate_obj(e)
+            self.request.session.flash('Event %s updated' %
+                                       (e.title), 'status')
+            return HTTPFound(location=self.request.route_url('events'))
+        return {'title': 'Edit event',
+                'form': form,
+                'id': id,
+                'action': 'event_edit'}
+
+    @view_config(route_name='event_archive',
+                 renderer='string',
+                 permission='archive')
+    def event_archive(self):
+        """ Archive events, returns redirect. """
+
+        id = int(self.request.matchdict.get('id'))
+
+        e = Event.by_id(id)
+        if not e:
+            return HTTPNotFound()
+        """ Authorization check. """
+        if e.private and e.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+
+        e.archived = True
+        DBSession.add(e)
+        self.request.session.flash('Event %s archived' %
+                                   (e.title), 'status')
+        return HTTPFound(location=self.request.route_url('events'))
+
+    @view_config(route_name='event_restore',
+                 renderer='string',
+                 permission='restore')
+    def event_restore(self):
+        """ Restore event, returns redirect. """
+
+        id = int(self.request.matchdict.get('id'))
+
+        e = Event.by_id(id)
+        if not e:
+            return HTTPNotFound()
+        """ Authorization check. """
+        if e.private and e.user_id is not authenticated_userid(self.request):
+            return HTTPForbidden()
+
+        e.archived = False
+        DBSession.add(e)
+        self.request.session.flash('Event %s restored' %
+                                   (e.title), 'status')
+        return HTTPFound(location=self.request.route_url('events_archived'))

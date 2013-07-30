@@ -34,3 +34,7 @@ from pyrtos.forms.alertsetting import (
     AlertSettingCreateForm,
     AlertSettingEditForm,
 )
+from pyrtos.forms.event import (
+    EventCreateForm,
+    EventEditForm,
+)

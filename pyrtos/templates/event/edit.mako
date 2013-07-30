@@ -1,7 +1,7 @@
-<%inherit file="pyrtos:templates/category/base.mako" />
+<%inherit file="pyrtos:templates/event/base.mako" />
 <form action="${request.route_url(action, id=id)}" method="POST">
   ${form.csrf_token}
-  %if action == 'category_edit':
+  %if action == 'event_edit':
     ${form.id()}
   %endif
 
@@ -11,6 +11,22 @@
   <p>
     <label>${form.title.label}</label><br />
     ${form.title}
+  </p>
+
+  %for error in form.from_date.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.from_date.label}</label><br />
+    ${form.from_date}
+  </p>
+
+  %for error in form.to_date.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.to_date.label}</label><br />
+    ${form.to_date}
   </p>
 
   <p>
