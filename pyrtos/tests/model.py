@@ -269,12 +269,14 @@ class EventModelTests(BaseTestCase):
         from pyrtos.models import Event
         return Event
 
-    def _makeOne(self, id):
+    def _makeOne(self, id, title):
         return self._getTargetClass()(id=id,
+                                      user_id=1,
+                                      title=title,
                                       )
 
     def test_constructor(self):
-        instance = self._makeOne(1)
+        instance = self._makeOne(1, 'test')
         self.session.add(instance)
 
         qe = self._getTargetClass().by_id(1)

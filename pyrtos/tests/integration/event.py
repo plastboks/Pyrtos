@@ -37,6 +37,8 @@ class IntegrationEventViews(IntegrationTestBase):
         """
         res = self.app.get('/events')
         self.assertTrue(res.status_int, 200)
+        res = self.app.get('/events/archived')
+        self.assertTrue(res.status_int, 200)
         """
         res = self.app.get('/event/new')
         token = res.form.fields['csrf_token'][0].value
