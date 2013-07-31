@@ -178,14 +178,14 @@ class InvoiceModelTests(BaseTestCase):
         self.assertEqual(css_time, 'expired')
 
         time_to = instance.time_to_expires_in_words()
-        self.assertIn('less', time_to)
+        self.assertIn('1 day', time_to)
 
         instance.due = datetime.utcnow()+timedelta(days=10)
         css_time = instance.css_class_for_time_distance()
-        self.assertEqual(css_time, 'd10')
+        self.assertEqual(css_time, 'd9')
 
         time_to = instance.time_to_expires_in_words()
-        self.assertIn('10 days', time_to)
+        self.assertIn('9 days', time_to)
 
 
 class FileModelTests(BaseTestCase):
