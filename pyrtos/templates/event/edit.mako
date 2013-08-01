@@ -37,6 +37,14 @@
     ${form.reminder}
   </p>
 
+  %for error in form.reminder_alert.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.reminder_alert.label}</label>
+    ${form.reminder_alert}
+  </p>
+
   <p>
     <label>${form.private.label}</label>
     ${form.private}

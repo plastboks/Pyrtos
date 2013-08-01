@@ -94,7 +94,7 @@ class EventViews(object):
             return HTTPForbidden()
 
         form = EventEditForm(self.request.POST, e,
-                                csrf_context=self.request.session)
+                             csrf_context=self.request.session)
 
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(e)
