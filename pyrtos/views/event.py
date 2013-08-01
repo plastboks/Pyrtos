@@ -19,6 +19,7 @@ from pyramid.view import (
 from pyrtos.models.meta import DBSession
 from pyrtos.models import (
     Event,
+    Reminder,
 )
 from pyrtos.forms import (
     EventCreateForm,
@@ -68,8 +69,15 @@ class EventViews(object):
 
         if self.request.method == 'POST' and form.validate():
             e = Event()
-            form.populate_obj(e)
             e.user_id = authenticated_userid(self.request)
+            form.populate_obj(e)
+            if form.reminder_true.data:
+                r = Reminder()
+                r.type = 0
+                r.alert = form.reminder_alert.data
+                DBSession.add(r)
+                DBSession.flush()
+                e.reminder_id = r.id
             DBSession.add(e)
             self.request.session.flash('Event %s created' %
                                        (e.title), 'success')

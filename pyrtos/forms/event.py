@@ -29,8 +29,11 @@ class EventCreateForm(BaseForm):
     from_date = DateField('From date', format='%Y-%m-%d')
     to_date = DateField('To date', format='%Y-%m-%d')
     private = BooleanField('Private')
-    reminder = BooleanField('Reminder')
-    reminder_alert = DateField('Alert time', format='%Y-%m-%d')
+    reminder_true = BooleanField('Reminder')
+    reminder_alert = DateField('Alert time',
+                               [validators.Optional()],
+                               format='%Y-%m-%d',
+                               )
 
 
 class EventEditForm(EventCreateForm):

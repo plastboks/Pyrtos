@@ -35,6 +35,7 @@ class Event(Base):
     __tablename__ = 'events'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    reminder_id = Column(Integer, ForeignKey('reminders.id'))
     title = Column(String(255), nullable=False)
     private = Column(Boolean, default=False)
     archived = Column(Boolean, default=False)
@@ -42,6 +43,9 @@ class Event(Base):
     to_date = Column(DateTime)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
+
+    """ Foregin key variables"""
+    reminder = relationship('Reminder', backref='event')
 
     """ Get all rows except what the user cannot access
 

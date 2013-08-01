@@ -40,8 +40,8 @@ class Reminder(Base):
     updated = Column(DateTime, default=datetime.utcnow)
 
     """ some lists. """
-    types = {1: 'onetime',
-             2: 'concuring',
+    types = {0: 'onetime',
+             1: 'concuring',
              }
 
     """ Get all rows except what the user cannot access
