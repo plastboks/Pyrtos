@@ -29,12 +29,12 @@
     ${form.to_date}
   </p>
 
-  %for error in form.reminder.errors:
+  %for error in form.reminder_true.errors:
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.reminder.label}</label>
-    ${form.reminder}
+    <label>${form.reminder_true.label}</label>
+    ${form.reminder_true}
   </p>
 
   %for error in form.reminder_alert.errors:

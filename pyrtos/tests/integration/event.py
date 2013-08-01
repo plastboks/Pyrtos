@@ -44,6 +44,8 @@ class IntegrationEventViews(IntegrationTestBase):
                                            'from_date': '2013-07-07',
                                            'to_date': '2013-07-08',
                                            'private': 'y',
+                                           'reminder_true': 'y',
+                                           'reminder_alert': '2013-07-06',
                                            'csrf_token': token}
                             )
         res = self.app.get('/events', status=200)

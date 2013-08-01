@@ -7,6 +7,7 @@
         <th>Title</th>
         <th>From date</th>
         <th>To date</th>
+        <th>Reminder</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -15,6 +16,11 @@
             <td>${item.title}</td>
             <td>${item.from_date.date()}</td>
             <td>${item.to_date.date()}</td>
+            <td>
+            %if item.reminder:
+              ${item.reminder.alert.date()}
+            %endif
+            </td>
             <td class='actions'>
               %if request.can_i('edit'):
                 <a href="${request.route_url('event_edit', id=item.id)}">
