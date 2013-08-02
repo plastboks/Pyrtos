@@ -101,14 +101,42 @@ class EventViews(object):
         if e.private and e.user_id is not authenticated_userid(self.request):
             return HTTPForbidden()
 
-        form = EventEditForm(self.request.POST, e,
-                             csrf_context=self.request.session)
+        form = EventEditForm(self.request.POST,
+                             e,
+                             csrf_context=self.request.session,
+                             )
 
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(e)
-            self.request.session.flash('Event %s updated' %
-                                       (e.title), 'status')
+            if form.reminder_true.data and e.reminder_id:
+                r = Reminder.by_id(e.reminder.id)
+                r.alert = form.reminder_alert.data
+                DBSession.add(r)
+                self.request.session.flash('Event %s updated and\
+                                            reminder updated' %
+                                           (e.title), 'status')
+            if form.reminder_true.data and not e.reminder_id:
+                r = Reminder()
+                r.type = 0
+                r.alert = form.reminder_alert.data
+                DBSession.add(r)
+                DBSession.flush()
+                e.reminder_id = r.id
+                self.request.session.flash('Event %s updated and\
+                                            reminder created' %
+                                           (e.title), 'status')
+            if not form.reminder_true.data and e.reminder_id:
+                r = Reminder.by_id(e.reminder.id)
+                DBSession.delete(r)
+                self.request.session.flash('Event %s updated and\
+                                            reminder deleted' %
+                                           (e.title), 'status')
             return HTTPFound(location=self.request.route_url('events'))
+
+        if e.reminder_id:
+            r = Reminder.by_id(e.reminder.id)
+            form.reminder_true.data = True
+            form.reminder_alert.data = r.alert
         return {'title': 'Edit event',
                 'form': form,
                 'id': id,
