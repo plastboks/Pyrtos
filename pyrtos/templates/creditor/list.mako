@@ -6,7 +6,7 @@
       <thead>
         <th>Title</th>
         <th>Invoices</th>
-        <th>Private</th>
+        <th>Status</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -14,7 +14,12 @@
           <tr>
             <td>${item.title}</td>
             <td>${len(item.invoices)}</td>
-            <td>${item.private}</td>
+            <td class='status'>
+              %if item.private:
+                <img src='${request.static_url("pyrtos:static/icons/lock.png")}' title='Private' alt='Private' />
+              %else:
+              %endif
+            </td>
             <td class='actions'>
               %if request.can_i('edit'):
                 <a href="${request.route_url('creditor_edit', id=item.id)}">
