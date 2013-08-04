@@ -372,6 +372,10 @@ img {
   padding: 5px;
 }
 
+#content tbody td.status{
+  width: 50px;
+}
+
 #content tbody td.actions{
   width: 100px;
 }
