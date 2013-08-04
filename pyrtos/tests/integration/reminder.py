@@ -37,6 +37,9 @@ class IntegrationReminderViews(IntegrationTestBase):
         """
         res = self.app.get('/reminders')
         self.assertTrue(res.status_int, 200)
+
+        res = self.app.get('/reminders/inactive')
+        self.assertTrue(res.status_int, 200)
         """
         res = self.app.get('/reminder/new')
         token = res.form.fields['csrf_token'][0].value

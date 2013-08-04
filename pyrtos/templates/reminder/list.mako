@@ -11,7 +11,7 @@
       <tbody>
         %for item in paginator.items:
           <tr>
-            <td>${item.type}</td>
+            <td>${item.types[item.type]}</td>
             <td>${item.alert.date()}</td>
             <td>
             %if item.event:

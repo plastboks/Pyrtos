@@ -121,6 +121,7 @@ def main(global_config, **settings):
 
     """ Reminders """
     config.add_route('reminders', '/reminders')
+    config.add_route('reminders_inactive', '/reminders/inactive')
 
     """ Events """
     config.add_route('events', '/events')

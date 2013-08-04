@@ -38,3 +38,15 @@ class ReminderViews(object):
         return {'paginator': reminders,
                 'title': 'Reminders',
                 }
+
+    @view_config(route_name='reminders_inactive',
+                 renderer='pyrtos:templates/reminder/list.mako',
+                 permission='view')
+    def reminders_inactive(self):
+        """ Get a paginated list of inactive reminders. """
+
+        page = int(self.request.params.get('page', 1))
+        reminders = Reminder.page(self.request, page, inactive=True)
+        return {'paginator': reminders,
+                'title': 'Inactive reminders',
+                }
