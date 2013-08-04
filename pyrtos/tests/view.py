@@ -224,11 +224,17 @@ class AlertSettingViewsTest(BaseTestCase):
 
 class ReminderViewsTest(BaseTestCase):
 
-    def test_reminder(self):
+    def test_reminders(self):
         request = testing.DummyRequest()
         r = ReminderViews(request)
         response = r.reminders()
         self.assertEqual(response['title'], 'Reminders')
+
+    def test_reminders_inactive(self):
+        request = testing.DummyRequest()
+        r = ReminderViews(request)
+        response = r.reminders_inactive()
+        self.assertEqual(response['title'], 'Inactive reminders')
 
 
 class EventViewsTest(BaseTestCase):
