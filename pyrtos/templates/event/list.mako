@@ -8,6 +8,7 @@
         <th>From date</th>
         <th>To date</th>
         <th>Reminder</th>
+        <th>Status</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -17,9 +18,15 @@
             <td>${item.from_date.date()}</td>
             <td>${item.to_date.date()}</td>
             <td>
-            %if item.reminder:
-              ${item.reminder.alert.date()}
-            %endif
+              %if item.reminder:
+                ${item.reminder.alert.date()}
+              %endif
+            </td>
+            <td class='status'>
+              %if item.private:
+                <img src='${request.static_url("pyrtos:static/icons/lock.png")}' title='Private' alt='Private' />
+              %else:
+              %endif
             </td>
             <td class='actions'>
               %if request.can_i('edit'):
