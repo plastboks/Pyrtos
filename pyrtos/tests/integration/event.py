@@ -41,11 +41,11 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.get('/event/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/event/new', {'title': 'testbest',
-                                           'from_date': '2013-07-07',
-                                           'to_date': '2013-07-08',
+                                           'from_date': '2013-07-07 07:00',
+                                           'to_date': '2013-07-08 08:00',
                                            'private': 'y',
                                            'reminder_true': 'y',
-                                           'reminder_alert': '2013-07-06',
+                                           'reminder_alert': '2013-07-06 06:00',
                                            'csrf_token': token}
                             )
         res = self.app.get('/events', status=200)
@@ -56,10 +56,10 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.post('/event/edit/1',
                             params={'id': 1,
                                     'title': 'besttest',
-                                    'from_date': '2013-07-07',
-                                    'to_date': '2013-07-08',
+                                    'from_date': '2013-07-07 07:00',
+                                    'to_date': '2013-07-08 08:00',
                                     'reminder_true': 'y',
-                                    'reminder_alert': '2013-07-09',
+                                    'reminder_alert': '2013-07-06 06:00',
                                     'private': 'y',
                                     'csrf_token': token}
                             )
@@ -74,8 +74,8 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.post('/event/edit/1',
                             params={'id': 1,
                                     'title': 'besttest',
-                                    'from_date': '2013-07-07',
-                                    'to_date': '2013-07-08',
+                                    'from_date': '2013-07-07 07:00',
+                                    'to_date': '2013-07-08 08:00',
                                     'private': 'y',
                                     'csrf_token': token}
                             )
@@ -99,8 +99,8 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.get('/event/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/event/new', {'title': 'testbest',
-                                           'from_date': '2013-07-07',
-                                           'to_date': '2013-07-08',
+                                           'from_date': '2013-07-07 07:00',
+                                           'to_date': '2013-07-08 08:00',
                                            'private': 'y',
                                            'csrf_token': token}
                             )
@@ -110,8 +110,8 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.post('/event/edit/2',
                             params={'id': 2,
                                     'title': 'besttest',
-                                    'from_date': '2013-07-07',
-                                    'to_date': '2013-07-08',
+                                    'from_date': '2013-07-07 07:00',
+                                    'to_date': '2013-07-08 08:00',
                                     'reminder_true': 'y',
                                     'reminder_alert': '2013-07-09',
                                     'private': 'y',

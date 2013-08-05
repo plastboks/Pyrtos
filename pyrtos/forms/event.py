@@ -6,6 +6,7 @@ from wtforms import (
     TextField,
     FloatField,
     DateField,
+    DateTimeField,
     HiddenField,
     SelectField,
     PasswordField,
@@ -13,7 +14,6 @@ from wtforms import (
     FileField,
     BooleanField,
 )
-
 
 class EventCreateForm(BaseForm):
     """
@@ -26,13 +26,13 @@ class EventCreateForm(BaseForm):
     title = TextField('Event title',
                       [validators.Length(min=2, max=255)],
                       filters=[strip_filter])
-    from_date = DateField('From date', format='%Y-%m-%d')
-    to_date = DateField('To date', format='%Y-%m-%d')
+    from_date = DateTimeField('From date', format='%Y-%m-%d %H:%M')
+    to_date = DateTimeField('To date', format='%Y-%m-%d %H:%M')
     private = BooleanField('Private')
     reminder_true = BooleanField('Reminder')
-    reminder_alert = DateField('Alert time',
+    reminder_alert = DateTimeField('Alert time',
                                [validators.Optional()],
-                               format='%Y-%m-%d',
+                               format='%Y-%m-%d %H:%M',
                                )
 
 
