@@ -109,9 +109,8 @@ class EventViews(object):
         if self.request.method == 'POST' and form.validate():
             form.populate_obj(e)
             if form.reminder_true.data and e.reminder_id:
-                r = Reminder.by_id(e.reminder.id)
-                r.alert = form.reminder_alert.data
-                DBSession.add(r)
+                e.reminder.alert = form.reminder_alert.data
+                e.reminder.active = True
                 self.request.session.flash('Event %s updated and\
                                             reminder updated' %
                                            (e.title), 'status')
@@ -126,17 +125,15 @@ class EventViews(object):
                                             reminder created' %
                                            (e.title), 'status')
             if not form.reminder_true.data and e.reminder_id:
-                r = Reminder.by_id(e.reminder.id)
-                DBSession.delete(r)
+                e.reminder.active = False
                 self.request.session.flash('Event %s updated and\
-                                            reminder deleted' %
+                                            reminder deactivated' %
                                            (e.title), 'status')
             return HTTPFound(location=self.request.route_url('events'))
 
-        if e.reminder_id:
-            r = Reminder.by_id(e.reminder.id)
+        if e.reminder_id and e.reminder.active:
             form.reminder_true.data = True
-            form.reminder_alert.data = r.alert
+            form.reminder_alert.data = e.reminder.alert
         return {'title': 'Edit event',
                 'form': form,
                 'id': id,

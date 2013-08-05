@@ -18,7 +18,7 @@
             <td>${item.from_date.date()}</td>
             <td>${item.to_date.date()}</td>
             <td>
-              %if item.reminder:
+              %if item.reminder and item.reminder.active:
                 ${item.reminder.alert.date()}
               %endif
             </td>
