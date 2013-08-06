@@ -38,19 +38,23 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.get('/events/archived')
         self.assertTrue(res.status_int, 200)
 
+        # create new event
         res = self.app.get('/event/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/event/new', {'title': 'testbest',
-                                           'from_date': '2013-07-07 07:00',
-                                           'to_date': '2013-07-08 08:00',
-                                           'private': 'y',
-                                           'reminder_true': 'y',
-                                           'reminder_alert': '2013-07-06 06:00',
-                                           'csrf_token': token}
+        res = self.app.post('/event/new',
+                            {'title': 'testbest',
+                             'from_date': '2013-07-07 07:00',
+                             'to_date': '2013-07-08 08:00',
+                             'private': 'y',
+                             'reminder_true': 'y',
+                             'reminder_alert': '2013-07-06 06:00',
+                             'csrf_token': token,
+                             }
                             )
         res = self.app.get('/events', status=200)
         self.assertTrue('testbest' in res.body)
 
+        # edit event
         res = self.app.get('/event/edit/1')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/event/edit/1',
@@ -69,6 +73,7 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.get('/event/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
 
+        # edit event
         res = self.app.get('/event/edit/1')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/event/edit/1',
@@ -96,6 +101,7 @@ class IntegrationEventViews(IntegrationTestBase):
         res = self.app.get('/events', status=200)
         self.assertTrue('besttest' in res.body)
 
+        # create new event
         res = self.app.get('/event/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/event/new', {'title': 'testbest',
@@ -105,6 +111,7 @@ class IntegrationEventViews(IntegrationTestBase):
                                            'csrf_token': token}
                             )
 
+        # edit event
         res = self.app.get('/event/edit/2')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/event/edit/2',
@@ -113,11 +120,12 @@ class IntegrationEventViews(IntegrationTestBase):
                                     'from_date': '2013-07-07 07:00',
                                     'to_date': '2013-07-08 08:00',
                                     'reminder_true': 'y',
-                                    'reminder_alert': '2013-07-09',
+                                    'reminder_alert': '2013-07-09 05:00',
                                     'private': 'y',
                                     'csrf_token': token}
                             )
 
+        # test 404 events
         self.app.get('/event/edit/100', status=404)
         self.app.get('/event/archive/100', status=404)
         self.app.get('/event/restore/100', status=404)
