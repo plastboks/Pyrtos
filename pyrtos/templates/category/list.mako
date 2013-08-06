@@ -7,7 +7,7 @@
         <th>Title</th>
         <th>Expenditures</th>
         <th>Inovoices</th>
-        <th>Private</th>
+        <th>Status</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -16,7 +16,12 @@
             <td>${item.title}</td>
             <td>${len(item.expenditures)}</td>
             <td>${len(item.invoices)}</td>
-            <td>${item.private}</td>
+            <td class='status'>
+              %if item.private:
+                <img src='${request.static_url("pyrtos:static/icons/lock.png")}' title='Private' alt='Private' />
+              %else:
+              %endif
+            </td>
             <td class='actions'>
               %if request.can_i('edit'):
                 <a href="${request.route_url('category_edit', id=item.id)}">

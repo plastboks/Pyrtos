@@ -64,7 +64,7 @@
           <tr class="${'archived' if item.archived else 'active'} ${'onhold' if item.on_hold else ''}">
             <td>${item.title}</td>
             <td>${item.amount}</td>
-            <td>${item.due.date()}</td>
+            <td>${item.due}</td>
             <td>${item.category.title}</td>
             <td>${item.creditor.title}</td>
             <td class='actions'>

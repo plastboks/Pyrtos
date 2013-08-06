@@ -178,14 +178,14 @@ class InvoiceModelTests(BaseTestCase):
         self.assertEqual(css_time, 'expired')
 
         time_to = instance.time_to_expires_in_words()
-        self.assertIn('less', time_to)
+        self.assertIn('1 day', time_to)
 
         instance.due = datetime.utcnow()+timedelta(days=10)
         css_time = instance.css_class_for_time_distance()
-        self.assertEqual(css_time, 'd10')
+        self.assertEqual(css_time, 'd9')
 
         time_to = instance.time_to_expires_in_words()
-        self.assertIn('10 days', time_to)
+        self.assertIn('9 days', time_to)
 
 
 class FileModelTests(BaseTestCase):
@@ -269,12 +269,14 @@ class EventModelTests(BaseTestCase):
         from pyrtos.models import Event
         return Event
 
-    def _makeOne(self, id):
+    def _makeOne(self, id, title):
         return self._getTargetClass()(id=id,
+                                      user_id=1,
+                                      title=title,
                                       )
 
     def test_constructor(self):
-        instance = self._makeOne(1)
+        instance = self._makeOne(1, 'test')
         self.session.add(instance)
 
         qe = self._getTargetClass().by_id(1)

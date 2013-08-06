@@ -121,9 +121,15 @@ def main(global_config, **settings):
 
     """ Reminders """
     config.add_route('reminders', '/reminders')
+    config.add_route('reminders_inactive', '/reminders/inactive')
 
     """ Events """
     config.add_route('events', '/events')
+    config.add_route('events_archived', '/events/archived')
+    config.add_route('event_new', '/event/new')
+    config.add_route('event_edit', '/event/edit/{id}')
+    config.add_route('event_archive', '/event/archive/{id}')
+    config.add_route('event_restore', '/event/restore/{id}')
 
     config.scan()
     return config.make_wsgi_app()

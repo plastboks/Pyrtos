@@ -4,12 +4,20 @@
   <div class='tablelist'>
     <table id='reminders'>
       <thead>
-        <th>ID</th>
+        <th>Type</th>
+        <th>Alert</th>
+        <th>Object</th>
       </thead>
       <tbody>
         %for item in paginator.items:
           <tr>
-            <td>${item.id}</td>
+            <td>${item.types[item.type]}</td>
+            <td>${item.alert.date()}</td>
+            <td>
+            %if item.event:
+              Event: ${item.event[0].title}
+            %endif
+            </td>
           </tr>
         %endfor
       </tbody>

@@ -338,19 +338,19 @@ img {
   font-style: italic !important;
 }
 
-#content table tbody td.alertsetting {
+#content table tbody td.alertsettings {
   width: 18px;
 }
 
-#content table tbody td.alertsetting span.True {
+#content table tbody td.alertsettings span.True {
   background: url('/static/icons/accept.png') left center no-repeat;
 }
 
-#content table tbody td.alertsetting span.False {
+#content table tbody td.alertsettings span.False {
   background: url('/static/icons/delete.png') left center no-repeat;
 }
 
-#content table tbody td.alertsetting span {
+#content table tbody td.alertsettings span {
   height: 16px;
   padding: 0px 0px 0px 0px;
   margin: 0px 0px 0px 0px;
@@ -370,6 +370,10 @@ img {
 
 #content tbody td {
   padding: 5px;
+}
+
+#content tbody td.status{
+  width: 50px;
 }
 
 #content tbody td.actions{

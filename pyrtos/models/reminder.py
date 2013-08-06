@@ -35,13 +35,14 @@ class Reminder(Base):
     id = Column(Integer, primary_key=True)
     type = Column(Integer, nullable=False)
     active = Column(Boolean, default=True)
+    alert = Column(DateTime)
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime, default=datetime.utcnow)
 
     """ some lists. """
-    types = ['onetime',
-             'concuring',
-             ]
+    types = {0: 'Onetime',
+             1: 'Concuring',
+             }
 
     """ Get all rows except what the user cannot access
 
@@ -50,7 +51,18 @@ class Reminder(Base):
     @classmethod
     def all_active(cls, request):
         """ Dont do anything with the request object for now. """
-        return DBSession.query(Reminder).all()
+        return DBSession.query(Reminder)\
+                        .filter(Reminder.active == True)
+
+    """ Get all rows except what the user cannot access
+
+    request -- request object.
+    """
+    @classmethod
+    def all_inactive(cls, request):
+        """ Dont do anything with the request object for now. """
+        return DBSession.query(Reminder)\
+                        .filter(Reminder.active == False)
 
     """ Page method used for lists with pagination.
 
@@ -58,8 +70,13 @@ class Reminder(Base):
     page -- int, page int.
     """
     @classmethod
-    def page(cls, request, page):
+    def page(cls, request, page, inactive=False):
         page_url = PageURL_WebOb(request)
+        if inactive:
+            return Page(Reminder.all_inactive(request),
+                        page,
+                        url=page_url,
+                        items_per_page=IPP)
         return Page(Reminder.all_active(request),
                     page,
                     url=page_url,

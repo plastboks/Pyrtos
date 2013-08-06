@@ -3,7 +3,7 @@ from pyrtos.tests.integration import IntegrationTestBase
 from pyrtos.tests.integration import _initTestingDB
 
 
-class IntegrationReminderViews(IntegrationTestBase):
+class IntegrationCategoryViews(IntegrationTestBase):
 
     def setUp(self):
         self.app = TestApp(self.app)
@@ -13,7 +13,7 @@ class IntegrationReminderViews(IntegrationTestBase):
         del self.app
         self.session.remove()
 
-    def test_reminders(self):
+    def test_categories(self):
         res = self.app.get('/login')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/login', {'submit': True,
@@ -22,7 +22,6 @@ class IntegrationReminderViews(IntegrationTestBase):
                                        'password': '1234567'}
                             )
 
-        """
         # create a new user
         res = self.app.get('/user/new')
         token = res.form.fields['csrf_token'][0].value
@@ -34,52 +33,48 @@ class IntegrationReminderViews(IntegrationTestBase):
                                           'group': 'admin',
                                           'csrf_token': token})
 
-        """
-        res = self.app.get('/reminders')
+        res = self.app.get('/categories')
         self.assertTrue(res.status_int, 200)
 
-        res = self.app.get('/reminders/inactive')
-        self.assertTrue(res.status_int, 200)
-        """
-        res = self.app.get('/reminder/new')
+        res = self.app.get('/category/new')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/reminder/new', {'title': 'testbest',
+        res = self.app.post('/category/new', {'title': 'testbest',
                                               'csrf_token': token}
                             )
-        res = self.app.get('/reminders', status=200)
+        res = self.app.get('/categories', status=200)
         self.assertTrue('testbest' in res.body)
 
-        res = self.app.get('/reminder/edit/1')
+        res = self.app.get('/category/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/reminder/edit/1', params={'id': 1,
+        res = self.app.post('/category/edit/1', params={'id': 1,
                                                         'title': 'besttest',
                                                         'csrf_token': token}
                             )
-        res = self.app.get('/reminders', status=200)
+        res = self.app.get('/categories', status=200)
         self.assertTrue('besttest' in res.body)
 
-        res = self.app.get('/reminder/edit/1', status=200)
+        res = self.app.get('/category/edit/1', status=200)
         self.assertTrue('besttest' in res.body)
 
-        res = self.app.get('/reminder/edit/1')
+        res = self.app.get('/category/edit/1')
         token = res.form.fields['csrf_token'][0].value
-        res = self.app.post('/reminder/edit/1', params={'id': 1,
+        res = self.app.post('/category/edit/1', params={'id': 1,
                                                         'title': 'besttest',
                                                         'private': 'y',
                                                         'csrf_token': token}
                             )
 
-        self.app.get('/reminder/archive/1', status=302)
-        res = self.app.get('/reminders/archived', status=200)
+        self.app.get('/category/archive/1', status=302)
+        res = self.app.get('/categories/archived', status=200)
         self.assertTrue('besttest' in res.body)
 
-        self.app.get('/reminder/restore/1', status=302)
-        res = self.app.get('/reminders', status=200)
+        self.app.get('/category/restore/1', status=302)
+        res = self.app.get('/categories', status=200)
         self.assertTrue('besttest' in res.body)
 
-        self.app.get('/reminder/edit/100', status=404)
-        self.app.get('/reminder/archive/100', status=404)
-        self.app.get('/reminder/restore/100', status=404)
+        self.app.get('/category/edit/100', status=404)
+        self.app.get('/category/archive/100', status=404)
+        self.app.get('/category/restore/100', status=404)
 
         # logout
         self.app.get('/logout')
@@ -93,10 +88,9 @@ class IntegrationReminderViews(IntegrationTestBase):
                                        'password': '123456'}
                             )
 
-        # try to edit a reminder the user do not have permission to
-        self.app.get('/reminder/edit/1', status=403)
-        # try to archive a reminder the user do not have permission to
-        self.app.get('/reminder/archive/1', status=403)
-        # try to restore a reminder the user do not have permission to
-        self.app.get('/reminder/restore/1', status=403)
-        """
+        # try to edit a category the user do not have permission to
+        self.app.get('/category/edit/1', status=403)
+        # try to archive a category the user do not have permission to
+        self.app.get('/category/archive/1', status=403)
+        # try to restore a category the user do not have permission to
+        self.app.get('/category/restore/1', status=403)
