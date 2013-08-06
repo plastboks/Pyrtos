@@ -17,6 +17,9 @@
             %if item.event:
               Event: ${item.event[0].title}
             %endif
+            %if item.invoice:
+              Invoice: ${item.invoice[0].title}
+            %endif
             </td>
           </tr>
         %endfor

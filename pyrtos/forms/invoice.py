@@ -59,6 +59,7 @@ class InvoiceCreateForm(BaseForm):
     creditor_id = QuerySelectField('Creditor',
                                    get_label='title')
     on_hold = BooleanField('On hold')
+    reminder_true = BooleanField('Reminder', default=True)
 
 
 class InvoiceEditForm(InvoiceCreateForm):
