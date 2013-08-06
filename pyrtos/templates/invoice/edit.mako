@@ -88,17 +88,22 @@
   %for error in form.on_hold.errors:
     <p class=error>${error}</p>
   %endfor
-  <p>
-    <label>${form.on_hold.label}</label>
-    ${form.on_hold}
-  </p>
-
   %for error in form.reminder_true.errors:
     <p class=error>${error}</p>
   %endfor
   <p>
+    <label>${form.on_hold.label}</label>
+    ${form.on_hold}
     <label>${form.reminder_true.label}</label>
     ${form.reminder_true}
+  </p>
+
+  %for error in form.notes.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.notes.label}</label><br />
+    ${form.notes}
   </p>
 
   <p>

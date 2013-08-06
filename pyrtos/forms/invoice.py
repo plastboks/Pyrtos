@@ -4,6 +4,7 @@ from wtforms import (
     validators,
     widgets,
     TextField,
+    TextAreaField,
     FloatField,
     DateField,
     HiddenField,
@@ -45,10 +46,13 @@ class InvoiceCreateForm(BaseForm):
     creditor_id -- foreginkey. populated in view file
     on_hold -- booleanfield.
     """
-    title = TextField('Invoice Title',
+    title = TextField('Title',
                       [validators.Length(min=2, max=255)],
                       filters=[strip_filter])
-    amount = FloatField('Invoice Amount')
+    notes = TextAreaField('Notes',
+                          [validators.Length(max=2048)],
+                          filters=[strip_filter])
+    amount = FloatField('Amount')
     due = DateField('Due date', format='%Y-%m-%d')
     paid = DateField('Paid date',
                      [validators.optional()],
