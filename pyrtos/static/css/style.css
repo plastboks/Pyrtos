@@ -256,6 +256,15 @@ img {
   width: 97%;
 }
 
+#content form textarea {
+  border: 1px solid #E5E5E5;
+  width: 97%;
+  margin-bottom: 16px;
+  margin-right: 6px;
+  margin-top: 2px;
+  padding: 3px;
+}
+
 #content form input[type='submit'] {
   background: none repeat scroll 0 0 lightskyblue;
   border: 1px solid dodgerblue;

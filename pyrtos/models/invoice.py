@@ -75,6 +75,7 @@ class Invoice(Base):
     creditor_id = Column(Integer, ForeignKey('creditors.id'), nullable=False)
     reminder_id = Column(Integer, ForeignKey('reminders.id'), nullable=True)
     title = Column(String(255), nullable=False)
+    notes = Column(String(2048))
     amount = Column(Float(16), nullable=False)
     due = Column(DateTime, nullable=False)
     paid = Column(DateTime, default=None)
