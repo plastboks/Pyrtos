@@ -14,6 +14,14 @@
     ${form.email}
   </p>
 
+  %for error in form.cellphone.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.cellphone.label}</label><br />
+    ${form.cellphone}
+  </p>
+
   %for error in form.givenname.errors:
     <p class=error>${error}</p>
   %endfor
