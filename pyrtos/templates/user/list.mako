@@ -5,6 +5,7 @@
       <thead>
         <th>Name</th>
         <th>Email</th>
+        <th>Cellphone</th>
         <th>Group</th>
         <th>Actions</th>
       </thead>
@@ -24,6 +25,7 @@
               ${item.surname}</td>
             %endif
             <td>${item.email}</td>
+            <td>${item.cellphone}</td>
             <td>${item.group}</td>
             <td class='actions'>
               %if item.id is not myid and item.id is not 1:

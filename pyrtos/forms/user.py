@@ -5,6 +5,7 @@ from wtforms import (
     TextField,
     HiddenField,
     BooleanField,
+    IntegerField,
     PasswordField,
     SelectField,
 )
@@ -28,6 +29,7 @@ class UserCreateForm(BaseForm):
                       [validators.Length(max=255),
                        validators.Email(message='Not an valid email address')],
                       filters=[strip_filter])
+    cellphone = IntegerField('Cellphone')
     givenname = TextField('Givenname',
                           [validators.Length(max=255)],
                           filters=[strip_filter])

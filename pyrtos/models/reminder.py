@@ -41,7 +41,7 @@ class Reminder(Base):
 
     """ some lists. """
     types = {0: 'Onetime',
-             1: 'Concuring',
+             1: 'Concurring',
              }
 
     """ Get all rows except what the user cannot access
