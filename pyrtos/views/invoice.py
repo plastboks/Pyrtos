@@ -26,6 +26,7 @@ from pyrtos.models import (
     Invoice,
     Creditor,
     File,
+    Reminder,
 )
 from pyrtos.forms import (
     InvoiceCreateForm,
@@ -258,6 +259,13 @@ class InvoiceViews(object):
             except Exception:
                 self.request.session.flash('No file added.',
                                            'status')
+            if form.reminder_true.data:
+                r = Reminder()
+                r.type = 1
+                r.alert = form.due.data
+                DBSession.add(r)
+                DBSession.flush()
+                i.reminder_id = r.id
 
             DBSession.add(i)
             self.request.session.flash('Invoice %s created' %
@@ -356,6 +364,23 @@ class InvoiceViews(object):
                 self.request.session.flash('No file added.',
                                            'status')
 
+            if form.reminder_true.data and i.reminder_id:
+                i.reminder.alert = form.due.data
+                i.reminder.active = True
+            if form.reminder_true.data and not i.reminder_id:
+                r = Reminder()
+                r.type = 0
+                r.alert = form.due.data
+                DBSession.add(r)
+                DBSession.flush()
+                i.reminder_id = r.id
+            if not form.reminder_true.data and i.reminder_id:
+                i.reminder.active = False
+            if form.paid.data and i.reminder_id:
+                i.reminder.active = False
+            else:
+                i.reminder.active = True
+
             self.request.session.flash('Invoice %s updated' %
                                        (i.title), 'status')
             self.update_flash()
@@ -368,6 +393,8 @@ class InvoiceViews(object):
 
         form.category_id.data = i.category
         form.creditor_id.data = i.creditor
+        if i.reminder_id and i.reminder.active:
+            form.reminder_true.data = True
         return {'title': 'Edit private invoice' if private else 'Edit invoice',
                 'form': form,
                 'id': id,
@@ -397,6 +424,9 @@ class InvoiceViews(object):
             return HTTPForbidden()
 
         i.paid = datetime.now()
+        if i.reminder_id:
+            i.reminder.active = False
+
         self.request.session.flash('Invoice %s is now paid' %
                                    (i.title), 'success')
         self.update_flash()

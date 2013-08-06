@@ -73,6 +73,7 @@ class Invoice(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
     creditor_id = Column(Integer, ForeignKey('creditors.id'), nullable=False)
+    reminder_id = Column(Integer, ForeignKey('reminders.id'), nullable=True)
     title = Column(String(255), nullable=False)
     amount = Column(Float(16), nullable=False)
     due = Column(DateTime, nullable=False)
@@ -86,6 +87,7 @@ class Invoice(Base):
     user = relationship('User', backref='invoices')
     category = relationship('Category', backref='invoices')
     creditor = relationship('Creditor', backref='invoices')
+    reminder = relationship('Reminder', backref='invoice')
     files = relationship('File',
                          secondary=association_table,
                          backref='invoices')

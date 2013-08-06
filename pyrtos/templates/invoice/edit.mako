@@ -81,9 +81,6 @@
   <p>
     <label>${form.category_id.label}</label>
     ${form.category_id}
-  </p>
-
-  <p>
     <label>${form.creditor_id.label}</label>
     ${form.creditor_id}
   </p>
@@ -94,6 +91,14 @@
   <p>
     <label>${form.on_hold.label}</label>
     ${form.on_hold}
+  </p>
+
+  %for error in form.reminder_true.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.reminder_true.label}</label>
+    ${form.reminder_true}
   </p>
 
   <p>
