@@ -112,7 +112,7 @@ class FileViews(object):
             response = FileResponse(
                 'pyrtos/uploads/'+f.filename,
                 request=self.request,
-                content_type=f.filemime
+                #content_type=f.filemime
             )
             return response
         return HTTPNotFound()
