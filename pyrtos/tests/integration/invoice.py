@@ -236,6 +236,9 @@ class IntegrationInvoiceViews(IntegrationTestBase):
         # try to quickpay the invoice
         self.app.get('/invoice/quickpay/1', status=302)
 
+        res = self.app.get('/invoices', status=200)
+        self.assertTrue('besttest' in res.body)
+
         # visit the query page
         res = self.app.get('/invoices/search', status=200)
         self.assertIn('Search', res.body)
