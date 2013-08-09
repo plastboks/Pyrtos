@@ -37,7 +37,7 @@ class Reminder(Base):
     active = Column(Boolean, default=True)
     alert = Column(DateTime)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ some lists. """
     types = {0: 'Onetime',

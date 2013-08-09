@@ -48,7 +48,7 @@ class Category(Base):
     private = Column(Boolean, default=False)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Constant used for getting this class foregin objects"""
     user = relationship('User', backref='categories')
