@@ -45,7 +45,8 @@ class Event(Base):
     updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Foregin key variables"""
-    reminder = relationship('Reminder', backref='event')
+    user = relationship('User', backref='events')
+    reminder = relationship('Reminder', backref='events')
 
     """ Get all rows except what the user cannot access
 

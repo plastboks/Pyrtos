@@ -18,6 +18,15 @@
     ${form.private}
   </p>
 
+  %if action is 'category_edit':
+    <p class='byline'>
+      Created by: ${category.user.givenname} ${category.user.surname} (${category.user.email}) @ ${category.created.date()}
+      %if category.updated:
+        | updated @ ${category.updated.date()}
+      %endif
+    </p>
+  %endif
+
   <p>
     <input type="submit" value="Submit" />
   </p>

@@ -103,6 +103,7 @@ class CategoryViews(object):
         return {'title': 'Edit category',
                 'form': form,
                 'id': id,
+                'category': c,
                 'action': 'category_edit'}
 
     @view_config(route_name='category_archive',

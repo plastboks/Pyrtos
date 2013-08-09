@@ -107,10 +107,10 @@
   </p>
 
   %if action is 'invoice_edit':
-    <p class=byline>
+    <p class='byline'>
       Created by: ${invoice.user.givenname} ${invoice.user.surname} (${invoice.user.email}) @ ${invoice.created.date()}
       %if invoice.updated:
-        ,updated @ ${invoice.updated.date()}
+        | updated @ ${invoice.updated.date()}
       %endif
     </p>
   %endif
