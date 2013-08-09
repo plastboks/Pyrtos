@@ -295,6 +295,10 @@ img {
   padding: 2px;
 }
 
+#content form p.byline {
+  font-size: 0.9em;
+}
+
 #content span {
   color: grey;
   display: block;
