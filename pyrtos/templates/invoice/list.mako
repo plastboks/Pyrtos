@@ -57,6 +57,7 @@
         <th>Due</th>
         <th>Category</th>
         <th>Creditor</th>
+        <th>Files</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -64,9 +65,18 @@
           <tr class="${'archived' if item.archived else 'active'} ${'onhold' if item.on_hold else ''}">
             <td>${item.title}</td>
             <td>${item.amount}</td>
-            <td>${item.due}</td>
+            <td>${item.due.date()}</td>
             <td>${item.category.title}</td>
             <td>${item.creditor.title}</td>
+            <td>
+              %if item.files:
+                %for f in item.files:
+                  <a href="${request.route_url('file_download', id=f.id, filename=f.filename)}">
+                    <img src='${request.static_url("pyrtos:static/icons/page_white_get.png")}' title='Edit' alt='Edit' />
+                  </a>
+                %endfor
+              %endif
+            </td>
             <td class='actions'>
               %if request.can_i('edit'):
                 %if item.category.private or item.creditor.private:

@@ -15,7 +15,7 @@
             <td>${item.private}</td>
             <td>
             %if item.filename:
-                <a href="${request.route_url('file_download', id=item.id)}">Download</a>
+                <a href="${request.route_url('file_download', id=item.id, filename=item.filename)}">Download</a>
             %endif
             </td>
           </tr>
