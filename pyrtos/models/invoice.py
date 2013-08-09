@@ -82,7 +82,7 @@ class Invoice(Base):
     on_hold = Column(Boolean, default=False)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Constants for relationships. """
     user = relationship('User', backref='invoices')
