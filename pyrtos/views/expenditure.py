@@ -173,6 +173,7 @@ class ExpenditureViews(object):
                          else 'Edit expenditure',
                 'form': form,
                 'id': id,
+                'expenditure': e,
                 'action': 'expenditure_edit',
                 'private': private}
 

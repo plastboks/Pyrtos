@@ -65,6 +65,15 @@
     </p>
   %endif
 
+  %if action is 'user_edit':
+    <p class='byline'>
+      Created @: ${user.created.date()}
+      %if user.updated:
+        | updated @ ${user.updated.date()}
+      %endif
+    </p>
+  %endif
+
   <p>
     <input type="submit" value="Submit" />
   </p>

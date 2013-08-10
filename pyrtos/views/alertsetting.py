@@ -138,6 +138,7 @@ class AlertSettingViews(object):
         return {'title': 'Edit alert setting',
                 'id': nid,
                 'form': form,
+                'alertsetting': a,
                 'action': 'alertsetting_edit'}
 
     @view_config(route_name='alertsetting_archive',

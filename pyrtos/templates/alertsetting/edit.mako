@@ -47,6 +47,14 @@
     ${form.active}
   </p>
 
+  %if action is 'alertsetting_edit':
+    <p class='byline'>
+      Created by: ${alertsetting.user.givenname} ${alertsetting.user.surname} (${alertsetting.user.email}) @ ${alertsetting.created.date()}
+      %if alertsetting.updated:
+        | updated @ ${alertsetting.updated.date()}
+      %endif
+    </p>
+  %endif
   <p>
     <input type="submit" value="Submit" />
   </p>

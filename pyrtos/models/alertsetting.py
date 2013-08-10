@@ -51,6 +51,7 @@ class AlertSetting(Base):
     updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Constants for relationships. """
+    user = relationship('User', backref='alertsettings')
     weekfilter = relationship('WeekFilter',
                               backref='alertsetting',
                               lazy='joined')
