@@ -114,6 +114,7 @@ class UserViews(object):
                 'form': form,
                 'id': id,
                 'myid': a,
+                'user': u,
                 'action': 'user_edit'}
 
     @view_config(route_name='user_archive',

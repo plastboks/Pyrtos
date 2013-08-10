@@ -22,7 +22,7 @@
 %endif
 
   ${form.csrf_token}
-  %if action == 'expenditure_edit':
+  %if action is 'expenditure_edit':
     ${form.id()}
   %endif
 
@@ -47,6 +47,15 @@
     <label>${form.category_id.label}</label>
     ${form.category_id}
   </p>
+
+  %if action is 'expenditure_edit':
+    <p class='byline'>
+      Created by: ${expenditure.user.givenname} ${expenditure.user.surname} (${expenditure.user.email}) @ ${expenditure.created.date()}
+      %if expenditure.updated:
+        | updated @ ${expenditure.updated.date()}
+      %endif
+    </p>
+  %endif
 
   <p>
     <input type="submit" value="Submit" />
