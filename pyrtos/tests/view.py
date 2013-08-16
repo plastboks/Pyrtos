@@ -92,6 +92,13 @@ class UserViewsTests(BaseTestCase):
         response = u.users_archived()
         self.assertEqual(response['title'], 'Archived users')
 
+    def test_user_profile(self):
+        request = testing.DummyRequest()
+        request.POST = multidict.MultiDict()
+        u = UserViews(request)
+        response = u.user_profile()
+        self.assertEqual(response['title'], 'Profile edit')
+
 
 class TagViewsTests(BaseTestCase):
 

@@ -1,11 +1,7 @@
 <%inherit file="pyrtos:templates/user/base.mako" />
 
-<form action="${request.route_url(action, id=id)}" method="POST">
+<form action="${request.route_url(action)}" method="POST">
   ${form.csrf_token}
-
-  %if action == 'user_edit':
-    ${form.id()}
-  %endif
 
   %for error in form.email.errors:
     <p class=error>${error}</p>
@@ -52,28 +48,12 @@
     ${form.confirm}
   </p>
 
-  %if id is not 1 and id is not myid:
-    <p>
-      <label>${form.group.label}</label>
-      ${form.group}
-    </p>
-  %endif
-
-  %if id is not 1 and id is not myid:
-    <p>
-      <label>${form.blocked.label}</label>
-      ${form.blocked}
-    </p>
-  %endif
-
-  %if action is 'user_edit':
-    <p class='byline'>
-      Created @: ${user.created.date()}
-      %if user.updated:
-        | updated @ ${user.updated.date()}
-      %endif
-    </p>
-  %endif
+  <p class='byline'>
+    Created @: ${user.created.date()}
+    %if user.updated:
+      | updated @ ${user.updated.date()}
+    %endif
+  </p>
 
   <p>
     <input type="submit" value="Submit" />
