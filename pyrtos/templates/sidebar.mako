@@ -21,7 +21,8 @@
   <li class='group'><a href="${request.route_url('files')}">Files</a></li>
 </ul>
 <ul>
-  <li class='user'><a href="${request.route_url('users')}">Users</a></li>
+  <li class='user'><a href="${request.route_url('user_profile')}">Profile</a></li>
   <li class='user'><a href="${request.route_url('alertsettings')}">Alert settings</a></li>
+  <li class='user'><a href="${request.route_url('users')}">Users</a></li>
   <li class='user'><a href="${request.route_url('logout')}">Logout</a></li>
 </ul>

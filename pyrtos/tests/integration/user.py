@@ -25,9 +25,33 @@ class IntegrationUserViews(IntegrationTestBase):
         res = self.app.get('/users', status=200)
         self.assertTrue(res.status_int, 200)
 
+        # profile edit with password
+        res = self.app.get('/user/profile', status=200)
+        self.assertIn('user@email.com', res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/profile', {'email': 'user@email.com',
+                                              'cellphone': 123123123,
+                                              'csrf_token': token,
+                                              'password': '1234567',
+                                              'confirm': '1234567',
+                                              }
+                            )
+
+        # profile edit wihout password
+        res = self.app.get('/user/profile', status=200)
+        self.assertIn('user@email.com', res.body)
+        token = res.form.fields['csrf_token'][0].value
+        res = self.app.post('/user/profile', {'email': 'user@email.com',
+                                              'cellphone': 123123123,
+                                              'csrf_token': token,
+                                              }
+                            )
+
+        # new user
         res = self.app.get('/user/new')
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/new', {'email': 'test@email.com',
+                                          'cellphone': 123123123,
                                           'givenname': 'testy',
                                           'surname': 'mctest',
                                           'password': '123456',
@@ -47,6 +71,7 @@ class IntegrationUserViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/edit/2', {'id': 2,
                                              'email': 'best@email.com',
+                                             'cellphone': 123123123,
                                              'password': '123456',
                                              'confirm': '123456',
                                              'group': 'admin',
@@ -54,7 +79,7 @@ class IntegrationUserViews(IntegrationTestBase):
                                              }
                             )
         res = self.app.get('/users', status=200)
-        self.assertTrue('best@email.com')
+        self.assertIn('best@email.com', res.body)
 
         self.app.get('/logout', status=302)
 
@@ -88,6 +113,7 @@ class IntegrationUserViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/edit/2', {'id': 2,
                                              'email': 'best@email.com',
+                                             'cellphone': 123123123,
                                              'csrf_token': token,
                                              'password': '',
                                              'confirm': '',
@@ -121,6 +147,7 @@ class IntegrationUserViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/edit/2', {'id': 2,
                                              'email': 'best@email.com',
+                                             'cellphone': 123123123,
                                              'csrf_token': token,
                                              'password': '',
                                              'confirm': '',
@@ -227,6 +254,7 @@ class IntegrationUserNotFoundViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/new', {'email': 'mustang@email.com',
                                           'givenname': 'mustang',
+                                          'cellphone': 123123123,
                                           'surname': 'mcmustang',
                                           'password': '123456',
                                           'confirm': '123456',
@@ -236,6 +264,7 @@ class IntegrationUserNotFoundViews(IntegrationTestBase):
                             status=200
                             )
         res = self.app.post('/user/new', {'email': 'mustang@email.com',
+                                          'cellphone': 123123123,
                                           'givenname': 'mustang',
                                           'surname': 'mcmustang',
                                           'password': '123456',
@@ -254,6 +283,7 @@ class IntegrationUserNotFoundViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/edit/2', {'id': 2,
                                              'email': 'mustang@email.com',
+                                             'cellphone': 123123123,
                                              'group': 'horse',
                                              'csrf_token': token,
                                              },
@@ -270,6 +300,7 @@ class IntegrationUserNotFoundViews(IntegrationTestBase):
         token = res.form.fields['csrf_token'][0].value
         res = self.app.post('/user/edit/2', {'id': 2,
                                              'email': 'mustang@email.com',
+                                             'cellphone': 123123123,
                                              'group': 'horse',
                                              'csrf_token': token,
                                              },
