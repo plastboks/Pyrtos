@@ -23,6 +23,8 @@ requires = [
     'coverage',
     'slugify',
     'pep8',
+    'python-hoiio',
+    #'hoiio',
     'Celery',
     'celery-with-redis',
     ]
