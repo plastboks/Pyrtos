@@ -46,7 +46,7 @@ class Event(Base):
 
     """ Foregin key variables"""
     user = relationship('User', backref='events')
-    reminder = relationship('Reminder', backref='events')
+    reminder = relationship('Reminder', backref='event')
 
     """ Get all rows except what the user cannot access
 
