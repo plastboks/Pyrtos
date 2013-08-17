@@ -114,7 +114,38 @@ class UserViews(object):
                 'form': form,
                 'id': id,
                 'myid': a,
+                'user': u,
                 'action': 'user_edit'}
+
+    @view_config(route_name='user_profile',
+                 renderer='pyrtos:templates/user/profile.mako',
+                 permission='edit')
+    def user_profile(self):
+        """ Edit self user view. Method handles both post and get
+        requests.
+        """
+
+        a = authenticated_userid(self.request)
+        u = User.by_id(a)
+        form = UserEditForm(self.request.POST, u,
+                            csrf_context=self.request.session)
+
+        if self.request.method == 'POST' and form.validate():
+            form.populate_obj(u)
+            u.id = a
+            if u.password:
+                u.password = u.pm.encode(form.password.data)
+            else:
+                del u.password
+            self.request.session.flash('User %s updated' %
+                                       (u.email), 'status')
+            return HTTPFound(location=self.request.route_url('user_profile'))
+        return {'title': 'Profile edit',
+                'form': form,
+                'myid': a,
+                'user': u,
+                'action': 'user_profile'
+                }
 
     @view_config(route_name='user_archive',
                  renderer='string',

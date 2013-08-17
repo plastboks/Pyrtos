@@ -31,8 +31,8 @@
               <td>
                 %if item.files:
                   %for f in item.files:
-                    <a href="${request.route_url('file_download', id=item.id)}">
-                      <img src='${request.static_url("pyrtos:static/icons/page_white_get.png")}' title='Edit' alt='Edit' />
+                    <a href="${request.route_url('file_download', id=f.id, filename=f.filename)}">
+                      <img src='${request.static_url("pyrtos:static/icons/page_white_get.png")}' title='Download' alt='Download' />
                     </a>
                   %endfor
                 %endif
@@ -113,7 +113,7 @@
               <td>
                 %if item.files:
                   %for f in item.files:
-                    <a href="${request.route_url('file_download', id=f.id)}">
+                    <a href="${request.route_url('file_download', id=f.id, filename=f.filename)}">
                       <img src='${request.static_url("pyrtos:static/icons/page_white_get.png")}' title='Edit' alt='Edit' />
                     </a>
                   %endfor

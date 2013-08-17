@@ -50,6 +50,15 @@
     ${form.private}
   </p>
 
+  %if action is 'event_edit':
+    <p class='byline'>
+      Created by: ${event.user.givenname} ${event.user.surname} (${event.user.email}) @ ${event.created.date()}
+      %if event.updated:
+        | updated @ ${event.updated.date()}
+      %endif
+    </p>
+  %endif
+
   <p>
     <input type="submit" value="Submit" />
   </p>

@@ -26,6 +26,14 @@
     ${form.user_id}
   </p>
 
+  %if action is 'income_edit':
+    <p class='byline'>
+      Created by: ${income.user.givenname} ${income.user.surname} (${income.user.email}) @ ${income.created.date()}
+      %if income.updated:
+        | updated @ ${income.updated.date()}
+      %endif
+    </p>
+  %endif
   <p>
     <input type="submit" value="Submit" />
   </p>

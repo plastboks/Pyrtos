@@ -1,19 +1,19 @@
 <%inherit file="pyrtos:templates/invoice/base.mako" />
-  %if not private and action is not 'invoice_edit':
-    <p class='changestate'>
-      Want to create a private invoice? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
-    </p>
-  %endif
-  %if action is 'invoice_edit' and not private:
-    <p class='changestate'>
-      Want to make this invoice private? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
-    </p>
-  %endif
-  %if action is 'invoice_edit' and private:
-    <p class='changestate'>
-      Want to make this invoice shared? <a href="${request.current_route_url()}">Click here.</a>
-    </p>
-  %endif
+%if not private and action is not 'invoice_edit':
+  <p class='changestate'>
+    Want to create a private invoice? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
+  </p>
+%endif
+%if action is 'invoice_edit' and not private:
+  <p class='changestate'>
+    Want to make this invoice private? <a href="${request.current_route_url(_query={'private': '1'})}">Click here.</a>
+  </p>
+%endif
+%if action is 'invoice_edit' and private:
+  <p class='changestate'>
+    Want to make this invoice shared? <a href="${request.current_route_url()}">Click here.</a>
+  </p>
+%endif
 
 %if private:
   <form action="${request.route_url(action, id=id, _query={'private' : '1'})}" method="POST" enctype="multipart/form-data">
@@ -88,18 +88,32 @@
   %for error in form.on_hold.errors:
     <p class=error>${error}</p>
   %endfor
-  <p>
-    <label>${form.on_hold.label}</label>
-    ${form.on_hold}
-  </p>
-
   %for error in form.reminder_true.errors:
     <p class=error>${error}</p>
   %endfor
   <p>
+    <label>${form.on_hold.label}</label>
+    ${form.on_hold}
     <label>${form.reminder_true.label}</label>
     ${form.reminder_true}
   </p>
+
+  %for error in form.notes.errors:
+    <p class=error>${error}</p>
+  %endfor
+  <p>
+    <label>${form.notes.label}</label><br />
+    ${form.notes}
+  </p>
+
+  %if action is 'invoice_edit':
+    <p class='byline'>
+      Created by: ${invoice.user.givenname} ${invoice.user.surname} (${invoice.user.email}) @ ${invoice.created.date()}
+      %if invoice.updated:
+        | updated @ ${invoice.updated.date()}
+      %endif
+    </p>
+  %endif
 
   <p>
     <input type="submit" value="Submit" />

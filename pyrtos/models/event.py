@@ -42,10 +42,11 @@ class Event(Base):
     from_date = Column(DateTime)
     to_date = Column(DateTime)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Foregin key variables"""
-    reminder = relationship('Reminder', backref='event')
+    user = relationship('User', backref='events')
+    reminder = relationship('Reminder', backref='events')
 
     """ Get all rows except what the user cannot access
 

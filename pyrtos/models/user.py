@@ -52,6 +52,8 @@ class User(Base):
     archived = Column(Boolean, default=False)
     blocked = Column(Boolean, default=False)
     last_logged = Column(DateTime, default=datetime.utcnow)
+    created = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Class constant used for accessing Bcrypt password manager. """
     pm = BCRYPTPasswordManager()

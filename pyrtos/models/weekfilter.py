@@ -42,7 +42,7 @@ class WeekFilter(Base):
     saturday = Column(Boolean, default=False)
     sunday = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Get one record based on id.
 

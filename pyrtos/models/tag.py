@@ -35,7 +35,7 @@ class Tag(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), unique=True, nullable=False)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Dummy method for getting the most popular tags.
     This method is pr now done.

@@ -23,6 +23,8 @@ requires = [
     'coverage',
     'slugify',
     'pep8',
+    'Celery',
+    'celery-with-redis',
     ]
 
 setup(name='pyrtos',

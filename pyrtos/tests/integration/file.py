@@ -55,7 +55,7 @@ class IntegrationFileViews(IntegrationTestBase):
         res = self.app.get('/files')
         self.assertIn('foo', res.body)
 
-        res = self.app.get('/file/download/1', status=200)
+        res = self.app.get('/file/download/1/foo.pdf', status=200)
 
         # create one without a file...
         res = self.app.get('/file/new')
@@ -69,10 +69,10 @@ class IntegrationFileViews(IntegrationTestBase):
                             status=302
                             )
 
-        res = self.app.get('/file/download/2', status=404)
+        res = self.app.get('/file/download/2/bar.pdf', status=404)
 
         # try to get nonexisting file
-        res = self.app.get('/file/download/100', status=404)
+        res = self.app.get('/file/download/100/bleh.pdf', status=404)
 
         # logout
         self.app.get('/logout')
@@ -88,4 +88,4 @@ class IntegrationFileViews(IntegrationTestBase):
                             status=302
                             )
 
-        self.app.get('/file/download/1', status=403)
+        self.app.get('/file/download/1/foo.pdf', status=403)

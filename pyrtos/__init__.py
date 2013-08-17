@@ -67,6 +67,7 @@ def main(global_config, **settings):
     config.add_route('users_archived', '/users/archived')
     config.add_route('user_new', '/user/new')
     config.add_route('user_edit', '/user/edit/{id}')
+    config.add_route('user_profile', '/user/profile')
     config.add_route('user_archive', '/user/archive/{id}')
     config.add_route('user_restore', '/user/restore/{id}')
 
@@ -109,7 +110,7 @@ def main(global_config, **settings):
     config.add_route('files', '/files')
     config.add_route('files_archived', '/files/archived')
     config.add_route('file_new', '/file/new')
-    config.add_route('file_download', '/file/download/{id}')
+    config.add_route('file_download', '/file/download/{id}/{filename}')
 
     """ Alert settings """
     config.add_route('alertsettings', '/alertsettings')

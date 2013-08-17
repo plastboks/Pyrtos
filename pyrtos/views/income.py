@@ -102,6 +102,7 @@ class IncomeViews(object):
         return {'title': 'Edit income',
                 'form': form,
                 'id': id,
+                'income': i,
                 'action': 'income_edit'}
 
     @view_config(route_name='income_archive',

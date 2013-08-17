@@ -48,9 +48,10 @@ class AlertSetting(Base):
     active = Column(Boolean, default=True)
     archived = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.utcnow)
-    updated = Column(DateTime, default=datetime.utcnow)
+    updated = Column(DateTime, onupdate=datetime.utcnow)
 
     """ Constants for relationships. """
+    user = relationship('User', backref='alertsettings')
     weekfilter = relationship('WeekFilter',
                               backref='alertsetting',
                               lazy='joined')

@@ -99,6 +99,7 @@ class CreditorViews(object):
         return {'title': 'Edit creditor',
                 'form': form,
                 'id': id,
+                'creditor': c,
                 'action': 'creditor_edit'}
 
     @view_config(route_name='creditor_archive',

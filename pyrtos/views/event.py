@@ -137,6 +137,7 @@ class EventViews(object):
         return {'title': 'Edit event',
                 'form': form,
                 'id': id,
+                'event': e,
                 'action': 'event_edit'}
 
     @view_config(route_name='event_archive',
