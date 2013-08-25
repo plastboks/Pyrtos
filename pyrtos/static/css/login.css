@@ -9,6 +9,7 @@
 body {
    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
    font-weight: 300;
+   background: #eaeaea url('../images/bg.png')
 }
 
 a {
@@ -46,6 +47,7 @@ img {
 	padding: 10px 0px 0px 60px !important;
   background: url('/static/icons/pyrtos.png') 5% 75% no-repeat ;
   margin-bottom: 0px;
+  font-weight: 300;
 }
 
 #login label {
@@ -58,10 +60,12 @@ img {
 }
 
 #login form input[type='submit'] {
-  background: none repeat scroll 0 0 #FBFBFB;
-  border: 1px solid #E5E5E5;
+  background: lightSkyBlue;
+  border: 1px solid dodgerBlue;
+  width: 300px;
   padding: 4px;
-  font-size: 0.8em;
+  font-size: 1.2em;
+  font-weight: 300;
 }
 
 #login form input[type='text'],
@@ -74,6 +78,8 @@ img {
   margin-top: 2px;
   padding: 3px;
   width: 300px;
+  font-weight: 300;
+  color: #333;
 }
 
 #login .error {
