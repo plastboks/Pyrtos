@@ -33,10 +33,12 @@ img {
 #header {
   width: 980px;
   margin: 0 auto;
-  padding-left: 10px;
+  padding-left: 0px;
 }
 
 #header h1 {
+  font-weight: 300;
+  font-size: 3em;
 }
 
 
@@ -54,10 +56,12 @@ img {
 #wrapper h1 {
   color: #585858;
   margin: 0px 0px 10px 0px;
+  font-weight: 300;
 }
 
 #wrapper h2 {
   color: #585858;
+  font-weight: 300;
 }
 
 /**
@@ -158,6 +162,8 @@ img {
 .upper_toolbar ul {
   list-style: none;
   font-size: 0.8em;
+  margin-left: 10px;
+  padding: 0;
 }
 
 .upper_toolbar li {
@@ -169,6 +175,10 @@ img {
 
 .upper_toolbar li:not(:last-child) {
   border-right: 1px solid #e8e8e8;
+}
+
+.upper_toolbar li:last-child {
+  margin-right: 0px;
 }
 
 /** 
@@ -254,6 +264,8 @@ img {
   margin-top: 2px;
   padding: 3px;
   width: 97%;
+  font-weight: 300;
+  color: #333;
 }
 
 #content form textarea {
