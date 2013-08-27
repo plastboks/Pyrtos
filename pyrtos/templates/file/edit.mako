@@ -9,7 +9,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.title.label}</label><br />
+    ${form.title.label}<br />
     ${form.title}
   </p>
 
@@ -17,7 +17,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.private.label}</label>
+    ${form.private.label}
     ${form.private}
   </p>
 
@@ -25,7 +25,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.file.label}</label>
+    ${form.file.label}
     ${form.file}
   </p>
 

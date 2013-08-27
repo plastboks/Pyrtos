@@ -9,7 +9,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.title.label}</label><br />
+    ${form.title.label}<br />
     ${form.title}
   </p>
 
@@ -17,7 +17,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.from_date.label}</label><br />
+    ${form.from_date.label}<br />
     ${form.from_date}
   </p>
 
@@ -25,7 +25,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.to_date.label}</label><br />
+    ${form.to_date.label}<br />
     ${form.to_date}
   </p>
 
@@ -33,7 +33,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.reminder_true.label}</label>
+    ${form.reminder_true.label}
     ${form.reminder_true}
   </p>
 
@@ -41,12 +41,12 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.reminder_alert.label}</label>
+    ${form.reminder_alert.label}
     ${form.reminder_alert}
   </p>
 
   <p>
-    <label>${form.private.label}</label>
+    ${form.private.label}
     ${form.private}
   </p>
 

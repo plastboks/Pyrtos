@@ -9,7 +9,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.title.label}: </label>
+    ${form.title.label}:
     ${form.title}
   </p>
 
@@ -17,7 +17,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.weekfilter.label}: </label>
+    ${form.weekfilter.label}:
     ${form.weekfilter}
   </p>
 
@@ -31,11 +31,11 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.hour.label}: </label>
+    ${form.hour.label}:
     ${form.hour}
-    <label>${form.minute.label}: </label>
+    ${form.minute.label}:
     ${form.minute}
-    <label>${form.days_in_advance.label}: </label>
+    ${form.days_in_advance.label}:
     ${form.days_in_advance}
   </p>
 
@@ -43,7 +43,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.active.label}: </label>
+    ${form.active.label}:
     ${form.active}
   </p>
 
