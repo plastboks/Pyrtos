@@ -30,7 +30,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.title.label}</label><br />
+    ${form.title.label}<br />
     ${form.title}
   </p>
 
@@ -38,7 +38,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.amount.label}</label><br />
+    ${form.amount.label}<br />
     ${form.amount}
   </p>
   
@@ -48,7 +48,7 @@
         <p class=error>${error}</p>
       %endfor
       <p>
-        <label>${form.files.label}</label><br />
+        ${form.files.label}<br />
         ${form.files}
       </p>
     %endif
@@ -58,7 +58,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.attachment.label}</label><br />
+    ${form.attachment.label}<br />
     ${form.attachment}
   </p>
 
@@ -66,7 +66,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.due.label}</label><br />
+    ${form.due.label}<br />
     ${form.due}
   </p>
 
@@ -74,14 +74,14 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.paid.label}</label><br />
+    ${form.paid.label}<br />
     ${form.paid}
   </p>
 
   <p>
-    <label>${form.category_id.label}</label>
+    ${form.category_id.label}
     ${form.category_id}
-    <label>${form.creditor_id.label}</label>
+    ${form.creditor_id.label}
     ${form.creditor_id}
   </p>
 
@@ -92,9 +92,9 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.on_hold.label}</label>
+    ${form.on_hold.label}
     ${form.on_hold}
-    <label>${form.reminder_true.label}</label>
+    ${form.reminder_true.label}
     ${form.reminder_true}
   </p>
 
@@ -102,7 +102,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.notes.label}</label><br />
+    ${form.notes.label}<br />
     ${form.notes}
   </p>
 

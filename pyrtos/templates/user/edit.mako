@@ -11,7 +11,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.email.label}</label><br />
+    ${form.email.label}<br />
     ${form.email}
   </p>
 
@@ -19,7 +19,7 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.cellphone.label}</label><br />
+    ${form.cellphone.label}<br />
     ${form.cellphone}
   </p>
 
@@ -27,15 +27,15 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.givenname.label}</label><br />
+    ${form.givenname.label}<br />
     ${form.givenname}
   </p>
-  
+
   %for error in form.surname.errors:
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.surname.label}</label><br />
+    ${form.surname.label}<br />
     ${form.surname}
   </p>
 
@@ -43,25 +43,25 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.password.label}</label><br />
+    ${form.password.label}<br />
     ${form.password}
   </p>
 
   <p>
-    <label>${form.confirm.label}</label><br />
+    ${form.confirm.label}<br />
     ${form.confirm}
   </p>
 
   %if id is not 1 and id is not myid:
     <p>
-      <label>${form.group.label}</label>
+      ${form.group.label}
       ${form.group}
     </p>
   %endif
 
   %if id is not 1 and id is not myid:
     <p>
-      <label>${form.blocked.label}</label>
+      ${form.blocked.label}
       ${form.blocked}
     </p>
   %endif

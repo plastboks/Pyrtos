@@ -7,7 +7,7 @@
       <p class=error>${error}</p>
     %endfor
     <p>
-      <label>${form.query.label}</label><br />
+      ${form.query.label}<br />
       ${form.query}
     </p>
 
@@ -15,7 +15,7 @@
       <p class=error>${error}</p>
     %endfor
     <p>
-      <label>${form.categories.label}</label><br />
+      ${form.categories.label}<br />
       ${form.categories}
     </p>
 
@@ -23,7 +23,7 @@
       <p class=error>${error}</p>
     %endfor
     <p>
-      <label>${form.creditors.label}</label><br />
+      ${form.creditors.label}<br />
       ${form.creditors}
     </p>
 
@@ -31,7 +31,7 @@
       <p class=error>${error}</p>
     %endfor
     <p>
-      <label>${form.fromdate.label}</label><br />
+      ${form.fromdate.label}<br />
       ${form.fromdate}
     </p>
 
@@ -39,7 +39,7 @@
       <p class=error>${error}</p>
     %endfor
     <p>
-      <label>${form.todate.label}</label><br />
+      ${form.todate.label}<br />
       ${form.todate}
     </p>
 

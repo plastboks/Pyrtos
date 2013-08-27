@@ -9,12 +9,12 @@
     <p class=error>${error}</p>
   %endfor
   <p>
-    <label>${form.title.label}</label><br />
+    ${form.title.label}<br />
     ${form.title}
   </p>
 
   <p>
-    <label>${form.private.label}</label>
+    ${form.private.label}
     ${form.private}
   </p>
 
