@@ -8,6 +8,11 @@
 
 class Cron():
     
-    __init__():
-        # this class should extend or inherit a SqlAlchemy instance.
+    db = ''
 
+    def __init__(self):
+        # this class should extend or inherit a SqlAlchemy instance.
+        self.initiateDB()
+
+    def initiateDB():
+      self.db = 'do nothing'
