@@ -28,8 +28,6 @@ except Exception as e:
 
 target_metadata = Base.metadata
 
-engine = create_engine(
-            c['sqlalchemy.url'],
-            poolclass=pool.NullPool)
+engine = create_engine(c['sqlalchemy.url'], poolclass=pool.NullPool)
 DBSession.configure(bind=engine)
 Base.metadata.bind = engine
