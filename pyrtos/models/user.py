@@ -44,7 +44,7 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True, nullable=False)
-    cellphone = Column(Integer(16), nullable=True)
+    cellphone = Column(Integer, nullable=True)
     givenname = Column(String(255))
     surname = Column(String(255))
     password = Column(String(255), nullable=False)
