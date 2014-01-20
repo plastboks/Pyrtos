@@ -29,6 +29,15 @@ Installation
   * run `initialize_pyrtos_db .ini`
   * run `pserve development.ini`
 
+Deploy
+======
+* install uwsgi `pip install uwsgi` (globally?)
+* copy examples/uwsgi.ini.example to app root and edit.
+* copy examples/flaskmarks.nginx.example to your nginx sites folder and enable.
+* copy examples/uwsgi_params.example to your nginx config folder.
+* run: `uwsgi uwsgi.ini`
+* restart nginx
+
 Alembic
 =======
 To create an alembic migrations do;
