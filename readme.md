@@ -31,12 +31,10 @@ Installation
 
 Deploy
 ======
-* install uwsgi `pip install uwsgi` (globally?)
-* copy examples/uwsgi.ini.example to app root and edit.
-* copy examples/flaskmarks.nginx.example to your nginx sites folder and enable.
-* copy examples/uwsgi_params.example to your nginx config folder.
-* run: `uwsgi uwsgi.ini`
-* restart nginx
+  * install uwsgi `pip install uwsgi` (globally?)
+  * Copy pyrtos.nginx.example from the example folder over to your nginx install.
+  * start pserve `../bin/gunicorn --paste production.ini`.
+  * restart nginx
 
 Alembic
 =======
