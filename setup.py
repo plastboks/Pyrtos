@@ -27,6 +27,7 @@ requires = [
     'python-hoiio',
     #'hoiio',
     'Celery',
+    'gunicorn'
     ]
 
 setup(name='pyrtos',
