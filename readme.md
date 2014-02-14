@@ -11,30 +11,30 @@ Description
 Features include:
   * Global categories for use trough the application.
   * Global creditors of invoices an such.
-  * Register all expected montly and yearly expenditures.
+  * Register all expected monthly and yearly expenditures.
   * Upload and register all uses and invoices.
   * All entries have tags in addition to one category.
   * Notify via SMS and Email when an invoice is due to payment.
   * Compare uses against expected numbers.
   * Plot and graphs to visualize budget.
-  * Upload and keep track of reciepts and documents.
+  * Upload and keep track of receipts and documents.
   * +++
 
 Installation
 ============
   * create a virtualenv (eg: `virtualenv2 venv`). Use Python2.X
   * activate virtualenv `. venv/bin/activate`
-  * clone this repo into venv directory (eg: venv/Pyrtos)
-  * run `pip install -e .` inside Pyrtos directory
+  * clone this repository into venv directory (eg: venv/Pyrtos).
+  * run `pip install -e .` inside Pyrtos directory.
   * run `initialize_pyrtos_db .ini`
   * run `pserve development.ini`
 
 Deploy
 ======
-  * install uwsgi `pip install uwsgi` (globally?)
-  * Copy pyrtos.nginx.example from the example folder over to your nginx install.
+  * see `example/pyrtos.nginx.example` for nginx example config file.
+  * setup and configure nginx.
   * start pserve `../bin/gunicorn --paste production.ini`.
-  * restart nginx
+  * restart nginx.
 
 Alembic
 =======
@@ -59,8 +59,8 @@ This app will be written with TDD. To test the app run:
 
 Branches
 ========
-There will mainly be two branches in this repo (@github) at all times. The master and develop branch.
-The master branch will be kept back featurewise of the develop branch. This is to ensure the stability of the master branch.
+There will mainly be two branches in this repository (@github) at all times. The master and develop branch.
+The master branch will be kept back feature wise of the develop branch. This is to ensure the stability of the master branch.
 
 Useful Links
 ============
@@ -79,4 +79,3 @@ Credits
   * [WTForms](http://wtforms.simplecodes.com/docs/1.0.4/)
   * [SQLAlchemy](http://www.sqlalchemy.org/)
   * Icon set from [FAMFAMFAM](http://www.famfamfam.com)
-
