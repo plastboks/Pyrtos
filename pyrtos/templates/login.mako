@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="${request.static_url('pyrtos:static/css/login.css')}" type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
-  <div id="login">
+  <section id="login">
     <h1>${request.registry.settings.get('pyrtos.title')}</h1>
     <form action="${request.route_url('login')}" method="post">
       ${form.csrf_token}
@@ -27,6 +27,6 @@
       </p>
         <input type="submit" value="Login">
     </form>
-  </div>
+  </section>
 </body>
 </html>

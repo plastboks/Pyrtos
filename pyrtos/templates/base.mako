@@ -7,22 +7,22 @@
   <link rel="stylesheet" href="${request.static_url('pyrtos:static/css/style.css')}" type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
-  <div id="wrapper">
-    <div id="header">
+  <section id="wrapper">
+    <header>
        <h1>${request.registry.settings.get('pyrtos.title')}</h1>
-    </div>
-    <div id="messages">
+    </header>
+    <section id="messages">
       <%include file="pyrtos:templates/messages.mako"/>
-    </div>
-    <div class="sidebar corners5px">
+    </section>
+    <section class="sidebar corners5px">
       <%include file="pyrtos:templates/sidebar.mako"/>
-    </div>
-    <div id="content" class="corners5px">
+    </section>
+    <section id="content" class="corners5px">
        ${next.body()} 
-    </div>
-    <div id='footer'>
+    </section>
+    <section id='footer'>
       <p>${request.registry.settings.get('pyrtos.footer')}</p>
-    </div>
-  </div>
+    </section>
+  </section>
 </body>
 </html>

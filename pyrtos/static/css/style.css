@@ -30,13 +30,13 @@ img {
 /**
  * header 
  */
-#header {
+header {
   width: 980px;
   margin: 0 auto;
   padding-left: 0px;
 }
 
-#header h1 {
+header h1 {
   font-weight: 300;
   font-size: 3em;
 }

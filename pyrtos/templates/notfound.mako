@@ -8,9 +8,9 @@
 </head>
 <body>
 <body>
-  <div id="notfound">
+  <section id="notfound">
     <h1>${title}</h1>
     <p>${message}</p>
     <p class="home"><span><a href="${request.route_url('index')}">Home</a></span><p>
-  </div>
+  </section>
 </body>
