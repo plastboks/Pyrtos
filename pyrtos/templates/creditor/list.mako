@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/creditor/base.mako"/>
 
 %if paginator.items:
-  <div class='tablelist'>
+  <section class='tablelist'>
     <table id='creditors'>
       <thead>
         <th>Title</th>
@@ -44,10 +44,10 @@
         %endfor
       </tbody>
     </table>
-  </div>
-  <div class='pager'>
+  </section>
+  <section class='pager'>
     ${paginator.pager()}
-  </div>
+  </section>
 %else:
   <p>No creditors found.</p>
 %endif

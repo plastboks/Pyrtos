@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/reminder/base.mako"/>
 
 %if paginator.items:
-  <div class='tablelist'>
+  <section class='tablelist'>
     <table id='reminders'>
       <thead>
         <th>Type</th>
@@ -25,10 +25,10 @@
         %endfor
       </tbody>
     </table>
-  </div>
-  <div class='pager'>
+  </section>
+  <section class='pager'>
     ${paginator.pager()}
-  </div>
+  </section>
 %else:
   <p>No reminders found.</p>
 %endif

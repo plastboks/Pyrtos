@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/expenditure/base.mako"/>
 
 %if paginator.items:
-  <div class='tablelist'>
+  <section class='tablelist'>
     <table id='expenditures'>
       <thead>
         <th>Title</th>
@@ -39,17 +39,17 @@
         %endfor
       </tbody>
     </table>
-  </div>
-  <div class='tablesum'>
+  </section>
+  <section class='tablesum'>
   %if amount_sum:
     %for s in amount_sum:
       <span>Sum: ${s}</span>
     %endfor
   %endif
-  </div>
-  <div class='pager'>
+  </section>
+  <section class='pager'>
     ${paginator.pager()}
-  </div>
+  </section>
 %else:
   <p>No expenditures found.</p>
 %endif

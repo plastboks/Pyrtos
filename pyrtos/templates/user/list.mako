@@ -1,6 +1,6 @@
 <%inherit file="pyrtos:templates/user/base.mako"/>
 %if paginator.items:
-  <div class='tablelist'>
+  <section class='tablelist'>
     <table id='users'>
       <thead>
         <th>Name</th>
@@ -60,10 +60,10 @@
         %endfor
       </tbody>
     </table>
-  </div>
-  <div class='pager'>
+  </section>
+  <section class='pager'>
     ${paginator.pager()}
-  </div>
+  </section>
 %else:
   <p>No users found.</p>
 %endif

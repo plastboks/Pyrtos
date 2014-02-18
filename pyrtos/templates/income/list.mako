@@ -1,7 +1,7 @@
 <%inherit file="pyrtos:templates/income/base.mako"/>
 
 %if paginator.items:
-  <div class='tablelist'>
+  <section class='tablelist'>
     <table id='incomes'>
       <thead>
         <th>Title</th>
@@ -45,10 +45,10 @@
           %endif
       </tbody>
     </table>
-  </div>
-  <div class='pager'>
+  </section>
+  <section class='pager'>
     ${paginator.pager()}
-  </div>
+  </section>
 %else:
   <p>No incomes found.</p>
 %endif

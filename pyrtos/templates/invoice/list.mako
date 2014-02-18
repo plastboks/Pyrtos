@@ -49,7 +49,7 @@
   </form>
 %endif
 %if paginator.items:
-  <div class='tablelist'>
+  <section class='tablelist'>
     <table id='invoices'>
       <thead>
         <th>Title</th>
@@ -111,17 +111,17 @@
         %endif
       </tbody>
     </table>
-  </div>
-  <div class='tablesum'>
+  </section>
+  <section class='tablesum'>
   %if amount_sum:
     %for s in amount_sum:
       <span>Sum: ${s}</span>
     %endfor
   %endif
-  </div>
-  <div class='pager'>
+  </section>
+  <section class='pager'>
     ${paginator.pager()}
-  </div>
+  </section>
 %else:
   <p>No invoices found.</p>
 %endif
