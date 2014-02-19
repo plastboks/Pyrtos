@@ -3,18 +3,18 @@
 /* CSS Document */
 
 * {
-  margin: 0px; 
+    margin: 0px; 
 }
 
 body {
-   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-   font-weight: 300;
-   background: #eaeaea url('../images/bg.png')
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    background: #eaeaea url('../images/bg.png')
 }
 
 a {
-  color: grey;
-  text-decoration: none;
+    color: grey;
+    text-decoration: none;
 }
 
 img {
@@ -22,9 +22,9 @@ img {
 }
 
 .corners5px {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 /* Login */
@@ -33,26 +33,26 @@ img {
 	margin: 0 auto;
 	margin-top: 150px;
 	-moz-box-shadow: 0 4px 18px #C8C8C8;
-  -webkit-box-shadow: 0 4px 18px #C8C8C8;
-  box-shadow: 0 4px 18px #C8C8C8;
-  -webkit-border-radius: 11px;
-  -moz-border-radius: 11px;
-  border-radius: 11px; 
-  background: #f2f2f2;
+    -webkit-box-shadow: 0 4px 18px #C8C8C8;
+    box-shadow: 0 4px 18px #C8C8C8;
+    -webkit-border-radius: 11px;
+    -moz-border-radius: 11px;
+    border-radius: 11px; 
+    background: #f2f2f2;
 	border: 1px solid #cccccc;
 }
 
 #login h1{
 	color: #adadad !important;
 	padding: 10px 0px 0px 60px !important;
-  background: url('/static/icons/pyrtos.png') 5% 75% no-repeat ;
-  margin-bottom: 0px;
-  font-weight: 300;
+    background: url('/static/icons/pyrtos.png') 5% 75% no-repeat ;
+    margin-bottom: 0px;
+    font-weight: 300;
 }
 
 #login label {
 	color: #adadad;
-  font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 #login form{
@@ -60,34 +60,34 @@ img {
 }
 
 #login form input[type='submit'] {
-  background: lightSkyBlue;
-  border: 1px solid dodgerBlue;
-  width: 300px;
-  padding: 4px;
-  font-size: 1.2em;
-  font-weight: 300;
+    background: lightSkyBlue;
+    border: 1px solid dodgerBlue;
+    width: 300px;
+    padding: 4px;
+    font-size: 1.2em;
+    font-weight: 300;
 }
 
 #login form input[type='text'],
 #login form input[type='password'] {
-  background: none repeat scroll 0 0 #FBFBFB;
-  border: 1px solid #E5E5E5;
-  font-size: 24px;
-  margin-bottom: 16px;
-  margin-right: 6px;
-  margin-top: 2px;
-  padding: 3px;
-  width: 300px;
-  font-weight: 300;
-  color: #333;
+    background: none repeat scroll 0 0 #FBFBFB;
+    border: 1px solid #E5E5E5;
+    font-size: 24px;
+    margin-bottom: 16px;
+    margin-right: 6px;
+    margin-top: 2px;
+    padding: 3px;
+    width: 300px;
+    font-weight: 300;
+    color: #333;
 }
 
 #login .error {
-  background: salmon;
-  border: 1px solid red;
-  height: auto;
-  padding: 2px;
-  width: 295px;
-  margin-bottom: 10px;
+    background: salmon;
+    border: 1px solid red;
+    height: auto;
+    padding: 2px;
+    width: 295px;
+    margin-bottom: 10px;
 }
 
