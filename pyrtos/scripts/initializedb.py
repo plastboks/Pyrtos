@@ -39,8 +39,12 @@ def main(argv=sys.argv):
     Base.metadata.create_all(engine)
 
     m = BPM()
-    a_email = raw_input('Enter email for admin account: ')
-    a_pw = getpass('Enter password for admin account: ')
+    if argv[1] == "autogenerate.ini":
+        a_email = "admin@local"
+        a_pw = "password"
+    else:
+        a_email = raw_input('Enter email for admin account: ')
+        a_pw = getpass('Enter password for admin account: ')
     a_hashed = m.encode(a_pw)
 
     with transaction.manager:
