@@ -1,1 +1,1 @@
-docker run -it --volume=${PWD}/../:/pyrtos/shared pyrtos /bin/bash
+docker run -p 6543:6543 -it --volume=${PWD}/../:/pyrtos/shared pyrtos /bin/bash

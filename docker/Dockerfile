@@ -18,4 +18,8 @@ RUN git clone https://github.com/plastboks/Pyrtos.git app
 WORKDIR /opt/virtualenvs/app
 RUN ls -lsa
 RUN pip install -e .
-RUN initialize_pyrtos_db autogenerate.ini
+RUN /usr/local/bin/initialize_pyrtos_db autogenerate.ini
+
+EXPOSE 6543
+ENTRYPOINT ["/usr/local/bin/pserve /opt/virtualenvs/app/autogenerate.ini"]
+USER daemon
