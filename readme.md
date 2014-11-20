@@ -29,6 +29,17 @@ Installation
   * run `initialize_pyrtos_db .ini`
   * run `pserve development.ini`
 
+Package updates
+===============
+* run: `pip install --upgrade -e .`
+
+Docker
+======
+Now with a docker automated build. See [the registry](https://registry.hub.docker.com/u/plastboks/pyrtos/) for details.
+* change directory into `./docker`
+* run: `build` (need superuser)
+* run: `debug` or `daemon` (need superuser)
+
 Deploy
 ======
   * see `example/pyrtos.nginx.example` for nginx example config file.
